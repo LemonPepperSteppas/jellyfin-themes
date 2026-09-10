@@ -58,3 +58,58 @@
 .listItem-border {
     border-color: var(--cg-border) !important;
 }
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .emby-select-withcolor:focus     { border-color: #00a4dc !important; }
+       .emby-select-tv-withcolor:focus  { background-color: #00a4dc !important;
+                                          color: #fff !important; }
+   Every dropdown on every settings page. */
+
+.emby-select-withcolor:focus {
+    border-color: var(--cg-accent) !important;
+}
+
+.emby-select-tv-withcolor:focus {
+    background-color: var(--cg-accent) !important;
+    color: var(--cg-accent-ink) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .alphaPickerButton-tv:focus { background-color: #00a4dc; color: #fff !important; }
+       .buttonActive               { color: #00a4dc !important; } */
+
+.alphaPickerButton-tv:focus {
+    background-color: var(--cg-accent);
+    color: var(--cg-accent-ink) !important;
+}
+
+.buttonActive {
+    color: var(--cg-text) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss - the Live TV guide.
+
+   Genre colour-coding (sports/movie/kids/news) is five saturated fills, all
+   !important. An achromatic interface cannot carry genre-by-hue, and leaving
+   them makes the guide the single most off-theme screen in the product, so
+   they collapse to one surface and the programme title does the work.
+
+   The focus and active fills are separate: those ARE state, and state is
+   allowed to be visible. */
+
+.programCell-sports,
+.programCell-movie,
+.programCell-kids,
+.programCell-news {
+    background: var(--cg-elevated) !important;
+}
+
+.programCell-active {
+    background: var(--cg-state-selected) !important;
+}
+
+.guide-channelHeaderCell:focus,
+.programCell:focus {
+    background-color: var(--cg-accent) !important;
+    color: var(--cg-accent-ink) !important;
+}

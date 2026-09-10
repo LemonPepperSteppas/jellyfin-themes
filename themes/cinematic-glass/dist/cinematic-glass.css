@@ -2060,7 +2060,314 @@ h1.itemName {
    Cinematic Glass - Dialogs, menus, toasts, forms, search, indicators.
    --------------------------------------------------------------------------
    Owns: .dialog, .actionSheet, .toast, .emby-input, .emby-select, .searchfields
+
+   The long tail. Most of the ~102 selectors the built-in dark theme touches
+   that no earlier module claimed end up here, which is also why this is the
+   file to check first when something looks unstyled on the real server.
+
+   Ordered to match themes/dark/theme.scss so the two can be read side by side.
    ========================================================================== */
+
+/* --- Dialogs -------------------------------------------------------------
+   Real glass: these sit over content, and a dialog is the clearest place in
+   the UI to show the material the theme is named for. */
+
+.dialog,
+.formDialog {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur-strong);
+    -webkit-backdrop-filter: var(--cg-blur-strong);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+    box-shadow: var(--cg-shadow-3);
+}
+
+.formDialogHeader:not(.formDialogHeader-clear),
+.formDialogFooter:not(.formDialogFooter-clear) {
+    background-color: transparent;
+    border-color: var(--cg-border);
+}
+
+.formDialogHeader:not(.formDialogHeader-clear) {
+    border-bottom: 1px solid var(--cg-border);
+}
+
+.formDialogFooter:not(.formDialogFooter-clear) {
+    border-top: 1px solid var(--cg-border);
+}
+
+.layout-tv .formDialogFooter:not(.formDialogFooter-clear) {
+    background-color: transparent;
+    border-top: 0;
+}
+
+.collapseContent,
+.paperList,
+.wizardStartForm,
+.ui-corner-all,
+.ui-shadow {
+    background-color: var(--cg-elevated);
+    border-radius: var(--cg-radius-panel);
+}
+
+.emby-collapsible-button {
+    border-color: var(--cg-border);
+}
+
+/* --- Action sheets and menus --------------------------------------------- */
+
+.actionSheet,
+.actionSheetContent {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur-strong);
+    -webkit-backdrop-filter: var(--cg-blur-strong);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+    box-shadow: var(--cg-shadow-3);
+}
+
+.actionsheetDivider {
+    background: var(--cg-border);
+}
+
+.actionSheetMenuItem:hover {
+    background-color: var(--cg-state-hover);
+}
+
+/* --- Toasts --------------------------------------------------------------
+   Stock is a light grey box. A toast lands over artwork as often as not, so
+   it gets the same glass as everything else that floats. */
+
+.toast {
+    background: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    box-shadow: var(--cg-shadow-3);
+    color: var(--cg-text);
+}
+
+/* --- Buttons -------------------------------------------------------------
+   Three tiers, and only one of them is the accent. .button-submit is the
+   affirmative action; .fab and .raised are neutral; .button-delete is the one
+   place a semantic hue outranks the achromatic rule, because a destructive
+   button that looks like every other button is a bug. */
+
+.fab,
+.raised {
+    background: var(--cg-glass);
+    color: var(--cg-text);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+}
+
+.fab:focus,
+.raised:focus {
+    background: var(--cg-state-active);
+    border-color: var(--cg-border-strong);
+}
+
+.button-submit {
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+    font-weight: var(--cg-fw-bold);
+}
+
+.button-submit:focus {
+    background: var(--cg-accent-light);
+    color: var(--cg-accent-ink);
+}
+
+.button-delete {
+    background: var(--cg-err);
+    color: var(--cg-accent-ink);
+}
+
+.button-flat:hover {
+    color: var(--cg-text);
+    background: var(--cg-state-hover);
+}
+
+/* --- Form fields ---------------------------------------------------------
+   Stock borders these in their own fill colour so the field reads as a solid
+   block, then turns the border blue on focus. Here the resting border is a
+   hairline and focus brightens it - the focus ring from 02-base.css is doing
+   the signalling, so the border does not have to shout. */
+
+.emby-input,
+.emby-textarea,
+.emby-select-withcolor {
+    color: var(--cg-text);
+    background: var(--cg-glass);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-sm);
+    transition: border-color var(--cg-dur-fast) var(--cg-ease),
+                background-color var(--cg-dur-fast) var(--cg-ease);
+}
+
+.emby-input:hover,
+.emby-textarea:hover,
+.emby-select-withcolor:hover {
+    background: var(--cg-state-active);
+}
+
+.emby-input:focus,
+.emby-textarea:focus {
+    border-color: var(--cg-accent);
+}
+
+/* The dropdown list itself is painted by the OS, not by us, so it gets a
+   solid colour rather than glass - a translucent option list renders as
+   whatever is behind the window. */
+
+.emby-select-withcolor > option {
+    color: var(--cg-text);
+    background: var(--cg-elevated);
+}
+
+.inputLabelFocused,
+.selectLabelFocused,
+.textareaLabelFocused {
+    color: var(--cg-text);
+}
+
+/* --- Checkboxes ---------------------------------------------------------- */
+
+.checkboxOutline {
+    border-color: var(--cg-border-strong);
+    border-radius: var(--cg-radius-sm);
+}
+
+.emby-checkbox:checked + span + .checkboxOutline {
+    border-color: var(--cg-accent);
+    background-color: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+.emby-checkbox:focus + span + .checkboxOutline,
+.emby-checkbox:focus:not(:checked) + span + .checkboxOutline {
+    border-color: var(--cg-accent);
+}
+
+/* --- Search and alpha picker --------------------------------------------- */
+
+.searchfields,
+.searchFields,
+.searchfields-icon {
+    color: var(--cg-muted);
+}
+
+.alphaPickerButton {
+    color: var(--cg-muted);
+    background-color: transparent;
+    border-radius: var(--cg-radius-pill);
+}
+
+.alphaPickerButton-selected {
+    color: var(--cg-accent-ink);
+    background-color: var(--cg-accent);
+}
+
+/* --- Indicators and small print ------------------------------------------ */
+
+.infoBanner {
+    color: var(--cg-text);
+    background: var(--cg-glass);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+}
+
+.progressring-spiner {
+    border-color: var(--cg-accent);
+}
+
+.upNextDialog-countdownText {
+    color: var(--cg-text);
+    font-weight: var(--cg-fw-bold);
+}
+
+.appfooter,
+.playlistSectionButton {
+    background: var(--cg-elevated);
+    color: var(--cg-text);
+}
+
+/* These three are Jellyfin's own semantic colours for user data, and they are
+   left chromatic on purpose: they mark state on an item, which is exactly
+   what the palette reserves hue for. */
+
+.ratingbutton-icon-withrating,
+.playstatebutton-icon-played {
+    color: var(--cg-err);
+}
+
+.downloadbutton-icon-complete,
+.downloadbutton-icon-on {
+    color: var(--cg-ok);
+}
+
+/* --- Live TV guide -------------------------------------------------------
+   No module of its own in the build order, and it is the densest grid in the
+   product. Stock colour-codes programme genres, which an achromatic interface
+   cannot carry - those five fills are !important upstream anyway and are
+   handled in 99-fixes.css. */
+
+.channelPrograms,
+.guide-channelHeaderCell,
+.programCell {
+    border-color: var(--cg-border);
+}
+
+.guide-programTextIcon {
+    color: var(--cg-accent-ink);
+    background: var(--cg-muted);
+}
+
+.guide-date-tab-button {
+    color: var(--cg-faint);
+    border-radius: var(--cg-radius-pill);
+}
+
+.guide-date-tab-button.emby-tab-button-active,
+.guide-date-tab-button:focus {
+    color: var(--cg-text);
+}
+
+.guide-headerTimeslots {
+    color: var(--cg-muted);
+}
+
+/* --- Book and comic readers ---------------------------------------------- */
+
+#comicsPlayer,
+#bookPlayer,
+#pdfPlayer,
+#dialogToc {
+    background: var(--cg-ground);
+}
+
+#comicsPlayer .swiper-pagination {
+    background: var(--cg-glass-chrome);
+    color: var(--cg-text);
+}
+
+#bookPlayer .topButtons,
+#comicsPlayer .actionButtonIcon,
+#pdfPlayer .actionButtonIcon {
+    color: var(--cg-text);
+}
+
+#dialogToc .bookplayerButtonIcon,
+#dialogToc .toc li a:link {
+    color: var(--cg-muted);
+}
+
+#dialogToc .bookplayerButtonIcon:hover,
+#dialogToc .toc li a:active,
+#dialogToc .toc li a:hover {
+    color: var(--cg-text);
+}
 
 /* ---- src/99-fixes.css ------------------------------------------ */
 /* ==========================================================================
@@ -2122,4 +2429,59 @@ h1.itemName {
 
 .listItem-border {
     border-color: var(--cg-border) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .emby-select-withcolor:focus     { border-color: #00a4dc !important; }
+       .emby-select-tv-withcolor:focus  { background-color: #00a4dc !important;
+                                          color: #fff !important; }
+   Every dropdown on every settings page. */
+
+.emby-select-withcolor:focus {
+    border-color: var(--cg-accent) !important;
+}
+
+.emby-select-tv-withcolor:focus {
+    background-color: var(--cg-accent) !important;
+    color: var(--cg-accent-ink) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .alphaPickerButton-tv:focus { background-color: #00a4dc; color: #fff !important; }
+       .buttonActive               { color: #00a4dc !important; } */
+
+.alphaPickerButton-tv:focus {
+    background-color: var(--cg-accent);
+    color: var(--cg-accent-ink) !important;
+}
+
+.buttonActive {
+    color: var(--cg-text) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss - the Live TV guide.
+
+   Genre colour-coding (sports/movie/kids/news) is five saturated fills, all
+   !important. An achromatic interface cannot carry genre-by-hue, and leaving
+   them makes the guide the single most off-theme screen in the product, so
+   they collapse to one surface and the programme title does the work.
+
+   The focus and active fills are separate: those ARE state, and state is
+   allowed to be visible. */
+
+.programCell-sports,
+.programCell-movie,
+.programCell-kids,
+.programCell-news {
+    background: var(--cg-elevated) !important;
+}
+
+.programCell-active {
+    background: var(--cg-state-selected) !important;
+}
+
+.guide-channelHeaderCell:focus,
+.programCell:focus {
+    background-color: var(--cg-accent) !important;
+    color: var(--cg-accent-ink) !important;
 }
