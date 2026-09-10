@@ -113,7 +113,7 @@
 /* --- Title and logo art -------------------------------------------------- */
 
 .detailLogo {
-    filter: drop-shadow(0 .12em .5em rgb(0, 0, 0));
+    filter: var(--cg-drop-logo);
 }
 
 .itemName,

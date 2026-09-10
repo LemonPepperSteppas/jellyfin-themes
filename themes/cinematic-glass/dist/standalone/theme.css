@@ -153,6 +153,11 @@
     --cg-shadow-2:      0 12px 34px -12px rgba(0, 0, 0, .9);   /* cards - PLAN.md sec. 3 */
     --cg-shadow-3:      0 24px 60px -18px rgba(0, 0, 0, .95);  /* dialogs, menus, the pill */
 
+    /* A filter, not a box-shadow: logo art is a transparent PNG, so it needs
+       the shadow to follow the glyphs rather than the element's box. */
+
+    --cg-drop-logo:     drop-shadow(0 .12em .5em rgba(0, 0, 0, .85));
+
     /* --- Scrims ----------------------------------------------------------
        Metadata-over-artwork is structural move #3, and this ramp is the only
        thing making it legible over an arbitrary poster. Composite rather than
@@ -1361,7 +1366,7 @@ h1, h2, h3,
 /* --- Title and logo art -------------------------------------------------- */
 
 .detailLogo {
-    filter: drop-shadow(0 .12em .5em rgb(0, 0, 0));
+    filter: var(--cg-drop-logo);
 }
 
 .itemName,
