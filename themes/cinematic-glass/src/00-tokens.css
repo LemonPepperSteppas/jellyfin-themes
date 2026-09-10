@@ -64,6 +64,8 @@
        Keep in sync with the hex above. They are the same colours written
        twice, and nothing checks that for us. */
 
+    --cg-tint-rgb:          255 255 255;    /* the white the borders and state fills are cut from */
+
     --cg-ground-rgb:        8 10 13;
     --cg-elevated-rgb:      15 19 25;
     --cg-text-rgb:          241 245 249;

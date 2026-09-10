@@ -23,12 +23,15 @@ _Last updated: 2026-09-10._
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
 - **Tags:** none yet. First release will be `cinematic-glass-v1.0.0`.
-- **Cinematic Glass:** `src/00-tokens.css` is written; every other file in
-  `themes/cinematic-glass/src/`, `options/`, `standalone/` and `accents/` is still a stub
-  containing only a header comment. `dist/` builds (both profiles) but holds tokens only.
-- **Next step:** `themes/cinematic-glass/src/01-mui-vars.css`, then work down the build
-  order in `themes/cinematic-glass/PLAN.md` section 5. The `--cg-*-rgb` triples it needs
-  for the `*Channel` names already exist in `00-tokens.css`.
+- **Cinematic Glass:** `src/00-tokens.css` and `src/01-mui-vars.css` are written; every
+  other file in `themes/cinematic-glass/src/`, `options/`, `standalone/` and `accents/` is
+  still a stub containing only a header comment. `dist/` builds for both profiles.
+- **The MUI layer is done and verified.** All six colour schemes fall to our variables and
+  no stock Jellyfin blue survives anywhere in the 233 `--jf-*` names MUI declares. Note
+  the consequence recorded in `PLAN.md` before section 3: the theme now overrides the
+  Display-settings theme picker for every user.
+- **Next step:** `themes/cinematic-glass/src/02-base.css`, then work down the build order
+  in `themes/cinematic-glass/PLAN.md` section 5.
 - **Font delivery settled:** self-hosted Manrope, variable woff2, embedded as a `data:`
   URI in a new `03-fonts.css`. Rationale and the per-profile reason a relative `url()`
   cannot work: `PLAN.md` section 3a. The font file itself is not in the repo yet.
@@ -81,7 +84,8 @@ at the target version — it doubles as the canonical list of ~102 themable lega
 - **`99-fixes.css` is the only file allowed `!important`.** Every rule there carries a
   comment saying why and a version stamp.
 - `build.py --check` enforces both, plus incomplete MUI accent families. Run it before
-  committing.
+  committing. It masks comments first, so a comment may name the stock value a variable
+  replaces without reading as a colour literal.
 - **`dist/` is committed on purpose** — jsDelivr serves straight from the repo. Never edit
   it by hand.
 - **Pin tags, never branches**, in install URLs. jsDelivr caches a tag permanently and a

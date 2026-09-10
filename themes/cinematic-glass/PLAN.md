@@ -1,6 +1,7 @@
 # Cinematic Glass — build plan
 
-Status: **in progress.** `00-tokens.css` is written; everything else in `src/` is a stub.
+Status: **in progress.** `00-tokens.css` and `01-mui-vars.css` are written;
+everything else in `src/` is a stub.
 
 Target: **Jellyfin 10.11.8** (verified against `jellyfin-web` @ `v10.11.8`; the whole 10.11.x
 line shares an identical file tree, so 10.11.5–10.11.11 are all in scope).
@@ -33,6 +34,19 @@ are space-separated RGB triples consumed as `rgba(var(--x) / 0.5)`.
 **Specificity.** MUI's sheet is `:root, [data-theme="dark"]` — (0,1,0), tied with `:root`.
 Custom CSS is injected as a `<style>` inside the React tree, so it wins on document order,
 but use `html[data-theme]` (0,1,1) to be safe regardless of injection order.
+
+### Consequence: the theme wins over the theme picker
+
+`html[data-theme]` matches the attribute whatever its value, and MUI ships a block
+per colour scheme (`dark`, `light`, `appletv`, `blueradiance`, `purplehaze`, `wmc`),
+each at (0,1,0). So our variables beat **all six**, and a user choosing Light or
+Purple Haze in Display settings keeps Cinematic Glass.
+
+That is deliberate for the custom-css profile - a partly-applied theme is worse than
+a forced one, and there is no light variant to fall back to - but it is a real
+user-visible effect on a shared server, so it is written down rather than discovered.
+Narrowing to `html[data-theme="dark"]` would restore the picker at the cost of
+leaving the other five schemes half-styled.
 
 ## 3. Approved tokens
 
@@ -103,7 +117,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 ## 5. Build order
 
 - [x] `00-tokens.css` — palette, geometry, blur, motion scales
-- [ ] `01-mui-vars.css` — `--jf-*` mapping (whole accent family + Channels)
+- [x] `01-mui-vars.css` — `--jf-*` mapping (whole accent family + Channels)
 - [ ] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
 - [ ] `03-fonts.css` — the embedded Manrope `@font-face` (see section 3a)
 - [ ] `10-chrome.css` — the pill nav; the defining move, do it early

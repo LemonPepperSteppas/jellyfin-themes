@@ -64,11 +64,25 @@ def minify(css):
     return re.sub(r";}", "}", css).strip()
 
 
+def mask_comments(text):
+    """Blank out comment bodies, preserving length and line breaks.
+
+    The lint governs declarations, not prose. A comment saying which stock
+    value a variable replaces - "Jellyfin blue (#00a4dc) becomes achromatic" -
+    is the kind of note this repo wants, and should not read as a colour
+    literal. Replacing each comment with spaces rather than deleting it keeps
+    every reported line number pointing at the right line.
+    """
+    return re.sub(r"/\*.*?\*/",
+                  lambda m: re.sub(r"[^\n]", " ", m.group(0)),
+                  text, flags=re.S)
+
+
 def lint(files):
     """Guardrails for the mistakes this theme is specifically prone to."""
     problems = []
     for d, f in files:
-        text = io.open(os.path.join(d, f), encoding="utf-8").read()
+        text = mask_comments(io.open(os.path.join(d, f), encoding="utf-8").read())
         where = os.path.basename(d) + "/" + f
 
         # colour literals belong in 00-tokens.css and nowhere else
