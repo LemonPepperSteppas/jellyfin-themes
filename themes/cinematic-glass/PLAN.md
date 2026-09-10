@@ -143,10 +143,16 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 
 ## 6. Test checklist
 
-**Progress (2026-09-10):** home and item-detail checked on the live server, desktop
-layout. Three bugs found and fixed that the fixtures could not catch — `.cardFooter`
-not existing in the rendered DOM, `html` losing its background to a cross-origin rule,
-and `.button-link` underlining 27px page titles. Everything below is still open.
+**Progress (2026-09-10), on the live server, desktop layout.** Checked: home, library
+grid, item detail, series, season/episode list, player OSD, settings forms, menus,
+drawer, dashboard, and the TV layout via the `.layout-tv` class. Still open: mobile
+(needs a real narrow viewport), sign-in (needs a signed-out browser), a transcoding
+session, and TV focus rings on real hardware.
+
+Four bugs found that the fixtures could not catch — `.cardFooter` not existing in the
+rendered DOM, `html` losing its background to a cross-origin rule, `.button-link`
+underlining 27px page titles, and **the dashboard receiving no custom CSS at all**
+(see section 7).
 
 Nine screens, on the live server, signed in as a normal user *and* as admin:
 
@@ -175,6 +181,22 @@ so a tag is both faster and immune to a mid-edit push reaching users half-finish
 **B. Registered theme (standalone).** Dropped into `<jellyfin-web>/themes/cinematic-glass/`
 and registered in `config.json`; appears in the Display settings dropdown.
 See `standalone/INSTALL.md`.
+
+### The dashboard asymmetry — the important one
+
+`apps/dashboard/AppLayout.tsx` renders `<ThemeCss dashboard />` and does **not** import
+`CustomCss`. Verified live and in source; see `research/jellyfin-10.11-theming.md` §2b.
+
+So profile A **cannot theme the dashboard at all**. `01-mui-vars.css` and
+`70-dashboard.css` are inert there — the dashboard stays Jellyfin blue no matter how
+correct that CSS is. Profile B does reach it, because `ThemeCss` mounts on every app.
+
+Profile B additionally requires the user to pick the theme in **both** Settings → Display
+dropdowns: `ThemeCss` resolves `dashboardTheme` for the dashboard and `theme` everywhere
+else, and they are separate settings.
+
+This undercuts the "A is primary, B is a documented extra" decision in CLAUDE.md. Flagged
+there, awaiting a call — do not flip it silently.
 
 ### The asymmetry between them
 

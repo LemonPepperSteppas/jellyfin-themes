@@ -32,10 +32,12 @@ _Last updated: 2026-09-10._
   `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
   `python build/embed-font.py`. The theme has no external dependency at runtime.
 - **Two things stand between here and `cinematic-glass-v1.0.0`:**
-  1. The rest of the `PLAN.md` section 6 test pass. **Home and item-detail are done** on
-     desktop against the live server (2026-09-10) and three real bugs came out of it —
-     see the git log around `ff0e844`. Still unchecked: library grid, series/episodes,
-     player OSD, dashboard, dialogs, settings forms, sign-in, mobile, TV, transcoding.
+  1. The rest of the `PLAN.md` section 6 test pass. **Done on the live server
+     (2026-09-10), desktop:** home, library grid, item detail, series, season/episode
+     list, player OSD, settings forms, menus, drawer, dashboard, and TV layout via the
+     `.layout-tv` class. **Still unchecked:** mobile (needs a real narrow viewport),
+     sign-in (needs a signed-out browser), transcoding, and TV focus rings on real
+     hardware.
   2. Tag and publish.
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
@@ -57,7 +59,7 @@ design/     the art-direction deck (generated: python design/src/assemble.py)
 research/   how 10.11 theming actually works + generated reference files
 ```
 
-## The six things that will make you write wrong CSS
+## The seven things that will make you write wrong CSS
 
 Read `research/jellyfin-10.11-theming.md` before touching a theme. The short version:
 
@@ -78,6 +80,15 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    `standalone/00-jellyfin-base.css` exists. Test both on the real server.
 5. **`backdrop-filter` is expensive.** It measurably stalled the renderer during mockup
    review. Every blur-using theme ships a `no-blur` option *with v1*, not later.
+
+7. **Custom CSS never reaches the dashboard.** `apps/dashboard/AppLayout.tsx` renders
+   `<ThemeCss dashboard />` but does **not** import `CustomCss` at all — only
+   `apps/stable` and `apps/experimental` do. Verified live and in source
+   (`research/jellyfin-10.11-theming.md` §2b). So `01-mui-vars.css` and
+   `70-dashboard.css` — the work that makes this theme cover the dashboard — are
+   **inert on the CDN `@import` profile**, and only pay off on `standalone`. That
+   profile also needs the user to set **Dashboard theme** as well as **Theme**, since
+   `ThemeCss` resolves a separate `dashboardTheme` setting.
 
 6. **A selector in Jellyfin's SCSS is not evidence the app renders it.** `card.scss`
    defines `.cardFooter`; the 10.11.8 card builder never emits one. A whole structural
@@ -137,6 +148,12 @@ python design/src/assemble.py              # regenerate the direction deck (from
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.
+  ⚠ **This premise is now known to be partly false and is awaiting a decision.** Custom
+  CSS cannot theme the dashboard (see item 7 above), so the two profiles are no longer
+  "same theme, two delivery methods" — `standalone` covers strictly more of the product.
+  Do not silently flip this; it is the user's call. The options are: accept a stock
+  dashboard on the primary profile, promote `standalone` to primary, or ship both and say
+  plainly which covers what.
 - **Cinematic Glass v1 ships no accent variants.** The accent is achromatic (`#e8eef6`)
   because the thesis is that artwork supplies the colour and the interface supplies none.
   `accents/` is capacity for a later request, not part of the release.

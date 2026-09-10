@@ -23,6 +23,12 @@ Per-user instead of server-wide: Settings → Display → Custom CSS. User CSS i
 after server CSS, so it wins. Applies to Jellyfin Web only — not Android, Swiftfin or the
 TV apps.
 
+> **The dashboard is the exception.** Jellyfin does not apply Custom CSS to the admin
+> dashboard — `apps/dashboard` never mounts the custom-CSS component, only the theme
+> `<link>`. So with this install the dashboard stays stock Jellyfin blue, however much
+> `--jf-palette-*` work the theme does. Only the registered-theme install below reaches it.
+> Details: `research/jellyfin-10.11-theming.md` §2b.
+
 ## Or install it as a real theme
 
 There is a second shipping shape. Instead of layering CSS over the built-in Dark theme,
@@ -34,7 +40,12 @@ instructions and the `config.json` entry: `standalone/INSTALL.md`.
 
 Why it is nicer: it *replaces* `themes/dark/theme.css` rather than fighting it, so there
 is no override layer and no specificity arms race. It also applies to the login screen
-before anyone has signed in.
+before anyone has signed in — **and it is the only install that themes the admin
+dashboard.**
+
+Note the dashboard uses a *separate* setting: Jellyfin resolves `dashboardTheme` there and
+`theme` everywhere else, so pick Cinematic Glass in **both** dropdowns under
+Settings → Display.
 
 ## Options
 

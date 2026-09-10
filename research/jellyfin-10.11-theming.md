@@ -79,6 +79,42 @@ MUI's dark sheet is `:root, [data-theme="dark"] { … }` — specificity (0,1,0)
 after `<head>`), so equal specificity wins on document order. To be safe, use
 `html[data-theme]` (0,1,1), which beats both regardless of injection order.
 
+## 2b. Custom CSS does NOT reach the dashboard
+
+Verified on a live 10.11.8 server, 2026-09-10, then confirmed in the source. This is the
+single most consequential fact in this document and it is easy to miss.
+
+`src/apps/*/AppLayout.tsx` decides which stylesheets each app mounts:
+
+| App | `<ThemeCss />` | `<CustomCss />` |
+|---|---|---|
+| `apps/stable` | yes | **yes** |
+| `apps/experimental` | yes | **yes** |
+| `apps/dashboard` | yes, as `<ThemeCss dashboard />` | **no — not even imported** |
+
+So **Dashboard -> Branding -> Custom CSS has no effect on the dashboard itself.** Navigating
+to `#/dashboard` unmounts the custom-CSS `<style>` entirely; navigating back to `#/home`
+remounts it. Round-tripped and reproduced.
+
+The practical consequence: the `--jf-palette-*` work that makes a theme cover the dashboard
+**cannot be delivered by the CDN `@import` profile at all.** On the dashboard every MUI
+variable stays stock — `--jf-palette-primary-main` reads `#00a4dc`, buttons are Jellyfin
+blue, device cards cyan, progress bars green.
+
+This also reframes section 1's claim that most community themes leave the dashboard stock.
+That is not only because their authors did not write the CSS. With the community-standard
+install, they *could not have*.
+
+Only the registered-theme (standalone) profile reaches it, because `<ThemeCss dashboard />`
+does mount. Note the `dashboard` prop: it resolves `dashboardTheme`, a **separate user
+setting** from `theme`, so a user must select the theme in *both* dropdowns
+(`src/components/ThemeCss.tsx`).
+
+```jsx
+const id = dashboard ? dashboardTheme : theme;
+if (id) setThemeUrl(getThemeUrl(id));
+```
+
 ## 3. How custom CSS is injected
 
 `src/components/CustomCss.tsx`:

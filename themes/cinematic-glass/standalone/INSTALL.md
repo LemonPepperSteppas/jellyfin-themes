@@ -13,6 +13,13 @@ use the CDN `@import` variant in the theme README instead.
 - `html[data-theme="cinematic-glass"]` is set for you by Jellyfin's `themeManager`.
 - Users pick it per-account, and can switch back to Dark without you touching anything.
 - It applies to the login screen before any user has signed in.
+- **It is the only way to theme the admin dashboard.** `apps/dashboard/AppLayout.tsx`
+  mounts `<ThemeCss dashboard />` but never `CustomCss`, so the CDN `@import` install
+  leaves the dashboard entirely stock. See `research/jellyfin-10.11-theming.md` §2b.
+
+  One catch: `ThemeCss` resolves `dashboardTheme` there, a **separate** user setting from
+  `theme`. Users must pick Cinematic Glass in *both* dropdowns under Settings → Display,
+  or the dashboard keeps whatever the other one is set to.
 
 ## Where jellyfin-web lives
 
