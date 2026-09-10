@@ -1,0 +1,10 @@
+/* ==========================================================================
+   Cinematic Glass - Single source of truth. Every other file reads from here and defines no literal colours.
+   --------------------------------------------------------------------------
+   Owns: :root / html[data-theme] custom properties (--cg-*)
+   
+   TODO: Palette, geometry, blur, motion and z-index scales.
+         Values are specified in PLAN.md section 3 - transcribe them here first.
+         Nothing in this file may reference a Jellyfin selector.
+   ========================================================================== */
+

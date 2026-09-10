@@ -1,0 +1,9 @@
+/* ==========================================================================
+   Cinematic Glass - Document ground: backgrounds, typography, scrollbars, focus, reduced-motion.
+   --------------------------------------------------------------------------
+   Owns: html, body, .backgroundContainer, .skinBody, ::-webkit-scrollbar, :focus-visible
+   
+   TODO: Set the page ground before anything else paints.
+         Honour prefers-reduced-motion here once, globally.
+   ========================================================================== */
+

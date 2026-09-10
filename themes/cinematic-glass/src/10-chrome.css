@@ -1,0 +1,10 @@
+/* ==========================================================================
+   Cinematic Glass - Header becomes a floating frosted pill; drawer and tabs follow it.
+   --------------------------------------------------------------------------
+   Owns: .skinHeader, .headerTabs, .mainDrawer, .navMenuOption, .emby-tab-button
+   
+   TODO: The stable app's header is legacy .skinHeader - there is no MUI AppBar there.
+         The experimental layout DOES use .MuiAppBar-root; both need covering.
+         Pill nav is the defining move of this direction - see PLAN.md section 4.
+   ========================================================================== */
+

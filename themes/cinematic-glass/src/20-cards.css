@@ -1,0 +1,10 @@
+/* ==========================================================================
+   Cinematic Glass - Cards, rails and grids. Metadata sits OVER artwork, not under it.
+   --------------------------------------------------------------------------
+   Owns: .card, .cardBox, .cardScalable, .cardText, .cardOverlayContainer, .itemProgressBar*
+   
+   TODO: Metadata-over-artwork needs a gradient scrim on .cardImageContainer.
+         Contrast over arbitrary artwork is the main risk - test on a pale poster.
+         Progress bar and played indicator keep their accent.
+   ========================================================================== */
+

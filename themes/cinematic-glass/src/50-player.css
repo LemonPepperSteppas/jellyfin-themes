@@ -1,0 +1,9 @@
+/* ==========================================================================
+   Cinematic Glass - Video OSD: floating translucent control panel instead of a full-width bar.
+   --------------------------------------------------------------------------
+   Owns: .videoOsdBottom, .osdControls, .sliderContainer, .nowPlayingBar
+   
+   TODO: Contrast comes from the scrim, not the palette - controls sit over moving picture.
+         Keep the trickplay preview aligned to the scrubber knob.
+   ========================================================================== */
+

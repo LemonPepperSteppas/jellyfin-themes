@@ -1,0 +1,28 @@
+/* ==========================================================================
+   Cinematic Glass - built-in-theme replacement layer (STANDALONE PROFILE ONLY)
+   --------------------------------------------------------------------------
+   Owns: everything jellyfin-web's own themes/dark/theme.scss would have provided
+
+   This file is NOT part of the Custom CSS build. It exists because of one
+   asymmetry between the two ways of shipping a theme:
+
+     custom-css profile  - our CSS is layered ON TOP of themes/dark/theme.css.
+                           Anything we do not restyle keeps Jellyfin's dark look.
+
+     standalone profile  - Jellyfin loads themes/<id>/theme.css INSTEAD of the
+                           built-in one. Nothing we omit falls back to anything.
+                           Whatever we do not cover is simply unstyled.
+
+   So the standalone build must supply base coverage for every legacy class the
+   built-in dark theme touched, before the shared modules restyle them.
+
+   TODO: Work through research/reference/jellyfin-dark-theme.10.11.8.scss - that
+         file IS the built-in dark theme at our target version, and its ~102
+         selectors are exactly the surface that must not be left bare.
+         Reproduce coverage (not appearance) here, reading --cg-* tokens.
+
+   TODO: Do not duplicate anything the shared src/ modules already handle. This
+         layer is a floor, not a second theme.
+   ========================================================================== */
+
+

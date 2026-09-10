@@ -1,0 +1,9 @@
+/* ==========================================================================
+   Cinematic Glass - Item detail: full-bleed backdrop, logo-art title, no poster column.
+   --------------------------------------------------------------------------
+   Owns: .detailPagePrimaryContainer, .detailRibbon, .itemBackdrop, .detailPageContent
+   
+   TODO: Jellyfin renders .itemBackdrop already - lean on it rather than adding an element.
+         Media-info block becomes floating glass chips.
+   ========================================================================== */
+

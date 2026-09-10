@@ -1,0 +1,12 @@
+/* ==========================================================================
+   Cinematic Glass - The MUI layer: retints the whole dashboard and the experimental chrome.
+   --------------------------------------------------------------------------
+   Owns: --jf-palette-*, --jf-shape-*, --jf-shadows-*
+   
+   TODO: Map --cg-* tokens onto --jf-* names. Full generated list of all 1097 vars is in
+         research/reference/mui-jf-variables.10.11.8.css.
+         MUST set the entire accent family (main/light/dark/contrastText AND every *Channel).
+         MUI computes those in JS at build time; they do not recompute from CSS.
+         Selector must be html[data-theme] (0,1,1) to beat MUI's ':root, [data-theme=dark]' (0,1,0).
+   ========================================================================== */
+

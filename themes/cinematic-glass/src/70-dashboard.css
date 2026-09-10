@@ -1,0 +1,9 @@
+/* ==========================================================================
+   Cinematic Glass - Admin dashboard structure. Colour already arrives via 01-mui-vars.css.
+   --------------------------------------------------------------------------
+   Owns: .MuiAppBar-root, .MuiDrawer-paper, .MuiPaper-root, .MuiButton-root, .dashboardDocument
+   
+   TODO: Only structural fixes belong here; anything colour-shaped belongs in 01-mui-vars.css.
+         10.11 dashboard is 100% React + MUI 6.4.12.
+   ========================================================================== */
+

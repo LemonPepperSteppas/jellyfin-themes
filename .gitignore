@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Node (only used to regenerate the MUI variable reference)
+node_modules/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# NOTE: themes/*/dist/ is intentionally NOT ignored.
+# jsDelivr serves files straight from the repo, so built CSS must be committed.

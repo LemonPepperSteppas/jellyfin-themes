@@ -1,0 +1,8 @@
+/* ==========================================================================
+   Cinematic Glass - Drops every backdrop-filter. The escape hatch for weak clients and TV boxes.
+   --------------------------------------------------------------------------
+   Owns: opt-in override, loaded AFTER the base theme
+   
+   TODO: Blur was measurably expensive during mockup review - this option matters.
+   ========================================================================== */
+
