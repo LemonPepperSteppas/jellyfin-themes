@@ -2,5 +2,57 @@
    Cinematic Glass - Replaces the floating pill with a conventional solid top bar.
    --------------------------------------------------------------------------
    Owns: opt-in override, loaded AFTER the base theme
+
+   @import this on a line after the base theme.
+
+   Reverses structural move #1. This is the same treatment 10-chrome.css
+   already applies under .layout-tv, promoted to every layout - which is the
+   argument for the option existing: the flattened header is not a fallback,
+   it is a shape the theme already ships and knows how to render.
+
+   Worth knowing before turning it on: the pill floats OVER content, so page
+   content sits higher up the screen than it does with a bar. Restoring the
+   bar takes that vertical space back. Jellyfin's own page padding
+   (.libraryPage padding-top, !important upstream) is unchanged either way, so
+   nothing overlaps - the page simply starts lower.
    ========================================================================== */
 
+.skinHeader,
+.skinHeader-withBackground,
+.skinHeader.semiTransparent {
+    padding-top: env(safe-area-inset-top);
+    pointer-events: auto;
+}
+
+.headerTop,
+.headerTabs,
+.sectionTabs {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: var(--cg-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+.headerTop {
+    border-bottom: 1px solid var(--cg-border);
+    padding: 0 var(--cg-page-pad);
+}
+
+.headerTabs,
+.sectionTabs {
+    align-self: stretch;
+    padding: 0 var(--cg-page-pad);
+    border-bottom: 1px solid var(--cg-border);
+}
+
+/* .headerLeft is flex-grow: 1 upstream; 10-chrome.css zeroes it so the pill
+   can hug its contents. A full-width bar wants it back. */
+
+.headerTop .headerLeft {
+    flex-grow: 1;
+}

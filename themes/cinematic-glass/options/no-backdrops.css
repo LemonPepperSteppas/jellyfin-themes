@@ -2,5 +2,39 @@
    Cinematic Glass - Disables full-bleed backdrops on library and detail pages.
    --------------------------------------------------------------------------
    Owns: opt-in override, loaded AFTER the base theme
+
+   @import this on a line after the base theme.
+
+   Reverses structural move #2. Two reasons someone wants this: backdrops cost
+   a large image fetch and a full-viewport repaint on every navigation, and
+   some people simply find a picture behind their library distracting.
+
+   Jellyfin already has a first-class way to express "no backdrops" - the
+   .noBackdropTransparency class it sets when the user turns them off in
+   Display settings - and 30-detail.css already handles that class. This file
+   forces the same end state for everyone, so prefer the per-user setting if
+   that is what you actually want.
    ========================================================================== */
 
+.backgroundContainer.withBackdrop {
+    background-image: none;
+    background-color: var(--cg-ground);
+}
+
+.itemBackdrop {
+    display: none;
+}
+
+/* With the hero gone the detail page has no artwork to dissolve into, so the
+   containers take the solid ground - the same end state .noBackdropTransparency
+   produces in 30-detail.css. */
+
+.detailPagePrimaryContainer,
+.detailPageSecondaryContainer {
+    background-color: var(--cg-ground);
+}
+
+/* The header pill and the OSD panel keep their glass. They are floating over
+   page content rather than over artwork, which is what the material is for -
+   turning backdrops off is not the same request as turning glass off. For
+   that, use no-blur.css. */

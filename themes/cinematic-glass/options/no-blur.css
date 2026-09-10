@@ -2,7 +2,44 @@
    Cinematic Glass - Drops every backdrop-filter. The escape hatch for weak clients and TV boxes.
    --------------------------------------------------------------------------
    Owns: opt-in override, loaded AFTER the base theme
-   
-   TODO: Blur was measurably expensive during mockup review - this option matters.
+
+   @import this on a line after the base theme.
+
+   backdrop-filter measurably stalled the renderer during mockup review, and
+   the TV boxes on this server are weaker than the laptop it was reviewed on.
+   PLAN.md section 6 requires this to ship with v1 rather than later.
+
+   This is nine declarations rather than a hunt through every module, because
+   every blur in the theme is `backdrop-filter: var(--cg-blur)` or
+   `var(--cg-blur-strong)` - never a literal. Redefining those two tokens
+   turns all of them off at once, and any module added later is covered
+   automatically as long as it keeps using the tokens.
+
+   The second half matters as much as the first. A translucent surface with
+   the blur removed is not "the same but cheaper" - it is a window onto
+   whatever is behind it, and small text stops being readable over a busy
+   poster. So the glass tokens go opaque in the same breath.
    ========================================================================== */
 
+:root {
+    --cg-blur: none;
+    --cg-blur-strong: none;
+
+    /* Opaque replacements for the two glass surfaces. Chrome floats over
+       artwork, so it goes fully solid; --cg-glass is used on panels that sit
+       over the page ground, where a slight lift still reads correctly. */
+
+    --cg-glass-chrome: rgb(11, 14, 19);
+    --cg-glass: rgba(148, 163, 184, .16);
+}
+
+/* Jellyfin's own semi-transparent header already sets `backdrop-filter: none
+   !important`, so there is nothing to undo there - but it also sets a
+   background, which 10-chrome.css neutralises. Restated here so the header
+   is not left transparent over content once the blur is gone. */
+
+.headerTop,
+.headerTabs,
+.sectionTabs {
+    background-color: var(--cg-glass-chrome);
+}

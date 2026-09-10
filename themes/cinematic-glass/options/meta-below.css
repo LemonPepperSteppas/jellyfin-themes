@@ -2,5 +2,32 @@
    Cinematic Glass - Moves card metadata back under the poster instead of over it.
    --------------------------------------------------------------------------
    Owns: opt-in override, loaded AFTER the base theme
+
+   @import this on a line after the base theme.
+
+   Reverses structural move #3. 20-cards.css keeps the whole overlay in one
+   contiguous block precisely so this file can be short: the footer is put
+   back into normal flow and the scrim is taken off it.
+
+   Note this changes card HEIGHT, not just appearance. With the footer
+   overlaid a card is exactly as tall as its artwork; put back in flow it adds
+   two lines underneath. That is the stock Jellyfin proportion, so rails and
+   grids lay out the way they always did.
    ========================================================================== */
 
+.cardBox > .cardFooter,
+.cardBox .cardScalable + .cardFooter {
+    position: static;
+    z-index: auto;
+    padding: .3em .3em .5em;
+    background-image: none;
+    border-radius: 0;
+}
+
+/* .innerCardFooter is Jellyfin's own over-artwork footer, used by a handful
+   of card types by design. It is left alone - this option is about the
+   default card, not about overriding Jellyfin's own choices. */
+
+.cardText {
+    text-shadow: none;
+}

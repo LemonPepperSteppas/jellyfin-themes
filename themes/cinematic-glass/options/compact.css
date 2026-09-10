@@ -2,5 +2,44 @@
    Cinematic Glass - Tighter rails and smaller posters for dense libraries.
    --------------------------------------------------------------------------
    Owns: opt-in override, loaded AFTER the base theme
+
+   @import this on a line after the base theme.
+
+   Five tokens, no selectors. 00-tokens.css owns the density scale and every
+   module reads it, so "compact" is a redefinition rather than a set of
+   overrides - which is the test PLAN.md sets for whether the tokens are
+   pulling their weight.
+
+   Only the poster width is a suggestion rather than a rule: Jellyfin sizes
+   cards from the user's own "items per row" preference in Display settings,
+   so on library grids that setting wins. This mostly shows on rails.
    ========================================================================== */
 
+:root {
+    --cg-rail-gap: 10px;
+    --cg-poster-w: 96px;
+    --cg-page-pad: 10px;
+    --cg-header-h: 44px;
+    --cg-header-gap: 8px;
+}
+
+/* The scrim ramp is tuned for a 120px poster. At 96px the same gradient eats
+   proportionally more of the artwork, so it is pulled tighter to the bottom
+   and the footer padding comes down with it. */
+
+:root {
+    --cg-scrim-card: linear-gradient(to top,
+                        rgba(0, 0, 0, .9) 0%,
+                        rgba(0, 0, 0, .6) 22%,
+                        rgba(0, 0, 0, .18) 46%,
+                        rgba(0, 0, 0, 0) 100%);
+}
+
+.cardBox > .cardFooter,
+.cardBox .cardScalable + .cardFooter {
+    padding: 1.6em .5em .45em;
+}
+
+.cardText {
+    font-size: var(--cg-fs-sm);
+}
