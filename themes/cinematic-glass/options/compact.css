@@ -40,6 +40,11 @@
     font-size: var(--cg-fs-sm);
 }
 
+.cardBox > .cardFooter {
+    padding: 0 .5em .35em;
+    font-size: var(--cg-fs-sm);
+}
+
 /* The stacked offsets in 20-cards.css assume a full-size secondary line; at
    --cg-fs-sm the two lines sit closer together. */
 

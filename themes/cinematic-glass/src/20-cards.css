@@ -5,14 +5,18 @@
 
    Structural move #3.
 
-   THE CARD DOM IS NOT WHAT THE STYLESHEET SUGGESTS. This was written first
-   against research/reference/jellyfin-card.10.11.8.scss, which defines
-   .cardFooter, and it did nothing at all on the real server. 10.11.8's card
-   builder does not emit .cardFooter for any card type on the home screen -
-   there were 43 cards on the page and zero .cardFooter elements. The rule
-   exists in the stylesheet; nothing uses it.
+   THERE ARE TWO CARD SHAPES AND THE THEME HAS TO HANDLE BOTH. This was
+   written first against research/reference/jellyfin-card.10.11.8.scss, which
+   defines .cardFooter, and did nothing at all on the home screen: 43 cards
+   there, zero .cardFooter elements. But the square user cards on the sign-in
+   screen DO use one - 3 cards, 3 .cardFooter elements, zero direct .cardText
+   children. Exactly the inverse.
 
-   What is actually rendered (read off the live DOM, 2026-09-10):
+   So which shape a card has depends on its type, and a rule written for one
+   silently does nothing on the other. Both are handled below.
+
+   The shape WITHOUT a footer (home, library grid), read off the live DOM
+   on 2026-09-10:
 
        div.card.overflowBackdropCard
          div.cardBox.cardBox-bottompadded          [position: relative]
@@ -25,13 +29,13 @@
            div.cardText.cardTextCentered.cardText-first        <- title
            div.cardText.cardTextCentered.cardText-secondary    <- subtitle
 
-   So there is no footer element to lift: the two text lines are DIRECT
-   CHILDREN of .cardBox with no wrapper between them. That rules out putting
-   one scrim behind one box, and is why the scrim and the text are handled
-   separately below.
+   Here the two text lines are DIRECT CHILDREN of .cardBox with no wrapper at
+   all. That rules out putting one scrim behind one box, which is why the scrim
+   lives on .cardScalable::after and serves both shapes.
 
-   Lesson worth keeping: a selector's presence in Jellyfin's SCSS is not
-   evidence the app renders it. Check the DOM.
+   Lesson worth keeping: a selector's presence in Jellyfin's SCSS proves
+   nothing about whether a given card renders it, and checking one screen
+   proves nothing about the others. Check the DOM, on more than one page.
 
    Reversing this is exactly what options/meta-below.css does, so the overlay
    is kept to one contiguous block below rather than spread through the file.
@@ -102,6 +106,24 @@
     left: 0;
     z-index: var(--cg-z-scrim);
     padding: 0 .7em;
+}
+
+/* The OTHER shape. Some card types - the square user cards on the sign-in
+   screen are the ones that caught this - DO wrap their text in a .cardFooter.
+   There the text lines are grandchildren of .cardBox and the rules above never
+   reach them, so the wrapper itself is what gets lifted.
+
+   No background here: .cardScalable::after already supplies the ramp for both
+   shapes. Upstream pads this 0.3em/0.5em as a row below the artwork. */
+
+.cardBox > .cardFooter {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--cg-z-scrim);
+    padding: 0 .7em .45em;
+    background: none;
 }
 
 .cardBox > .cardText-secondary {

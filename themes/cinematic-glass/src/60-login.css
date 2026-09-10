@@ -30,8 +30,16 @@
 }
 
 /* --- The card ------------------------------------------------------------
-   Both forms get the same pane. .manualLoginForm is `margin-auto-x` upstream
-   and already centred; this gives it a width and a surface. */
+   Only the MANUAL form gets a pane, and that is a limitation rather than a
+   choice. Measured on the real server: .visualLoginForm - the user picker -
+   is full-bleed (1793px of a 1920px viewport), the buttons live in a separate
+   .readOnlyContent sibling outside it, and there is no element wrapping the
+   title, the users and the buttons together. So there is nothing to put a
+   centred card around without inventing layout.
+
+   The user picker therefore sits directly on the veiled backdrop, and the
+   legibility work is done by the veil on #loginPage.backdropPage, the card
+   scrims from 20-cards.css, and the dark glass on the buttons below. */
 
 .manualLoginForm,
 .loginForm {
@@ -76,12 +84,19 @@
     color: var(--cg-accent-ink);
 }
 
+/* --cg-glass-chrome, not --cg-glass. These sit directly on the sign-in
+   backdrop - a bright poster collage on this server - and the light tint
+   washed out against it exactly the way the header pill did before
+   10-chrome.css switched. Anything floating on artwork takes the dark base. */
+
 #loginPage .raised.cancel,
 #loginPage .btnManual,
 #loginPage .btnQuick,
 #loginPage .btnForgotPassword,
 #loginPage .btnSelectServer {
-    background: var(--cg-glass);
+    background: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
     color: var(--cg-text);
     border: 1px solid var(--cg-border);
     border-radius: var(--cg-radius-pill);

@@ -90,12 +90,13 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    profile also needs the user to set **Dashboard theme** as well as **Theme**, since
    `ThemeCss` resolves a separate `dashboardTheme` setting.
 
-6. **A selector in Jellyfin's SCSS is not evidence the app renders it.** `card.scss`
-   defines `.cardFooter`; the 10.11.8 card builder never emits one. A whole structural
-   move was written against it and did nothing on the real server — 43 cards on the home
-   screen, zero `.cardFooter` elements. Card text lines are *direct children* of
-   `.cardBox` with no wrapper. Read the live DOM before styling a layout, not just the
-   stylesheet.
+6. **Cards come in two shapes, and one screen does not tell you which.** On home and
+   library grids the text lines are *direct children* of `.cardBox` with no wrapper — 43
+   cards, zero `.cardFooter`. On the sign-in screen's square user cards it is the
+   opposite — 3 cards, 3 `.cardFooter` wrappers, zero direct `.cardText`. A rule written
+   for one shape silently does nothing on the other, and `card.scss` defining a selector
+   proves nothing about whether a given card type renders it. `20-cards.css` handles
+   both. Read the live DOM, on more than one page.
 
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:

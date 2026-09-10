@@ -16,7 +16,9 @@
    out the way they always did.
    ========================================================================== */
 
-/* 1. Put the text back in normal flow. */
+/* 1. Put the text back in normal flow - both card shapes. Some card types
+      wrap their text in a .cardFooter and some make .cardText a direct child
+      of .cardBox; see the note at the top of 20-cards.css. */
 
 .cardBox > .cardText,
 .cardBox > .cardText-first,
@@ -26,6 +28,15 @@
     bottom: auto;
     z-index: auto;
     padding: .06em .5em;
+}
+
+.cardBox > .cardFooter {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    z-index: auto;
+    padding: .3em .3em .5em;
 }
 
 /* 2. Take the ramp off the artwork. Below the poster the text sits on the
