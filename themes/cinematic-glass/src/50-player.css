@@ -2,8 +2,189 @@
    Cinematic Glass - Video OSD: floating translucent control panel instead of a full-width bar.
    --------------------------------------------------------------------------
    Owns: .videoOsdBottom, .osdControls, .sliderContainer, .nowPlayingBar
-   
-   TODO: Contrast comes from the scrim, not the palette - controls sit over moving picture.
-         Keep the trickplay preview aligned to the scrubber knob.
+
+   From src/styles/videoosd.scss at v10.11.8:
+
+     - .videoOsdBottom is position: fixed across the bottom, `pointer-events:
+       none`, with `padding-top: 7.5em` and a 0.75 gradient up from #101010.
+       .osdControls inside it takes `pointer-events: all`. That split is load
+       bearing: the picture stays clickable everywhere the controls are not,
+       so the panel floats WITHIN .videoOsdBottom rather than replacing it.
+     - .osdHeader reuses .skinHeader, so 10-chrome.css's pill rules reach it.
+       It is given its own treatment at the bottom of this file.
+
+   Everything here sits over moving picture, so contrast comes from the scrim
+   and the panel, never from the palette. A control that relies on the page
+   ground being dark will vanish over a snow scene.
    ========================================================================== */
 
+/* --- The layer -----------------------------------------------------------
+   Stock's flat 0.75 gradient is replaced with the theme's card scrim, which
+   ramps rather than washing the bottom third of the picture. */
+
+.videoOsdBottom {
+    background: var(--cg-scrim-card);
+    color: var(--cg-text);
+    align-items: flex-end;
+}
+
+/* --- The panel -----------------------------------------------------------
+   The move: controls become one floating pane of glass rather than a
+   full-bleed bar. Capped so it does not stretch to 2.5m on a TV. */
+
+.osdControls {
+    box-sizing: border-box;
+    flex-grow: 0;
+    width: min(100% - (var(--cg-page-pad) * 2), 62em);
+    margin: 0 auto var(--cg-header-gap);
+    padding: .5em 1.1em .9em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur-strong);
+    -webkit-backdrop-filter: var(--cg-blur-strong);
+    box-shadow: var(--cg-shadow-3);
+}
+
+.videoOsdBottom .buttons {
+    gap: .15em;
+}
+
+.osdTitle,
+.osdTitleSmall {
+    font-family: var(--cg-font-display);
+    font-weight: var(--cg-fw-display);
+    letter-spacing: var(--cg-track-display);
+    color: var(--cg-text);
+}
+
+.osdMediaInfo,
+.osdSecondaryMediaInfo,
+.osdTimeText {
+    color: var(--cg-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.osdMediaStatus {
+    color: var(--cg-muted);
+}
+
+/* --- Scrubber ------------------------------------------------------------
+   The filled portion is the accent, which is the one place on the OSD it can
+   be: a light fill against a dark track, over picture, with no text on it. */
+
+.mdl-slider-background-lower {
+    background-color: var(--cg-accent);
+}
+
+.mdl-slider-background-upper {
+    background-color: var(--cg-state-active);
+}
+
+.mdl-slider::-webkit-slider-thumb {
+    background: var(--cg-accent);
+    border-color: var(--cg-accent);
+}
+
+.mdl-slider::-moz-range-thumb {
+    background: var(--cg-accent);
+    border-color: var(--cg-accent);
+}
+
+.mdl-slider[disabled]::-webkit-slider-thumb {
+    background: var(--cg-faint);
+}
+
+.mdl-slider[disabled]::-moz-range-thumb {
+    background: var(--cg-faint);
+}
+
+.sliderContainer {
+    color: var(--cg-accent);
+}
+
+/* Trickplay preview. PLAN.md section 5 asks for it to stay aligned to the
+   knob, which is .sliderBubbleTrack's job upstream - only the skin changes. */
+
+.sliderBubble {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-sm);
+    box-shadow: var(--cg-shadow-2);
+    color: var(--cg-text);
+}
+
+.chapterThumbContainer {
+    border-radius: var(--cg-radius-sm);
+    box-shadow: var(--cg-shadow-2);
+    overflow: hidden;
+}
+
+.chapterThumbTextContainer {
+    background: var(--cg-scrim-card);
+}
+
+.chapterThumbText {
+    color: var(--cg-text);
+}
+
+.chapterThumbText-dim {
+    color: var(--cg-muted);
+}
+
+/* --- OSD header ----------------------------------------------------------
+   .osdHeader is .skinHeader with another class, so the pill from
+   10-chrome.css already applies. Upstream gives it its own downward gradient
+   and `backdrop-filter: none` at (0,2,0), which beats the rail rule; the pill
+   itself is on .headerTop and survives. Only the back button shows here, so
+   the pill is left to hug it. */
+
+.skinHeader-withBackground.osdHeader {
+    background: var(--cg-scrim-hero);
+    color: var(--cg-text);
+}
+
+/* --- Now playing bar -----------------------------------------------------
+   The audio equivalent, and the one piece of chrome that is on screen while
+   the user is doing something else. Glass, matching the header pill. */
+
+.nowPlayingBar {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border-top: 1px solid var(--cg-border);
+    color: var(--cg-text);
+}
+
+.nowPlayingBarText {
+    font-weight: var(--cg-fw-medium);
+}
+
+.nowPlayingImage {
+    border-radius: var(--cg-radius-sm);
+    box-shadow: var(--cg-shadow-1);
+}
+
+.nowPlayingPlaylist,
+.nowPlayingContextMenu {
+    background-color: var(--cg-elevated);
+    border-radius: var(--cg-radius-panel);
+}
+
+/* --- TV ------------------------------------------------------------------
+   No blur, and the panel spans the width: on a TV the OSD is the only thing
+   on screen when it is up, and every pixel of blur is spent on the weakest
+   hardware in the fleet. */
+
+.layout-tv .osdControls {
+    width: 100%;
+    margin-bottom: 0;
+    border: 0;
+    border-radius: 0;
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}

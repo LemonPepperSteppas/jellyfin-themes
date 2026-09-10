@@ -124,7 +124,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `20-cards.css` — cards, rails, metadata-over-artwork scrim
 - [x] `30-detail.css` — backdrop hero, logo title, glass media-info chips
 - [x] `40-episodes.css`
-- [ ] `50-player.css` — floating control panel
+- [x] `50-player.css` — floating control panel
 - [ ] `60-login.css`
 - [ ] `70-dashboard.css` — MUI structure only
 - [ ] `80-misc.css` — dialogs, menus, toasts, forms
