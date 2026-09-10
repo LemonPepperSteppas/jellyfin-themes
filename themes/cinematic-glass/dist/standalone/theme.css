@@ -1772,9 +1772,157 @@ h1.itemName {
    Cinematic Glass - Sign-in: full-bleed artwork behind a centred glass card.
    --------------------------------------------------------------------------
    Owns: #loginPage, .loginForm, .userItem, #quickConnect*
-   
-   TODO: Quick Connect code is part of the design - do not hide it.
+
+   Markup confirmed from src/controllers/session/login/index.html at v10.11.8:
+
+       #loginPage.page.standalonePage.backdropPage
+         > .manualLoginForm   (username + password, hidden by default)
+         > .visualLoginForm   (user avatars, .itemsContainer.vertical-wrap.centered)
+
+   The user avatars are ordinary cards, so 20-cards.css already gives them
+   their radius, shadow and scrim - nothing here restates that.
+
+   This is the first screen anyone sees, and on a fresh install it is the only
+   screen where the theme has to look right with no library artwork behind it.
+   So the glass card is legible against the plain ground as well as against a
+   backdrop; it does not rely on there being a picture.
    ========================================================================== */
+
+#loginPage {
+    background-color: var(--cg-ground);
+}
+
+/* .backdropPage is the class Jellyfin puts on pages that show artwork behind
+   the content. Veiled, so a login form stays readable over anything. */
+
+#loginPage.backdropPage {
+    background-color: var(--cg-veil);
+}
+
+/* --- The card ------------------------------------------------------------
+   Both forms get the same pane. .manualLoginForm is `margin-auto-x` upstream
+   and already centred; this gives it a width and a surface. */
+
+.manualLoginForm,
+.loginForm {
+    box-sizing: border-box;
+    width: min(100% - (var(--cg-page-pad) * 2), 26em);
+    margin-inline: auto;
+    padding: 2em 1.75em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur-strong);
+    -webkit-backdrop-filter: var(--cg-blur-strong);
+    box-shadow: var(--cg-shadow-3);
+}
+
+#loginPage .sectionTitle {
+    font-family: var(--cg-font-display);
+    font-weight: var(--cg-fw-display);
+    font-size: var(--cg-fs-xl);
+    letter-spacing: var(--cg-track-display);
+    line-height: var(--cg-lh-tight);
+    color: var(--cg-text);
+    margin-bottom: .6em;
+}
+
+/* --- Buttons -------------------------------------------------------------
+   The submit button is the accent's proper use: a light fill with dark ink.
+   Everything else on this screen is a quieter glass button, so there is
+   exactly one obvious thing to press. */
+
+#loginPage .button-submit,
+.loginForm .button-submit {
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+    border-radius: var(--cg-radius-pill);
+    font-weight: var(--cg-fw-bold);
+}
+
+#loginPage .button-submit:hover,
+#loginPage .button-submit:focus {
+    background: var(--cg-accent-light);
+    color: var(--cg-accent-ink);
+}
+
+#loginPage .raised.cancel,
+#loginPage .btnManual,
+#loginPage .btnQuick,
+#loginPage .btnForgotPassword,
+#loginPage .btnSelectServer {
+    background: var(--cg-glass);
+    color: var(--cg-text);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+}
+
+#loginPage .raised.cancel:hover,
+#loginPage .btnManual:hover,
+#loginPage .btnQuick:hover,
+#loginPage .btnForgotPassword:hover,
+#loginPage .btnSelectServer:hover {
+    background: var(--cg-state-active);
+    border-color: var(--cg-border-strong);
+}
+
+/* --- User picker ---------------------------------------------------------
+   .visualLoginForm holds the avatars. Centred upstream via
+   .itemsContainer.vertical-wrap.centered. */
+
+.visualLoginForm .cardText {
+    text-align: center;
+}
+
+.userItem,
+#divUsers .card {
+    text-align: center;
+}
+
+/* --- Quick Connect -------------------------------------------------------
+   PLAN.md is explicit that the code is part of the design and must not be
+   hidden. It is set as a large tabular-figure display so it can be read off
+   a screen from across a room and typed on a phone without a mistake.
+
+   Selector note: the Quick Connect code lives in a React route in 10.11, and
+   its markup was not confirmable from the tag the way the login page was, so
+   this targets the stable id/class prefixes only and deliberately styles no
+   layout. If it comes out wrong on the real server it is a skin-only fix. */
+
+[id^="quickConnect"] .sectionTitle,
+.quickConnectCode,
+#quickConnectCode {
+    font-family: var(--cg-font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .18em;
+    color: var(--cg-text);
+}
+
+.quickConnectCode,
+#quickConnectCode {
+    font-size: var(--cg-fs-display);
+    font-weight: var(--cg-fw-display);
+}
+
+/* --- Disclaimer ---------------------------------------------------------- */
+
+.loginDisclaimerContainer,
+.loginDisclaimer {
+    color: var(--cg-muted);
+    font-size: var(--cg-fs-sm);
+    text-align: center;
+}
+
+/* --- TV ------------------------------------------------------------------
+   Sign-in on a TV is done with a remote, so the blur goes and the card gets a
+   solid surface - the focus ring has to be the loudest thing on screen. */
+
+.layout-tv .manualLoginForm,
+.layout-tv .loginForm {
+    background-color: var(--cg-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
 
 /* ---- src/70-dashboard.css -------------------------------------- */
 /* ==========================================================================

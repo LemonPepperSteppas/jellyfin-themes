@@ -125,7 +125,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `30-detail.css` — backdrop hero, logo title, glass media-info chips
 - [x] `40-episodes.css`
 - [x] `50-player.css` — floating control panel
-- [ ] `60-login.css`
+- [x] `60-login.css`
 - [ ] `70-dashboard.css` — MUI structure only
 - [ ] `80-misc.css` — dialogs, menus, toasts, forms
 - [~] `99-fixes.css` — in use: two upstream `!important` declarations beaten
