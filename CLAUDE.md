@@ -23,11 +23,15 @@ _Last updated: 2026-09-10._
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
 - **Tags:** none yet. First release will be `cinematic-glass-v1.0.0`.
-- **Cinematic Glass:** scaffolded, **no CSS written**. Every file in
-  `themes/cinematic-glass/src/`, `options/`, `standalone/` and `accents/` is a stub
-  containing only a header comment. `dist/` is empty.
-- **Next step:** `themes/cinematic-glass/src/00-tokens.css`, then work down the build
-  order in `themes/cinematic-glass/PLAN.md` section 5.
+- **Cinematic Glass:** `src/00-tokens.css` is written; every other file in
+  `themes/cinematic-glass/src/`, `options/`, `standalone/` and `accents/` is still a stub
+  containing only a header comment. `dist/` builds (both profiles) but holds tokens only.
+- **Next step:** `themes/cinematic-glass/src/01-mui-vars.css`, then work down the build
+  order in `themes/cinematic-glass/PLAN.md` section 5. The `--cg-*-rgb` triples it needs
+  for the `*Channel` names already exist in `00-tokens.css`.
+- **Font delivery settled:** self-hosted Manrope, variable woff2, embedded as a `data:`
+  URI in a new `03-fonts.css`. Rationale and the per-profile reason a relative `url()`
+  cannot work: `PLAN.md` section 3a. The font file itself is not in the repo yet.
 - **Design is locked.** The seven-direction deck was shown to the server's users and they
   picked Cinematic Glass. Token values are transcribed in `PLAN.md` section 3 — use those,
   do not re-derive them. Deck source: `design/src/`; published page:

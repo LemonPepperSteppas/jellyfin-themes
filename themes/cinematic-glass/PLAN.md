@@ -1,6 +1,6 @@
 # Cinematic Glass — build plan
 
-Status: **scaffolded, not started.** Nothing in `src/` has been written yet.
+Status: **in progress.** `00-tokens.css` is written; everything else in `src/` is a stub.
 
 Target: **Jellyfin 10.11.8** (verified against `jellyfin-web` @ `v10.11.8`; the whole 10.11.x
 line shares an identical file tree, so 10.11.5–10.11.11 are all in scope).
@@ -57,6 +57,7 @@ reads from these and defines no literal colour.
 Geometry: radius `14px` cards, `18px` panels, pill chips, `6px` small.
 Depth: `blur(22px) saturate(140%)` on chrome; shadows `0 12px 34px -12px rgba(0,0,0,.9)`.
 Type: **Manrope** 400/500/700/800. Display 800 at −0.03em.
+Font delivery: **self-hosted, embedded** — see section 3a.
 Density: 16px rails, 120px posters.
 
 The accent is achromatic **by design** — colour is supposed to come from the artwork.
@@ -65,6 +66,30 @@ the scrim. Every interactive state needs checking against that.
 
 For the same reason **v1 ships no accent variants.** `accents/` stays empty apart from the
 template; it is capacity for a later request, not part of the release.
+
+## 3a. Font delivery — self-hosted, embedded as a data URI
+
+The server is reachable on LAN and over Tailscale only, so **no remote font host.**
+Google Fonts is out; the deck's `fonts.googleapis.com` link (`design/src/assemble.py`) was
+for a local HTML page and does not carry over to the theme.
+
+Manrope is **OFL-1.1**, so it can be redistributed here. Ship `OFL.txt` beside the file.
+
+Ship the **variable** woff2 (`wght` 200–800), latin subset, not four statics — one file,
+smaller than the four weights the spec calls for, and it covers 400/500/700/800 from one
+`@font-face` with `font-weight: 200 800`.
+
+**Embed it as a `data:` URI**, not a relative `url()`. A relative URL resolves against the
+origin the *stylesheet* came from, which differs per profile — jsDelivr for custom-css,
+the Jellyfin host for standalone — so a relative path cannot be correct for both. Embedding
+makes the built CSS self-contained, and removes the standalone failure mode where the CSS
+is installed but the font file is not. Cost is ~33% base64 inflation on the font bytes.
+
+Checked: the base64 blob survives `build.py --min` (no whitespace inside it for the
+minifier's `+ : ; ,` rules to bite) and trips no lint rule (no `#` or `rgb(`).
+
+Always follow with a real fallback stack — `system-ui, sans-serif` — so a failed decode
+degrades instead of blanking.
 
 ## 4. What makes it this direction, not a palette
 
@@ -77,9 +102,10 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 
 ## 5. Build order
 
-- [ ] `00-tokens.css` — palette, geometry, blur, motion scales
+- [x] `00-tokens.css` — palette, geometry, blur, motion scales
 - [ ] `01-mui-vars.css` — `--jf-*` mapping (whole accent family + Channels)
 - [ ] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
+- [ ] `03-fonts.css` — the embedded Manrope `@font-face` (see section 3a)
 - [ ] `10-chrome.css` — the pill nav; the defining move, do it early
 - [ ] `20-cards.css` — cards, rails, metadata-over-artwork scrim
 - [ ] `30-detail.css` — backdrop hero, logo title, glass media-info chips
