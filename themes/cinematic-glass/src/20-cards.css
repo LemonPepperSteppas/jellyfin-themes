@@ -2,9 +2,211 @@
    Cinematic Glass - Cards, rails and grids. Metadata sits OVER artwork, not under it.
    --------------------------------------------------------------------------
    Owns: .card, .cardBox, .cardScalable, .cardText, .cardOverlayContainer, .itemProgressBar*
-   
-   TODO: Metadata-over-artwork needs a gradient scrim on .cardImageContainer.
-         Contrast over arbitrary artwork is the main risk - test on a pale poster.
-         Progress bar and played indicator keep their accent.
+
+   Structural move #3.
+
+   Card DOM in 10.11.8 (src/components/cardbuilder), confirmed against
+   research/reference/jellyfin-card.10.11.8.scss:
+
+       .card > .cardBox > .cardScalable > .cardPadder + .cardImageContainer
+                        > .cardFooter
+
+   .cardPadder is what gives the card its aspect ratio; .cardFooter is a
+   sibling BELOW the image, which is the layout this move overturns. Jellyfin
+   already has an over-artwork footer - .innerCardFooter, at rgba(0,0,0,.7) -
+   but it is only used by a few card types. Rather than switch every card to
+   that class, .cardFooter is lifted onto the image and given the scrim.
+
+   .cardBox already carries `contain: layout`, which makes it a containing
+   block for absolutely positioned descendants, so the lift needs no new
+   stacking context.
+
+   Reversing this is exactly what options/meta-below.css does, so the overlay
+   is kept to one contiguous block below rather than spread through the file.
    ========================================================================== */
 
+/* --- Geometry ------------------------------------------------------------
+   Stock radius is 0.2em on .cardImageContainer and .visualCardBox. */
+
+.cardBox {
+    position: relative;
+    border-radius: var(--cg-radius-card);
+}
+
+.cardImageContainer,
+.cardScalable,
+.visualCardBox,
+.cardContent {
+    border-radius: var(--cg-radius-card);
+}
+
+.visualCardBox {
+    box-shadow: var(--cg-shadow-2);
+}
+
+.cardScalable {
+    overflow: hidden;
+    box-shadow: var(--cg-shadow-2);
+}
+
+/* --- Metadata over artwork -----------------------------------------------
+   The move. .cardFooter stops being a row under the poster and becomes a
+   scrimmed overlay on it, which is also what makes the card's height equal
+   the artwork's height.
+
+   The scrim is --cg-scrim-card rather than a flat fill because a flat panel
+   over a poster reads as a label stuck on top, while a ramp reads as part of
+   the image. Contrast over a pale poster is the risk here; the ramp is
+   weighted so its opaque end is under the text. */
+
+.cardBox > .cardFooter,
+.cardBox .cardScalable + .cardFooter {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--cg-z-scrim);
+    padding: 2.4em .7em .6em;
+    background-image: var(--cg-scrim-card);
+    border-radius: 0 0 var(--cg-radius-card) var(--cg-radius-card);
+}
+
+/* .innerCardFooter is Jellyfin's own over-artwork footer, on the card types
+   that already used one. Given the same scrim so the two kinds of card match
+   instead of one being a flat black box. */
+
+.innerCardFooter,
+.fullInnerCardFooter {
+    background: var(--cg-scrim-card);
+    border-radius: 0 0 var(--cg-radius-card) var(--cg-radius-card);
+}
+
+.innerCardFooterClear {
+    background: none;
+}
+
+.cardText {
+    color: var(--cg-text);
+    font-weight: var(--cg-fw-medium);
+    letter-spacing: var(--cg-track-tight);
+}
+
+/* Over a scrim the secondary line needs more than 50% white to stay legible,
+   and it is sitting on artwork rather than on the ground. */
+
+.cardFooter .cardText-secondary,
+.innerCardFooter .cardText-secondary {
+    color: var(--cg-muted);
+    font-weight: var(--cg-fw-regular);
+}
+
+.cardFooter-vibrant .cardText-secondary {
+    color: var(--cg-muted);
+    opacity: 1;
+}
+
+/* --- Rails and grids ----------------------------------------------------- */
+
+.itemsContainer {
+    gap: 0;
+}
+
+.cardBox {
+    margin: calc(var(--cg-rail-gap) / 2);
+}
+
+/* --- Hover ---------------------------------------------------------------
+   A lift, not a tint. Pointer only: .layout-tv drives focus, not hover, and
+   upstream already scales focused cards by 1.07. */
+
+@media (hover: hover) and (pointer: fine) {
+    .card .cardBox {
+        transition: transform var(--cg-dur) var(--cg-ease),
+                    box-shadow var(--cg-dur) var(--cg-ease);
+    }
+
+    .card:hover .cardBox {
+        transform: translateY(-.25em);
+        box-shadow: var(--cg-shadow-3);
+    }
+}
+
+/* --- Indicators ----------------------------------------------------------
+   Stock paints these Jellyfin blue. They are the accent's real job: a fill
+   with dark ink on it, which is the only way the accent reads (see the States
+   note in 00-tokens.css). */
+
+.countIndicator,
+.playedIndicator,
+.fullSyncIndicator,
+.mediaSourceIndicator {
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+.itemProgressBar {
+    background: var(--cg-state-active);
+    border-radius: var(--cg-radius-pill);
+    overflow: hidden;
+}
+
+.itemProgressBarForeground {
+    background-color: var(--cg-accent);
+}
+
+.itemProgressBarForeground-recording {
+    background-color: var(--cg-err);
+}
+
+/* --- Overlay buttons -----------------------------------------------------
+   The play/menu buttons that appear on a card. Glass, so they read as
+   floating over the artwork rather than punched into it. */
+
+.cardOverlayContainer {
+    background: var(--cg-scrim-card);
+    border-radius: var(--cg-radius-card);
+}
+
+.cardOverlayButton {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    color: var(--cg-text);
+}
+
+.cardOverlayButton:hover {
+    background-color: var(--cg-accent);
+    border-color: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+.btnCardOptions {
+    color: var(--cg-text);
+}
+
+/* --- Default (artwork-less) cards ----------------------------------------
+   Jellyfin ships five numbered fallback backgrounds, all of them blue. An
+   achromatic theme cannot use hue to tell them apart, so they become one
+   surface and the letter glyph does the distinguishing. */
+
+.defaultCardBackground,
+.defaultCardBackground1,
+.defaultCardBackground2,
+.defaultCardBackground3,
+.defaultCardBackground4,
+.defaultCardBackground5,
+.textCardImageContainer {
+    background-color: var(--cg-elevated);
+    color: var(--cg-faint);
+}
+
+.chapterCardImageContainer {
+    border-radius: var(--cg-radius-sm);
+}
+
+.cardImageIcon,
+.cardDefaultText {
+    color: var(--cg-faint);
+}

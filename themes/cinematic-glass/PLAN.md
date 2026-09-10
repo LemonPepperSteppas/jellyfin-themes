@@ -121,7 +121,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
 - [ ] `03-fonts.css` — the embedded Manrope `@font-face` (see section 3a)
 - [x] `10-chrome.css` — the pill nav; the defining move, do it early
-- [ ] `20-cards.css` — cards, rails, metadata-over-artwork scrim
+- [x] `20-cards.css` — cards, rails, metadata-over-artwork scrim
 - [ ] `30-detail.css` — backdrop hero, logo title, glass media-info chips
 - [ ] `40-episodes.css`
 - [ ] `50-player.css` — floating control panel

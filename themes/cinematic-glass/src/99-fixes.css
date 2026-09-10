@@ -35,3 +35,16 @@
 .selectedMediaFolder {
     background-color: var(--cg-state-selected) !important;
 }
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .card:focus .cardBox.visualCardBox,
+       .card:focus .cardBox:not(.visualCardBox) .cardScalable
+           { border-color: #00a4dc !important; }
+   The focused-card border. This is the TV layout's primary cursor, so it is
+   not optional, and it is the last place Jellyfin blue survives on a library
+   grid. */
+
+.card:focus .cardBox.visualCardBox,
+.card:focus .cardBox:not(.visualCardBox) .cardScalable {
+    border-color: var(--cg-accent) !important;
+}
