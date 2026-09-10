@@ -48,9 +48,14 @@ Each is an extra `@import` on a line *after* the base theme.
 
 ## Accents
 
-Cinematic Glass is achromatic by design. Accent modules exist for anyone who wants a tint;
-copy `accents/_template.css`. An accent should be ~15 lines — it changes the accent family
-and nothing else.
+**v1 ships no accents, on purpose.** The accent is `#e8eef6` — achromatic — because the
+thesis is that the artwork supplies all the colour and the interface supplies none. A
+tinted accent partly undoes that.
+
+The `accents/` folder exists as capacity, not a plan. If someone on the server eventually
+asks for their copy in coral, copy `accents/_template.css`: an accent module changes the
+accent family and nothing else, so it should be about fifteen lines. If it needs more, the
+tokens in `00-tokens.css` are not doing enough work.
 
 ## Layout
 
@@ -97,7 +102,5 @@ a port, not a no-op.
 
 ## Open questions
 
-Answers needed before the first release, not before the first line of CSS:
-
-1. **Which accents, if any**, for v1. The theme is achromatic by design, so this may be
-   none.
+None. The design is settled (`PLAN.md` section 3), hosting is live, and both shipping
+profiles are scaffolded. Next step is `src/00-tokens.css`.

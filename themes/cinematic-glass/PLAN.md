@@ -63,6 +63,9 @@ The accent is achromatic **by design** — colour is supposed to come from the a
 That means state cannot be signalled by hue; it has to come from position, weight and
 the scrim. Every interactive state needs checking against that.
 
+For the same reason **v1 ships no accent variants.** `accents/` stays empty apart from the
+template; it is capacity for a later request, not part of the release.
+
 ## 4. What makes it this direction, not a palette
 
 Four structural moves. If any one is dropped it stops being Cinematic Glass:
