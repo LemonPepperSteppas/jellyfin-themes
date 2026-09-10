@@ -32,9 +32,10 @@ _Last updated: 2026-09-10._
   `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
   `python build/embed-font.py`. The theme has no external dependency at runtime.
 - **Two things stand between here and `cinematic-glass-v1.0.0`:**
-  1. The `PLAN.md` section 6 test pass on the real server. Everything so far was verified
-     against fixtures rebuilt from the v10.11.8 stylesheets — good for catching specificity
-     and parse failures, no substitute for the real DOM.
+  1. The rest of the `PLAN.md` section 6 test pass. **Home and item-detail are done** on
+     desktop against the live server (2026-09-10) and three real bugs came out of it —
+     see the git log around `ff0e844`. Still unchecked: library grid, series/episodes,
+     player OSD, dashboard, dialogs, settings forms, sign-in, mobile, TV, transcoding.
   2. Tag and publish.
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
@@ -56,7 +57,7 @@ design/     the art-direction deck (generated: python design/src/assemble.py)
 research/   how 10.11 theming actually works + generated reference files
 ```
 
-## The five things that will make you write wrong CSS
+## The six things that will make you write wrong CSS
 
 Read `research/jellyfin-10.11-theming.md` before touching a theme. The short version:
 
@@ -77,6 +78,13 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    `standalone/00-jellyfin-base.css` exists. Test both on the real server.
 5. **`backdrop-filter` is expensive.** It measurably stalled the renderer during mockup
    review. Every blur-using theme ships a `no-blur` option *with v1*, not later.
+
+6. **A selector in Jellyfin's SCSS is not evidence the app renders it.** `card.scss`
+   defines `.cardFooter`; the 10.11.8 card builder never emits one. A whole structural
+   move was written against it and did nothing on the real server — 43 cards on the home
+   screen, zero `.cardFooter` elements. Card text lines are *direct children* of
+   `.cardBox` with no wrapper. Read the live DOM before styling a layout, not just the
+   stylesheet.
 
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:

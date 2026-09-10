@@ -143,6 +143,11 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 
 ## 6. Test checklist
 
+**Progress (2026-09-10):** home and item-detail checked on the live server, desktop
+layout. Three bugs found and fixed that the fixtures could not catch — `.cardFooter`
+not existing in the rendered DOM, `html` losing its background to a cross-origin rule,
+and `.button-link` underlining 27px page titles. Everything below is still open.
+
 Nine screens, on the live server, signed in as a normal user *and* as admin:
 
 sign-in · home · library grid · movie detail · series & episodes · player OSD ·
