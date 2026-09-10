@@ -1,0 +1,9 @@
+# Normalise to LF in the repo. These files are served straight from GitHub via
+# jsDelivr, so line endings should not depend on who committed them.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.webp binary
+*.avif binary
+*.woff2 binary
