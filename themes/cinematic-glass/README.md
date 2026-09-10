@@ -4,7 +4,9 @@ A theme for **Jellyfin 10.11.x** web. The artwork supplies all the colour; the i
 supplies none. There is no top bar — navigation floats as a frosted pill, card metadata
 sits over the poster instead of under it, and the billboard runs edge to edge.
 
-> **Not built yet.** This folder is scaffolded and planned only. See `PLAN.md`.
+> **Built, not yet released.** Every module in `src/` is written and `dist/` is built for
+> both profiles. Still outstanding before `v1.0.0`: the embedded font (see below) and the
+> test pass on the real server in `PLAN.md` section 6.
 
 ## Install
 
@@ -36,15 +38,34 @@ before anyone has signed in.
 
 ## Options
 
-Each is an extra `@import` on a line *after* the base theme.
+Each is an extra `@import` on a line *after* the base theme. They are served straight from
+the repo rather than from `dist/`, since they are single files with nothing to concatenate:
+
+```css
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/options/no-blur.css");
+```
 
 | Module | Effect |
 |---|---|
-| `options/no-blur.css` | Drops every `backdrop-filter`. Use on weak clients and TV boxes. |
-| `options/meta-below.css` | Card metadata under the poster instead of over it. |
+| `options/no-blur.css` | Drops every `backdrop-filter` and makes the glass opaque. Use on weak clients and TV boxes. |
+| `options/meta-below.css` | Card metadata under the poster instead of over it. Also makes cards taller. |
 | `options/solid-header.css` | Conventional solid top bar instead of the floating pill. |
 | `options/no-backdrops.css` | No full-bleed backdrops on library and detail pages. |
 | `options/compact.css` | Tighter rails, smaller posters, for dense libraries. |
+
+`no-blur.css` is not a downgrade path bolted on afterwards &mdash; every blur in the theme
+is written as `var(--cg-blur)`, so the option turns them all off by redefining two tokens,
+and it re-opaques the glass in the same breath. A translucent surface with the blur removed
+is a window, not a cheaper pane.
+
+## Typography
+
+The theme asks for **Manrope** and currently falls back to `system-ui`. The font is meant to
+be self-hosted and embedded as a `data:` URI in `src/03-fonts.css` &mdash; see `PLAN.md`
+section 3a for why a relative `url()` cannot work across both profiles. That file is still a
+stub, so until it is filled in the theme renders in the system UI font. Everything else is
+unaffected.
 
 ## Accents
 
@@ -102,5 +123,12 @@ a port, not a no-op.
 
 ## Open questions
 
-None. The design is settled (`PLAN.md` section 3), hosting is live, and both shipping
-profiles are scaffolded. Next step is `src/00-tokens.css`.
+Three, all recorded where the work is:
+
+- **The font is not embedded yet.** `src/03-fonts.css` is still a stub; see Typography above.
+- **The detail page keeps its poster column.** The scaffold note for `src/30-detail.css` said
+  "no poster column", but that is not one of the four structural moves in `PLAN.md` section 4,
+  so the poster stayed and became a floating card. Worth checking against the deck.
+- **Nothing has been tested on the real server.** Rendering was verified against fixtures
+  built from the v10.11.8 stylesheets, which is not the same thing. `PLAN.md` section 6 is
+  the checklist.

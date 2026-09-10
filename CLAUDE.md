@@ -23,18 +23,25 @@ _Last updated: 2026-09-10._
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
 - **Tags:** none yet. First release will be `cinematic-glass-v1.0.0`.
-- **Cinematic Glass:** `src/00-tokens.css` and `src/01-mui-vars.css` are written; every
-  other file in `themes/cinematic-glass/src/`, `options/`, `standalone/` and `accents/` is
-  still a stub containing only a header comment. `dist/` builds for both profiles.
-- **The MUI layer is done and verified.** All six colour schemes fall to our variables and
-  no stock Jellyfin blue survives anywhere in the 233 `--jf-*` names MUI declares. Note
-  the consequence recorded in `PLAN.md` before section 3: the theme now overrides the
-  Display-settings theme picker for every user.
-- **Next step:** `themes/cinematic-glass/src/02-base.css`, then work down the build order
-  in `themes/cinematic-glass/PLAN.md` section 5.
-- **Font delivery settled:** self-hosted Manrope, variable woff2, embedded as a `data:`
-  URI in a new `03-fonts.css`. Rationale and the per-profile reason a relative `url()`
-  cannot work: `PLAN.md` section 3a. The font file itself is not in the repo yet.
+- **Cinematic Glass is written, and untested on a real server.** All twelve modules in
+  `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
+  builds both profiles (~88 KB, ~33 KB minified). `accents/` is still just the template,
+  which is the settled decision, not an omission.
+- **Three things stand between here and `cinematic-glass-v1.0.0`:**
+  1. `src/03-fonts.css` is still a stub — it needs the Manrope variable woff2 downloaded
+     and embedded as a `data:` URI (`PLAN.md` section 3a). Until then the theme falls back
+     to `system-ui`, which is the only thing about it that is visibly unfinished.
+  2. The `PLAN.md` section 6 test pass on the real server. Everything so far was verified
+     against fixtures rebuilt from the v10.11.8 stylesheets — good for catching specificity
+     and parse failures, no substitute for the real DOM.
+  3. Tag and publish.
+- **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
+  Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
+  `PLAN.md` before section 3: the theme overrides the Display-settings theme picker.
+- **Two decisions worth a second opinion**, both flagged in the files that made them:
+  `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp (section 3
+  specifies no such tokens), and `30-detail.css` kept the poster column its scaffold note
+  said to drop, because removing it is not one of the four moves in `PLAN.md` section 4.
 - **Design is locked.** The seven-direction deck was shown to the server's users and they
   picked Cinematic Glass. Token values are transcribed in `PLAN.md` section 3 — use those,
   do not re-derive them. Deck source: `design/src/`; published page:
@@ -82,7 +89,13 @@ at the target version — it doubles as the canonical list of ~102 themable lega
 - **`00-tokens.css` is the only file allowed a colour literal.** Everything else reads
   `--cg-*` tokens.
 - **`99-fixes.css` is the only file allowed `!important`.** Every rule there carries a
-  comment saying why and a version stamp.
+  comment saying why and a version stamp. In practice it holds exactly one category:
+  declarations upstream marks `!important`, which a normal rule loaded later cannot beat
+  no matter how specific. It is inert on the standalone profile, which replaces that
+  stylesheet rather than layering over it.
+- **Durations are always `var(--cg-dur*)`, never literals.** `02-base.css` implements
+  `prefers-reduced-motion` by collapsing those tokens, because the usual
+  `* { transition: none !important }` reset is not available outside `99-fixes.css`.
 - `build.py --check` enforces both, plus incomplete MUI accent families. Run it before
   committing. It masks comments first, so a comment may name the stock value a variable
   replaces without reading as a colour literal.

@@ -1,7 +1,8 @@
 # Cinematic Glass — build plan
 
-Status: **in progress.** `00-tokens.css` and `01-mui-vars.css` are written;
-everything else in `src/` is a stub.
+Status: **written, untested on a real server.** Every module in `src/`, all five options
+and the standalone base layer are done and `dist/` builds for both profiles. Outstanding:
+`03-fonts.css` (needs the Manrope woff2), the section 6 test pass, and the tag.
 
 Target: **Jellyfin 10.11.8** (verified against `jellyfin-web` @ `v10.11.8`; the whole 10.11.x
 line shares an identical file tree, so 10.11.5–10.11.11 are all in scope).
