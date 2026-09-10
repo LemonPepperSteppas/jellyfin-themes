@@ -195,8 +195,14 @@ Profile B additionally requires the user to pick the theme in **both** Settings 
 dropdowns: `ThemeCss` resolves `dashboardTheme` for the dashboard and `theme` everywhere
 else, and they are separate settings.
 
-This undercuts the "A is primary, B is a documented extra" decision in CLAUDE.md. Flagged
-there, awaiting a call — do not flip it silently.
+**Decided 2026-09-10: profile A stays primary and the stock dashboard is accepted.** It is
+an admin surface, seen occasionally by a couple of people, and the alternative costs
+filesystem access plus a bind-mount to survive every upgrade. B stays documented for
+anyone who wants the dashboard covered.
+
+That does *not* make the MUI layer dead weight. `apps/experimental` does render
+`CustomCss`, so `01-mui-vars.css` still drives the experimental layout's MUI chrome on
+profile A, and both MUI modules apply in full on profile B. Do not strip them.
 
 ### The asymmetry between them
 

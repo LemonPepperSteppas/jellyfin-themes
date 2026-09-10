@@ -148,12 +148,16 @@ python design/src/assemble.py              # regenerate the direction deck (from
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.
-  ⚠ **This premise is now known to be partly false and is awaiting a decision.** Custom
-  CSS cannot theme the dashboard (see item 7 above), so the two profiles are no longer
-  "same theme, two delivery methods" — `standalone` covers strictly more of the product.
-  Do not silently flip this; it is the user's call. The options are: accept a stock
-  dashboard on the primary profile, promote `standalone` to primary, or ship both and say
-  plainly which covers what.
+  **Reaffirmed 2026-09-10 with the dashboard limitation known and accepted** (item 7
+  above): the admin dashboard stays stock Jellyfin on the primary profile. Judged the
+  right trade — it is an admin surface a handful of people see occasionally, and the
+  alternative costs filesystem access plus a bind-mount to survive upgrades. `standalone`
+  remains available for anyone who wants the dashboard covered too.
+- **Do not delete `01-mui-vars.css` or `70-dashboard.css` as dead code.** They are inert
+  on the *dashboard* under the primary profile, but they are not unused: `apps/experimental`
+  renders `CustomCss`, so the `--jf-*` layer drives the experimental layout's MUI chrome
+  there, and the whole file pays off on `standalone`. This is the obvious wrong conclusion
+  to draw from the decision above, so it is written down.
 - **Cinematic Glass v1 ships no accent variants.** The accent is achromatic (`#e8eef6`)
   because the thesis is that artwork supplies the colour and the interface supplies none.
   `accents/` is capacity for a later request, not part of the release.
