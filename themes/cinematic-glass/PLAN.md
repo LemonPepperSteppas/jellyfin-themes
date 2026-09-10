@@ -130,7 +130,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `80-misc.css` — dialogs, menus, toasts, forms
 - [~] `99-fixes.css` — in use: two upstream `!important` declarations beaten
 - [x] `options/no-blur.css` — shipped with v1; all five options written
-- [ ] `standalone/00-jellyfin-base.css` — base coverage for the registered variant
+- [x] `standalone/00-jellyfin-base.css` — base coverage for the registered variant
 - [ ] Test pass on the real server, all nine screens
 - [ ] Tag and publish
 

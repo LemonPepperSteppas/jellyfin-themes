@@ -43,6 +43,30 @@ use the CDN `@import` variant in the theme README instead.
 
 3. Hard-refresh the browser (Ctrl/Cmd + Shift + R). `config.json` is cached aggressively.
 
+## One difference from the Custom CSS install: the default banner
+
+Jellyfin's built-in themes set the header's default logo with
+
+```scss
+.pageTitleWithDefaultLogo { background-image: url(@jellyfin/ux-web/banner-light.png); }
+```
+
+That is a build-time webpack alias, and the asset it resolves to has a hashed filename that
+changes between releases. A theme dropped onto disk cannot resolve it, and hardcoding
+today's path would break on the next upgrade — so **this profile does not carry Jellyfin's
+default banner**. The element is collapsed rather than left blank, and the library's own
+title text shows in the header instead.
+
+If you want a logo there, either set one in **Dashboard → Branding**, or add a single rule
+to `themes/cinematic-glass/theme.css` pointing at a URL your server actually serves:
+
+```css
+.pageTitleWithDefaultLogo { background-image: url("/web/assets/img/your-banner.png"); }
+```
+
+The Custom CSS profile is unaffected — it layers over the built-in theme, so the stock
+banner is still there.
+
 ## It will be wiped by server updates
 
 Upgrading Jellyfin replaces the whole `jellyfin-web` directory. Pick one:

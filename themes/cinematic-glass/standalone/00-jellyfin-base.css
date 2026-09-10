@@ -13,16 +13,86 @@
                            built-in one. Nothing we omit falls back to anything.
                            Whatever we do not cover is simply unstyled.
 
-   So the standalone build must supply base coverage for every legacy class the
-   built-in dark theme touched, before the shared modules restyle them.
+   It is deliberately short, and that is the point: the ~102 selectors
+   themes/dark/theme.scss touches are now almost all covered by the shared
+   modules in src/, which both profiles get. What remains is the handful of
+   things that are NOT colour - sizing, and one asset - plus a floor under the
+   root elements. Anything that could go in src/ went in src/; this layer is a
+   floor, not a second theme.
 
-   TODO: Work through research/reference/jellyfin-dark-theme.10.11.8.scss - that
-         file IS the built-in dark theme at our target version, and its ~102
-         selectors are exactly the surface that must not be left bare.
-         Reproduce coverage (not appearance) here, reading --cg-* tokens.
-
-   TODO: Do not duplicate anything the shared src/ modules already handle. This
-         layer is a floor, not a second theme.
+   Checked against research/reference/jellyfin-dark-theme.10.11.8.scss, which
+   IS the built-in dark theme at the target version.
    ========================================================================== */
 
+/* --- Root floor ----------------------------------------------------------
+   02-base.css sets html. .skinHeader is called out separately here for the
+   same reason the built-in theme does: it is positioned out of the normal
+   flow, and it is the one element where a missing inherited colour is
+   immediately visible. */
 
+html,
+.skinHeader {
+    color: var(--cg-text);
+}
+
+body {
+    background-color: var(--cg-ground);
+}
+
+/* --- Scrollbar sizing ----------------------------------------------------
+   02-base.css restyles scrollbar COLOUR for both profiles, but the built-in
+   theme is also where the WebKit scrollbar gets its dimensions. Without these
+   the standalone profile falls back to the browser default, which on desktop
+   is roughly three times wider than the theme expects. */
+
+.layout-desktop ::-webkit-scrollbar,
+.layout-tv ::-webkit-scrollbar {
+    width: .4em;
+    height: .4em;
+}
+
+.timeslotHeaders-desktop::-webkit-scrollbar {
+    height: .7em;
+}
+
+/* --- Surfaces the modules size but do not fill --------------------------- */
+
+.chapterCardImageContainer {
+    background-color: var(--cg-ground);
+}
+
+/* .infoBanner takes its padding from the built-in theme rather than from
+   layout CSS, so it collapses to a borderless line without this. */
+
+.infoBanner {
+    padding: 1em;
+}
+
+.checkboxLabel {
+    color: inherit;
+}
+
+/* --- KNOWN GAP: the default banner --------------------------------------
+   themes/dark/theme.scss sets
+
+       .pageTitleWithDefaultLogo { background-image: url(@jellyfin/ux-web/banner-light.png); }
+
+   That is a webpack alias, resolved at Jellyfin's build time into a hashed
+   asset path. A theme dropped onto disk cannot resolve it, and the real path
+   changes between releases, so hardcoding one would break on the next
+   upgrade.
+
+   So the standalone profile does not carry Jellyfin's default banner. It is
+   set to none rather than left to load nothing, so the element does not
+   reserve space for an image that will never arrive, and the library's own
+   .pageTitle text shows instead.
+
+   If you want a logo in the header on this profile, set your own in
+   Dashboard -> Branding, or add one rule to this file pointing at a URL your
+   server actually serves. Noted in standalone/INSTALL.md too.
+   ------------------------------------------------------------------------ */
+
+.pageTitleWithDefaultLogo,
+.layout-tv .pageTitleWithDefaultLogo {
+    background-image: none;
+}
