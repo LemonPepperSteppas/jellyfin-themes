@@ -2,8 +2,176 @@
    Cinematic Glass - Document ground: backgrounds, typography, scrollbars, focus, reduced-motion.
    --------------------------------------------------------------------------
    Owns: html, body, .backgroundContainer, .skinBody, ::-webkit-scrollbar, :focus-visible
-   
-   TODO: Set the page ground before anything else paints.
-         Honour prefers-reduced-motion here once, globally.
+
+   The floor everything else stands on. Nothing here knows about cards, chrome
+   or detail pages; it sets the ground, the type, the scroll furniture and the
+   one focus treatment the whole theme uses.
    ========================================================================== */
 
+/* --- Ground --------------------------------------------------------------
+   Jellyfin paints #101010 on html, .backgroundContainer and .dialog. The
+   first two are ours; .dialog belongs to 80-misc.css.
+
+   .backgroundContainer.withBackdrop is the element the full-bleed billboard
+   shows through, so it gets the veil rather than a solid fill. */
+
+html,
+.skinBody,
+.backgroundContainer {
+    background-color: var(--cg-ground);
+}
+
+.backgroundContainer.withBackdrop {
+    background-color: var(--cg-veil);
+}
+
+/* --- Type ----------------------------------------------------------------
+   Manrope arrives from 03-fonts.css. The root font-size is deliberately not
+   touched: Jellyfin sizes almost everything in em, so changing it rescales
+   the entire UI and breaks the user's browser zoom along with it. */
+
+html {
+    color: var(--cg-text);
+    font-family: var(--cg-font);
+    font-weight: var(--cg-fw-regular);
+    line-height: var(--cg-lh-base);
+    letter-spacing: var(--cg-track-tight);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3,
+.sectionTitle {
+    font-family: var(--cg-font-display);
+    font-weight: var(--cg-fw-display);
+    line-height: var(--cg-lh-tight);
+    letter-spacing: var(--cg-track-display);
+}
+
+/* Jellyfin's whole "less important text" vocabulary, in one place. Stock is
+   white at 50%; ours is a solid token so it holds its colour over glass. */
+
+.secondaryText,
+.fieldDescription,
+.cardText-secondary,
+.listItem .secondary,
+.nowPlayingBarSecondaryText,
+.programSecondaryTitle,
+.guide-programNameCaret,
+.checkboxListLabel,
+.inputLabel,
+.inputLabelUnfocused,
+.paperListLabel,
+.textareaLabelUnfocused {
+    color: var(--cg-muted);
+}
+
+/* Links cannot be tinted here - the accent and the body text are the same
+   luminance, so an accent-coloured link is just body text (see the States
+   note in 00-tokens.css). Weight and a rule underneath carry it instead. */
+
+.button-link {
+    color: var(--cg-text);
+    font-weight: var(--cg-fw-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--cg-border-strong);
+    text-underline-offset: .2em;
+}
+
+.button-link:hover {
+    text-decoration-color: var(--cg-accent);
+}
+
+::selection {
+    background-color: var(--cg-state-selected);
+    color: var(--cg-text);
+}
+
+/* --- Scroll furniture ----------------------------------------------------
+   Jellyfin sets `* { scrollbar-width: thin; scrollbar-color: #3b3b3b #202020 }`
+   and a matching set of ::-webkit-scrollbar rules. Both are restated, because
+   the standard property and the WebKit pseudo-elements are honoured by
+   different browsers and the TV clients are the old ones. */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cg-border-strong) transparent;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+::-webkit-scrollbar-thumb:horizontal,
+::-webkit-scrollbar-thumb:vertical {
+    border-radius: var(--cg-radius-pill);
+    background: var(--cg-border-strong);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--cg-accent-dark);
+}
+
+/* --- Focus ---------------------------------------------------------------
+   One treatment for the entire theme, defined once here.
+
+   Two rings, ground then accent, so it survives landing on artwork as well as
+   on the page ground - a single light ring disappears against a pale poster,
+   which is the case that matters most given move #3.
+
+   Jellyfin has its own focus vocabulary: `.show-focus:focus` is set by the TV
+   navigation layer, while pointer and keyboard users get :focus-visible. Both
+   are covered, and .layout-tv gets the thicker ring because on a TV the ring
+   is the only cursor there is. */
+
+:focus-visible,
+.show-focus:focus,
+.emby-button.show-focus:focus,
+.paper-icon-button-light.show-focus:focus {
+    outline: none;
+    box-shadow: var(--cg-focus-ring);
+}
+
+.layout-tv :focus-visible,
+.layout-tv .show-focus:focus,
+.layout-tv .emby-button.show-focus:focus {
+    box-shadow: var(--cg-focus-ring-tv);
+}
+
+/* Stock turns focused controls Jellyfin blue. Achromatic means the ring does
+   the work and the control keeps its own colour. */
+
+.emby-button.show-focus:focus,
+.paper-icon-button-light.show-focus:focus,
+.emby-tab-button.show-focus:focus {
+    background-color: var(--cg-state-active);
+    color: var(--cg-text);
+}
+
+/* --- Reduced motion ------------------------------------------------------
+   Handled by collapsing the motion tokens rather than by the usual
+   `* { transition: none !important }` reset, which this theme cannot write:
+   !important is confined to 99-fixes.css, and without it a `*` rule at (0,0,0)
+   loses to essentially everything.
+
+   So: every duration in this theme must be var(--cg-dur*), never a literal.
+   Collapsing the tokens then stops all of it at once.
+
+   What this does NOT cover is Jellyfin's own animations, which read no token
+   of ours. If any of them turn out to matter to someone, that is a 99-fixes.css
+   rule with a reason attached, not a change here. */
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --cg-dur-fast: 1ms;
+        --cg-dur: 1ms;
+        --cg-dur-slow: 1ms;
+    }
+
+    * {
+        scroll-behavior: auto;
+    }
+}

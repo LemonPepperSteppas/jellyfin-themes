@@ -118,7 +118,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 
 - [x] `00-tokens.css` — palette, geometry, blur, motion scales
 - [x] `01-mui-vars.css` — `--jf-*` mapping (whole accent family + Channels)
-- [ ] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
+- [x] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
 - [ ] `03-fonts.css` — the embedded Manrope `@font-face` (see section 3a)
 - [ ] `10-chrome.css` — the pill nav; the defining move, do it early
 - [ ] `20-cards.css` — cards, rails, metadata-over-artwork scrim

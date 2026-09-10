@@ -139,6 +139,13 @@
                         rgba(8, 10, 13, .70) 35%,
                         rgba(8, 10, 13, 0) 75%);
 
+    /* Flat veil over a page-wide backdrop. Jellyfin's dark theme uses black at
+       .86 here; this is lighter, and in the ground colour rather than black,
+       because structural move #2 wants the artwork legible rather than merely
+       present. Anything higher and the billboard stops reading as artwork. */
+
+    --cg-veil: rgba(8, 10, 13, .72);
+
     /* --- States ----------------------------------------------------------
        The accent is achromatic by design: the artwork supplies the colour and
        the interface supplies none. Two consequences decide these values.
