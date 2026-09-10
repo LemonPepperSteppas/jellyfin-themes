@@ -110,10 +110,12 @@ renderer during mockup review, and TV boxes are weaker than this laptop. Ship it
 **A. Custom CSS (primary).** CDN `@import` into **Dashboard → Branding → Custom CSS**:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/OWNER/REPO@TAG/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 `@import` must be the first rule in the block. Options go on the lines *after* it.
+Pin a tag; never use a branch. jsDelivr caches a branch URL for 7 days but a tag forever,
+so a tag is both faster and immune to a mid-edit push reaching users half-finished.
 
 **B. Registered theme (standalone).** Dropped into `<jellyfin-web>/themes/cinematic-glass/`
 and registered in `config.json`; appears in the Display settings dropdown.

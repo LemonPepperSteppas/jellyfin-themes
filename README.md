@@ -15,6 +15,9 @@ research/    how Jellyfin 10.11 theming actually works, with generated reference
 |---|---|
 | [Cinematic Glass](themes/cinematic-glass/) | scaffolded, not yet built |
 
+Themes are released under per-theme tags (`cinematic-glass-v1.0.0`) and served by jsDelivr
+straight from this repo, so one theme's release never moves another's URL.
+
 ## Why the research folder exists
 
 Jellyfin 10.11 is mid-migration from the Emby-derived UI to React + MUI, which is why so

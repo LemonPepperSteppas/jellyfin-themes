@@ -11,8 +11,11 @@ sits over the poster instead of under it, and the billboard runs edge to edge.
 Dashboard → **Branding** → Custom CSS. `@import` must be the first line in the box.
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/OWNER/REPO@TAG/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
+
+> The tag above does not exist yet &mdash; nothing is built. It becomes live the moment
+> `cinematic-glass-v1.0.0` is tagged and pushed.
 
 Per-user instead of server-wide: Settings → Display → Custom CSS. User CSS is injected
 after server CSS, so it wins. Applies to Jellyfin Web only — not Android, Swiftfin or the

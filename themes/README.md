@@ -44,6 +44,18 @@ MUI variables. See `research/jellyfin-10.11-theming.md` for why, and
 an alternate colourway costs about fifteen lines. If a colourway needs more than that, the
 tokens are not doing enough work.
 
+## Releasing
+
+Tags are prefixed per theme, so one theme's release never moves another theme's URL:
+
+```
+cinematic-glass-v1.0.0
+<next-theme>-v1.0.0
+```
+
+Build, commit `dist/`, tag, push the tag. jsDelivr picks it up on first request and caches
+it permanently, so a tag is never re-pointed &mdash; cut a new one instead.
+
 ## Starting a new theme
 
 1. `cp -r cinematic-glass <new-slug>` and empty `src/`, `accents/`, `options/`, `dist/`
