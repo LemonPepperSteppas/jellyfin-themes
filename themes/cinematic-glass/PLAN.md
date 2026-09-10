@@ -126,7 +126,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `40-episodes.css`
 - [x] `50-player.css` — floating control panel
 - [x] `60-login.css`
-- [ ] `70-dashboard.css` — MUI structure only
+- [x] `70-dashboard.css` — MUI structure only
 - [ ] `80-misc.css` — dialogs, menus, toasts, forms
 - [~] `99-fixes.css` — in use: two upstream `!important` declarations beaten
 - [ ] `options/no-blur.css` — ship alongside v1, not later (see below)

@@ -1901,10 +1901,159 @@ h1.itemName {
    Cinematic Glass - Admin dashboard structure. Colour already arrives via 01-mui-vars.css.
    --------------------------------------------------------------------------
    Owns: .MuiAppBar-root, .MuiDrawer-paper, .MuiPaper-root, .MuiButton-root, .dashboardDocument
-   
-   TODO: Only structural fixes belong here; anything colour-shaped belongs in 01-mui-vars.css.
-         10.11 dashboard is 100% React + MUI 6.4.12.
+
+   apps/dashboard is 100% React + MUI 6.4.12. Every colour on it is already
+   correct, because 01-mui-vars.css set the variables MUI reads - verified in a
+   browser across all six colour schemes. So this file deliberately sets almost
+   no colours. If something on the dashboard is the wrong COLOUR, the fix
+   belongs in 01-mui-vars.css, not here.
+
+   The exception, and the reason this file has any backgrounds at all: glass.
+   There is no --jf- variable for "translucent surface with a blur behind it",
+   so the material cannot be expressed in the variable layer and has to be
+   stated as component CSS. Those rules are grouped and marked below.
+
+   Layout is left alone. librarybrowser.scss pins the dashboard drawer with a
+   run of !important declarations above 40em (width, left, transform, z-index),
+   and fighting them would mean putting layout in 99-fixes.css to beat a
+   stylesheet that is doing the right thing.
    ========================================================================== */
+
+/* --- Geometry ------------------------------------------------------------
+   --jf-shape-borderRadius is the small step, which is right for inputs and
+   buttons but too tight for a panel. Surfaces get the panel radius. */
+
+.MuiPaper-rounded,
+.MuiCard-root,
+.MuiDialog-paper,
+.MuiAccordion-root {
+    border-radius: var(--cg-radius-panel);
+}
+
+.MuiButton-root,
+.MuiChip-root,
+.MuiToggleButton-root {
+    border-radius: var(--cg-radius-pill);
+    text-transform: none;
+    letter-spacing: var(--cg-track-tight);
+}
+
+.MuiButton-root {
+    font-weight: var(--cg-fw-bold);
+}
+
+/* MUI's default is uppercase with wide tracking, which fights Manrope's
+   display weight everywhere it appears. */
+
+.MuiTab-root {
+    text-transform: none;
+    font-weight: var(--cg-fw-medium);
+    letter-spacing: var(--cg-track-tight);
+}
+
+/* --- Depth ---------------------------------------------------------------
+   MUI paints elevation with the shadow ladder, which 01-mui-vars.css already
+   remapped onto --cg-shadow-1..3. What it does not do is put a hairline on
+   surfaces, and without one a dark panel on a dark ground has no edge. */
+
+.MuiPaper-outlined,
+.MuiCard-root,
+.MuiAccordion-root {
+    border: 1px solid var(--cg-border);
+}
+
+.MuiDivider-root {
+    border-color: var(--cg-border);
+}
+
+/* --- Glass ---------------------------------------------------------------
+   The one place this file sets surfaces, because "translucent with a blur"
+   has no --jf- variable to carry it. Everything else about these components
+   is still driven from 01-mui-vars.css. */
+
+.MuiAppBar-root {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border-bottom: 1px solid var(--cg-border);
+    box-shadow: none;
+}
+
+.MuiDrawer-paper {
+    background-color: var(--cg-elevated);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border-right: 1px solid var(--cg-border);
+}
+
+.MuiMenu-paper,
+.MuiPopover-paper,
+.MuiAutocomplete-paper {
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+}
+
+/* --- Typography ---------------------------------------------------------- */
+
+.dashboardDocument,
+.MuiTypography-root {
+    font-family: var(--cg-font);
+}
+
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4 {
+    font-family: var(--cg-font-display);
+    font-weight: var(--cg-fw-display);
+    letter-spacing: var(--cg-track-display);
+    line-height: var(--cg-lh-tight);
+}
+
+/* Numbers on the dashboard are read in columns - transcode counts, bitrates,
+   uptime - so they line up. */
+
+.MuiTableCell-root,
+.MuiListItemText-secondary {
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Tables -------------------------------------------------------------- */
+
+.MuiTableHead-root .MuiTableCell-root {
+    font-weight: var(--cg-fw-bold);
+    letter-spacing: var(--cg-track-caps);
+    text-transform: uppercase;
+    font-size: var(--cg-fs-xs);
+    color: var(--cg-faint);
+}
+
+.MuiTableRow-hover:hover {
+    background-color: var(--cg-state-hover);
+}
+
+/* --- Focus ---------------------------------------------------------------
+   02-base.css gives :focus-visible the theme's ring. MUI draws its own focus
+   with an inset shadow on some components, which would sit inside the ring
+   and read as a doubled outline. */
+
+.MuiButtonBase-root:focus-visible {
+    outline: none;
+    box-shadow: var(--cg-focus-ring);
+}
+
+/* --- The legacy header on dashboard pages --------------------------------
+   Dashboard pages still render .skinHeader from the stable app, so the pill
+   from 10-chrome.css appears above the MUI drawer. It keeps the pill, but the
+   drawer is a fixed column here rather than an overlay, so the pill is left
+   in the normal flow of the content area instead of floating over it. */
+
+.dashboardDocument .skinHeader {
+    pointer-events: auto;
+}
 
 /* ---- src/80-misc.css ------------------------------------------- */
 /* ==========================================================================
