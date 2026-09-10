@@ -48,3 +48,13 @@
 .card:focus .cardBox:not(.visualCardBox) .cardScalable {
     border-color: var(--cg-accent) !important;
 }
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .listItem-border { border-color: rgba(34, 34, 34, 0.9) !important; }
+   The hairline between episode rows. Left alone it is a near-black line on a
+   near-black ground, which reads as no line at all once the ground is
+   --cg-ground rather than #101010. */
+
+.listItem-border {
+    border-color: var(--cg-border) !important;
+}

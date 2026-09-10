@@ -1436,7 +1436,116 @@ h1.itemName {
    Cinematic Glass - Season and episode lists.
    --------------------------------------------------------------------------
    Owns: .listItem, .listItemBody, .listItemImage, .seasonSelector
+
+   List rows are the one place in the theme where artwork is a thumbnail
+   rather than the subject, so they are the exception to metadata-over-artwork:
+   the text sits beside the image, not on it. Rows are separated by the
+   material they are made of - a hairline and a hover fill - rather than by
+   boxes, so a season of 24 episodes does not read as 24 cards.
    ========================================================================== */
+
+.listItem {
+    border-radius: var(--cg-radius-sm);
+    transition: background-color var(--cg-dur-fast) var(--cg-ease);
+}
+
+/* Stock is #242424 hover / #333 focus - flat greys that carry no depth. */
+
+.listItem:hover {
+    background: var(--cg-state-hover);
+}
+
+.listItem:focus {
+    background: var(--cg-state-active);
+}
+
+/* .listItem-border's colour is !important upstream; beaten in 99-fixes.css. */
+
+.listItem-border.show-focus:focus {
+    border-radius: var(--cg-radius-sm);
+}
+
+.listItemBody {
+    color: var(--cg-text);
+}
+
+.listItemBodyText {
+    letter-spacing: var(--cg-track-tight);
+}
+
+.listItemBodyText:not(.secondary) {
+    font-weight: var(--cg-fw-medium);
+}
+
+/* 02-base.css already colours `.listItem .secondary`; this is the sizing. */
+
+.listItemBodyText.secondary {
+    font-size: var(--cg-fs-sm);
+}
+
+.listItemMediaInfo {
+    color: var(--cg-muted);
+}
+
+/* --- Thumbnails ----------------------------------------------------------
+   Real depth, at row scale: a smaller radius than a card and a lighter
+   shadow, so a list of episodes does not turn into a stack of floating
+   tiles. */
+
+.listItemImage,
+.listItemImage-large {
+    border-radius: var(--cg-radius-sm);
+    box-shadow: var(--cg-shadow-1);
+}
+
+.listItemImage .cardImageIcon {
+    color: var(--cg-faint);
+}
+
+/* The play button that appears over an episode thumbnail. Same glass as the
+   card overlay buttons in 20-cards.css, so the two read as one control. */
+
+.listItemImageButton {
+    color: var(--cg-text);
+    background-color: var(--cg-glass-chrome);
+    border-radius: var(--cg-radius-pill);
+}
+
+.listItemImageButton:hover {
+    background-color: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+/* --- Watched / progress state --------------------------------------------
+   An episode's watched state has to survive being scanned down a column of
+   twenty, and it cannot be a hue. Unwatched rows keep full-strength text;
+   watched rows step back to muted, so the eye lands on what is left. */
+
+.listItem .playedIndicator {
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+.listItem .itemProgressBar {
+    background: var(--cg-state-active);
+    border-radius: var(--cg-radius-pill);
+    overflow: hidden;
+}
+
+/* --- Season selector ----------------------------------------------------- */
+
+.seasonSelector,
+.selectSeason {
+    border-radius: var(--cg-radius-pill);
+}
+
+.listViewDragHandle {
+    color: var(--cg-faint);
+}
+
+.listItemAside {
+    color: var(--cg-muted);
+}
 
 /* ---- src/50-player.css ----------------------------------------- */
 /* ==========================================================================
@@ -1524,4 +1633,14 @@ h1.itemName {
 .card:focus .cardBox.visualCardBox,
 .card:focus .cardBox:not(.visualCardBox) .cardScalable {
     border-color: var(--cg-accent) !important;
+}
+
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .listItem-border { border-color: rgba(34, 34, 34, 0.9) !important; }
+   The hairline between episode rows. Left alone it is a near-black line on a
+   near-black ground, which reads as no line at all once the ground is
+   --cg-ground rather than #101010. */
+
+.listItem-border {
+    border-color: var(--cg-border) !important;
 }
