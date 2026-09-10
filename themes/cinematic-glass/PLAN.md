@@ -120,7 +120,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [x] `01-mui-vars.css` — `--jf-*` mapping (whole accent family + Channels)
 - [x] `02-base.css` — ground, type, scrollbars, focus, reduced-motion
 - [ ] `03-fonts.css` — the embedded Manrope `@font-face` (see section 3a)
-- [ ] `10-chrome.css` — the pill nav; the defining move, do it early
+- [x] `10-chrome.css` — the pill nav; the defining move, do it early
 - [ ] `20-cards.css` — cards, rails, metadata-over-artwork scrim
 - [ ] `30-detail.css` — backdrop hero, logo title, glass media-info chips
 - [ ] `40-episodes.css`
@@ -128,7 +128,7 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 - [ ] `60-login.css`
 - [ ] `70-dashboard.css` — MUI structure only
 - [ ] `80-misc.css` — dialogs, menus, toasts, forms
-- [ ] `99-fixes.css` — leave empty until something breaks
+- [~] `99-fixes.css` — in use: two upstream `!important` declarations beaten
 - [ ] `options/no-blur.css` — ship alongside v1, not later (see below)
 - [ ] `standalone/00-jellyfin-base.css` — base coverage for the registered variant
 - [ ] Test pass on the real server, all nine screens

@@ -1,10 +1,257 @@
 /* ==========================================================================
    Cinematic Glass - Header becomes a floating frosted pill; drawer and tabs follow it.
    --------------------------------------------------------------------------
-   Owns: .skinHeader, .headerTabs, .mainDrawer, .navMenuOption, .emby-tab-button
-   
-   TODO: The stable app's header is legacy .skinHeader - there is no MUI AppBar there.
-         The experimental layout DOES use .MuiAppBar-root; both need covering.
-         Pill nav is the defining move of this direction - see PLAN.md section 4.
+   Owns: .skinHeader, .headerTop, .headerTabs, .mainDrawer, .navMenuOption, .emby-tab-button
+
+   Structural move #1, and the one that makes this direction recognisable.
+
+   Verified against jellyfin-web v10.11.8, src/styles/librarybrowser.scss.
+   Four things there decide how this is built:
+
+     1. .skinHeader is `position: fixed; left: 0; right: 0; z-index: 999` with
+        `flex-direction: column` - headerTop on top, headerTabs under it. So the
+        pill is NOT .skinHeader. .skinHeader stays a full-width transparent rail
+        and .headerTop becomes the pill inside it. That also sidesteps
+        `.skinHeader.semiTransparent { backdrop-filter: none !important }` in the
+        built-in dark theme, which would otherwise kill the blur outright.
+
+     2. .skinHeader carries `contain: layout style paint`. `paint` clips
+        descendants to its box, which would shear the pill's drop shadow off.
+        Relaxed to `layout style` below - the containment that was doing the
+        work is kept, only the clipping is dropped.
+
+     3. `.layout-tv .skinHeader` is `position: relative`, not fixed. A floating
+        overlay pill is wrong on a TV, where nothing hovers and the header is
+        not focusable, so the TV layout gets a plain solid bar instead.
+
+     4. .skinHeader's z-index of 999 is left alone. It sits below Jellyfin's
+        dialogs and below every MUI layer, which is right; raising it to
+        --cg-z-header would put the pill over things that should cover it.
+        --cg-z-header is for the MUI AppBar in the experimental layout.
    ========================================================================== */
 
+/* --- The rail ------------------------------------------------------------
+   .skinHeader stops being a bar and becomes a transparent positioning rail.
+   All three background-bearing variants are named explicitly: `.semiTransparent`
+   and `-withBackground` are (0,2,0) in the built-in theme and would otherwise
+   out-specify a bare `.skinHeader` rule here. */
+
+.skinHeader,
+.skinHeader-withBackground,
+.skinHeader.semiTransparent {
+    background: none;
+    background-color: transparent;
+    box-shadow: none;
+    contain: layout style;
+    padding-top: calc(env(safe-area-inset-top) + var(--cg-header-gap));
+    pointer-events: none;
+}
+
+/* The rail ignores the pointer so the artwork behind it stays clickable;
+   everything actually in the pill takes it back. */
+
+.skinHeader > * {
+    pointer-events: auto;
+}
+
+/* --- The pill ------------------------------------------------------------ */
+
+/* Hugs its contents rather than taking a width. A max-width cap large enough
+   to look centred on a laptop is not a pill at all on one - at 1280px an 78em
+   cap is the full window. fit-content keeps it the size of what is in it at
+   every width, and the cap only ever bites on a phone. */
+
+.headerTop {
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: calc(100% - (var(--cg-page-pad) * 2));
+    margin: 0 auto;
+    gap: .6em;
+    min-height: var(--cg-header-h);
+    padding: 0 .5em 0 .35em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    box-shadow: var(--cg-shadow-3);
+    transition: background-color var(--cg-dur) var(--cg-ease),
+                border-color var(--cg-dur) var(--cg-ease);
+}
+
+.headerTop:hover {
+    border-color: var(--cg-border-strong);
+}
+
+/* --- Header controls -----------------------------------------------------
+   Stock turns these Jellyfin blue on hover and press. The selector shape is
+   copied from the built-in dark theme, including the hover media query, so
+   this matches its specificity exactly and wins on load order. */
+
+@media (hover: hover) and (pointer: fine) {
+    .paper-icon-button-light:hover:not(:disabled) {
+        color: var(--cg-text);
+        background-color: var(--cg-state-hover);
+    }
+}
+
+.paper-icon-button-light:active:not(:disabled) {
+    color: var(--cg-text);
+    background-color: var(--cg-state-active);
+}
+
+.headerButton,
+.headerRight .paper-icon-button-light {
+    border-radius: var(--cg-radius-pill);
+    transition: background-color var(--cg-dur-fast) var(--cg-ease);
+}
+
+.pageTitle {
+    font-family: var(--cg-font-display);
+    font-weight: var(--cg-fw-display);
+    letter-spacing: var(--cg-track-display);
+    color: var(--cg-text);
+}
+
+/* --- Section tabs --------------------------------------------------------
+   A second, smaller pill under the first. librarybrowser.scss pulls
+   .headerTabs up with `margin-top: -4.3em` above 100em wide and centres it;
+   that layout is left alone, only the skin changes. */
+
+/* .skinHeader is a flex column, so its children are flex items - which is how
+   librarybrowser.scss centres the tabs above 100em, with `align-self: center`
+   and `width: auto` against `.sectionTabs { width: 100% }`. Same mechanism,
+   applied at every width, rather than forcing display: flex onto a container
+   whose internals belong to the emby-tabs element. */
+
+.headerTabs,
+.sectionTabs {
+    align-self: center;
+    width: auto;
+    max-width: calc(100% - (var(--cg-page-pad) * 2));
+    margin-top: var(--cg-header-gap);
+    padding: 0 .3em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    background-color: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    box-shadow: var(--cg-shadow-2);
+}
+
+/* headerLeft is flex-grow: 1 upstream, which would stretch the pill back out
+   to full width once .headerTop is fit-content. */
+
+.headerTop .headerLeft {
+    flex-grow: 0;
+}
+
+/* emby-tabs.scss pads these 1.5em all round, which is a full-width bar's
+   spacing. Inside a strip that hugs its contents it just makes the strip
+   enormous, so it is tightened here. */
+
+.emby-tab-button {
+    color: var(--cg-muted);
+    font-weight: var(--cg-fw-medium);
+    padding: .7em 1.15em;
+    margin: .3em 0;
+    border-radius: var(--cg-radius-pill);
+    transition: color var(--cg-dur-fast) var(--cg-ease),
+                background-color var(--cg-dur-fast) var(--cg-ease);
+}
+
+.emby-tab-button:hover {
+    color: var(--cg-text);
+    background-color: var(--cg-state-hover);
+}
+
+/* Selected state cannot be a hue here - the accent is the same luminance as
+   body text. It is weight plus a fill instead. */
+
+.emby-tab-button-active {
+    color: var(--cg-text);
+    font-weight: var(--cg-fw-bold);
+    background-color: var(--cg-state-selected);
+}
+
+/* --- Drawer --------------------------------------------------------------
+   Same glass as the pill, one step more opaque, since it sits over content
+   rather than over artwork and has to carry readable text at small sizes. */
+
+.mainDrawer,
+.drawer-open {
+    background-color: var(--cg-elevated);
+    border-right: 1px solid var(--cg-border);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+}
+
+.mainDrawer-scrollContainer {
+    background: none;
+}
+
+.sidebarHeader {
+    color: var(--cg-faint);
+    font-size: var(--cg-fs-xs);
+    font-weight: var(--cg-fw-bold);
+    letter-spacing: var(--cg-track-caps);
+    text-transform: uppercase;
+}
+
+/* librarybrowser.scss marks .navMenuOption's padding, margin, border-radius,
+   font-weight and display !important, so only colour is available here.
+   Its selected background is !important too, in the built-in dark theme -
+   that one is beaten in 99-fixes.css, which is the only file allowed to. */
+
+.navMenuOption {
+    color: var(--cg-muted);
+    transition: background-color var(--cg-dur-fast) var(--cg-ease),
+                color var(--cg-dur-fast) var(--cg-ease);
+}
+
+.navMenuOption:hover {
+    background-color: var(--cg-state-hover);
+    color: var(--cg-text);
+}
+
+.navMenuOptionIcon {
+    color: inherit;
+}
+
+/* --- TV ------------------------------------------------------------------
+   `.layout-tv .skinHeader` is position: relative upstream, so there is nothing
+   to float over and no hover to reveal it. The pill flattens back into a bar:
+   full width, square, opaque, no blur - which is also the cheapest thing to
+   render on the weakest hardware this has to run on. */
+
+.layout-tv .skinHeader,
+.layout-tv .skinHeader-withBackground,
+.layout-tv .skinHeader.semiTransparent {
+    padding-top: 0;
+    pointer-events: auto;
+}
+
+.layout-tv .headerTop,
+.layout-tv .headerTabs,
+.layout-tv .sectionTabs {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--cg-border);
+    border-radius: 0;
+    background-color: var(--cg-elevated);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+/* upstream: .layout-tv .sectionTabs { width: 55% } above 100em, 100% below.
+   Both are overridden above, so the tab row stays a full-width band and the
+   focus ring never has to fight a rounded edge for space. */
+
+.layout-tv .headerTabs,
+.layout-tv .sectionTabs {
+    align-self: stretch;
+    padding: 0;
+}

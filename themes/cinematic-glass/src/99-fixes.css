@@ -2,8 +2,36 @@
    Cinematic Glass - Version-specific patches. Every rule here carries a comment saying why.
    --------------------------------------------------------------------------
    Owns: anything broken by a point release
-   
-   TODO: Keep this file empty until something actually breaks.
-         Date and version-stamp each rule so it can be removed later.
+
+   The only file allowed !important, and the bar for adding to it is high.
+   Every rule states which upstream declaration forces it and the version that
+   was true of, so it can be retested and dropped later.
+
+   All of these exist for one reason: upstream declares the property
+   !important, and an !important declaration in a stylesheet loaded earlier
+   beats a normal one loaded later no matter how specific. That is the whole
+   category. A rule that merely needs more specificity does not belong here -
+   write a more specific selector in the module that owns it.
+
+   Note these are only strictly needed by the custom-css profile, which layers
+   over themes/dark/theme.css. The standalone profile replaces that stylesheet,
+   so the upstream !important is not present and these are inert. Harmless
+   either way, and keeping one list is better than keeping two.
    ========================================================================== */
 
+/* jellyfin-web 10.11.8, themes/dark/theme.scss:
+       .navMenuOption-selected { background: #00a4dc !important; }
+   The selected drawer item would otherwise stay Jellyfin blue. Only the
+   background is !important upstream; the colour is set in 10-chrome.css. */
+
+.navMenuOption-selected {
+    background: var(--cg-state-selected) !important;
+}
+
+/* jellyfin-web 10.11.8, src/styles/librarybrowser.scss:
+       .selectedMediaFolder { background-color: #f2f2f2 !important; }
+   A near-white fill on the active library, from a light-theme era. */
+
+.selectedMediaFolder {
+    background-color: var(--cg-state-selected) !important;
+}
