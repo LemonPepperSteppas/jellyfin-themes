@@ -35,11 +35,22 @@
                         rgba(0, 0, 0, 0) 100%);
 }
 
-.cardBox > .cardFooter,
-.cardBox .cardScalable + .cardFooter {
-    padding: 1.6em .5em .45em;
+.cardBox > .cardText {
+    padding: 0 .5em;
+    font-size: var(--cg-fs-sm);
 }
 
-.cardText {
-    font-size: var(--cg-fs-sm);
+/* The stacked offsets in 20-cards.css assume a full-size secondary line; at
+   --cg-fs-sm the two lines sit closer together. */
+
+.cardBox > .cardText-secondary {
+    bottom: .3em;
+}
+
+.cardBox > .cardText-first {
+    bottom: 1.5em;
+}
+
+.cardBox > .cardText-first:last-child {
+    bottom: .3em;
 }

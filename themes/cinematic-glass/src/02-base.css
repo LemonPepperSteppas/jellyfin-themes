@@ -15,9 +15,26 @@
    .backgroundContainer.withBackdrop is the element the full-bleed billboard
    shows through, so it gets the veil rather than a solid fill. */
 
-html,
 .skinBody,
 .backgroundContainer {
+    background-color: var(--cg-ground);
+}
+
+/* html is called out separately, at html[data-theme] (0,1,1) rather than the
+   bare `html` (0,0,1) the rule above would give it.
+
+   Measured on the real server: the bare selector lost. .skinBody and
+   .backgroundContainer in the same rule took our colour and html alone stayed
+   Jellyfin's #101010, with no inline style on the element and no readable
+   rule outranking us - the winning sheet is cross-origin and its rules cannot
+   be enumerated from script, so this is out-specified rather than diagnosed.
+
+   Rarely visible either way, since .backgroundContainer is a fixed
+   full-viewport layer painted over it, but html is what the canvas takes on
+   overscroll and before that layer paints. Same (0,1,1) trick 01-mui-vars.css
+   uses, and for the same reason. */
+
+html[data-theme] {
     background-color: var(--cg-ground);
 }
 

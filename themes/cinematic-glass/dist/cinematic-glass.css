@@ -588,9 +588,26 @@ html[data-theme] {
    .backgroundContainer.withBackdrop is the element the full-bleed billboard
    shows through, so it gets the veil rather than a solid fill. */
 
-html,
 .skinBody,
 .backgroundContainer {
+    background-color: var(--cg-ground);
+}
+
+/* html is called out separately, at html[data-theme] (0,1,1) rather than the
+   bare `html` (0,0,1) the rule above would give it.
+
+   Measured on the real server: the bare selector lost. .skinBody and
+   .backgroundContainer in the same rule took our colour and html alone stayed
+   Jellyfin's #101010, with no inline style on the element and no readable
+   rule outranking us - the winning sheet is cross-origin and its rules cannot
+   be enumerated from script, so this is out-specified rather than diagnosed.
+
+   Rarely visible either way, since .backgroundContainer is a fixed
+   full-viewport layer painted over it, but html is what the canvas takes on
+   overscroll and before that layer paints. Same (0,1,1) trick 01-mui-vars.css
+   uses, and for the same reason. */
+
+html[data-theme] {
     background-color: var(--cg-ground);
 }
 
@@ -1070,21 +1087,33 @@ h1, h2, h3,
 
    Structural move #3.
 
-   Card DOM in 10.11.8 (src/components/cardbuilder), confirmed against
-   research/reference/jellyfin-card.10.11.8.scss:
+   THE CARD DOM IS NOT WHAT THE STYLESHEET SUGGESTS. This was written first
+   against research/reference/jellyfin-card.10.11.8.scss, which defines
+   .cardFooter, and it did nothing at all on the real server. 10.11.8's card
+   builder does not emit .cardFooter for any card type on the home screen -
+   there were 43 cards on the page and zero .cardFooter elements. The rule
+   exists in the stylesheet; nothing uses it.
 
-       .card > .cardBox > .cardScalable > .cardPadder + .cardImageContainer
-                        > .cardFooter
+   What is actually rendered (read off the live DOM, 2026-09-10):
 
-   .cardPadder is what gives the card its aspect ratio; .cardFooter is a
-   sibling BELOW the image, which is the layout this move overturns. Jellyfin
-   already has an over-artwork footer - .innerCardFooter, at rgba(0,0,0,.7) -
-   but it is only used by a few card types. Rather than switch every card to
-   that class, .cardFooter is lifted onto the image and given the scrim.
+       div.card.overflowBackdropCard
+         div.cardBox.cardBox-bottompadded          [position: relative]
+           div.cardScalable                        [position: relative]
+             div.cardPadder-overflowBackdrop        - sets the aspect ratio
+             canvas.blurhash-canvas
+             a.cardImageContainer.cardContent       - the artwork
+               div.innerCardFooter…Clear            - holds the progress bar
+             div.cardOverlayContainer               - hover play button
+           div.cardText.cardTextCentered.cardText-first        <- title
+           div.cardText.cardTextCentered.cardText-secondary    <- subtitle
 
-   .cardBox already carries `contain: layout`, which makes it a containing
-   block for absolutely positioned descendants, so the lift needs no new
-   stacking context.
+   So there is no footer element to lift: the two text lines are DIRECT
+   CHILDREN of .cardBox with no wrapper between them. That rules out putting
+   one scrim behind one box, and is why the scrim and the text are handled
+   separately below.
+
+   Lesson worth keeping: a selector's presence in Jellyfin's SCSS is not
+   evidence the app renders it. Check the DOM.
 
    Reversing this is exactly what options/meta-below.css does, so the overlay
    is kept to one contiguous block below rather than spread through the file.
@@ -1124,28 +1153,58 @@ h1, h2, h3,
    the image. Contrast over a pale poster is the risk here; the ramp is
    weighted so its opaque end is under the text. */
 
-.cardBox > .cardFooter,
-.cardBox .cardScalable + .cardFooter {
+/* The scrim rides on .cardScalable, which is the element that owns the
+   artwork's box. .cardOverlayContainer is a later sibling inside it and so
+   still paints above; .cardScalable's `overflow: hidden` above clips the ramp
+   to the card's rounded corners. */
+
+.cardScalable::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: var(--cg-z-base);
+    pointer-events: none;
+    background-image: var(--cg-scrim-card);
+}
+
+/* The text lines are siblings of .cardScalable, not children, so they are
+   positioned against .cardBox - which upstream already makes `position:
+   relative`. With both lines taken out of flow, .cardBox's height collapses to
+   the artwork's, which is the visible half of this move.
+
+   The offsets stack the two lines from the bottom. .cardText-secondary is 86%
+   font-size upstream, so it occupies roughly 1.25em of the parent's em, and
+   the title clears it at 1.7em. A card with no secondary line puts its title
+   back on the baseline via :last-child - .cardBox's only other child is
+   .cardScalable, so that test is reliable. */
+
+.cardBox > .cardText {
     position: absolute;
     right: 0;
-    bottom: 0;
     left: 0;
     z-index: var(--cg-z-scrim);
-    padding: 2.4em .7em .6em;
-    background-image: var(--cg-scrim-card);
-    border-radius: 0 0 var(--cg-radius-card) var(--cg-radius-card);
+    padding: 0 .7em;
 }
 
-/* .innerCardFooter is Jellyfin's own over-artwork footer, on the card types
-   that already used one. Given the same scrim so the two kinds of card match
-   instead of one being a flat black box. */
+.cardBox > .cardText-secondary {
+    bottom: .4em;
+}
+
+.cardBox > .cardText-first {
+    bottom: 1.7em;
+}
+
+.cardBox > .cardText-first:last-child {
+    bottom: .4em;
+}
+
+/* .innerCardFooter is Jellyfin's own over-artwork strip - on this build it
+   carries the resume progress bar rather than text. It stays transparent,
+   because .cardScalable::after already supplies the ramp and a second one
+   here would double up on exactly the same pixels. */
 
 .innerCardFooter,
-.fullInnerCardFooter {
-    background: var(--cg-scrim-card);
-    border-radius: 0 0 var(--cg-radius-card) var(--cg-radius-card);
-}
-
+.fullInnerCardFooter,
 .innerCardFooterClear {
     background: none;
 }
