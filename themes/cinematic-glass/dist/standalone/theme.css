@@ -1571,6 +1571,25 @@ h1.itemName {
     letter-spacing: var(--cg-track-tight);
 }
 
+/* Jellyfin puts .button-link on both kinds of link: the small inline ones
+   (IMDb, genres, people) and the page title itself, which is an <a> inside
+   h1.parentName. 02-base.css underlines .button-link because an achromatic
+   accent leaves nothing else to mark a link with - but on a 27px display
+   title that underline reads as a mistake.
+
+   Seen on the real server. Scoped off inside .nameContainer only, where size
+   and position already say "this is the thing you clicked to get here", and
+   kept on hover so the target is still obviously live. */
+
+.nameContainer .button-link {
+    text-decoration: none;
+}
+
+.nameContainer .button-link:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--cg-border-strong);
+}
+
 /* --- Media-info chips ----------------------------------------------------
    Stock .mediaInfoText is a flat lilac-grey tint. As chips they read as a row
    of small glass tiles, which is the direction's vocabulary and also groups
