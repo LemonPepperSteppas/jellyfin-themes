@@ -7,6 +7,7 @@ they came out of.
 themes/      the themes themselves - one folder each, see themes/README.md
 design/      the art-direction deck the server's users chose from
 research/    how Jellyfin 10.11 theming actually works, with generated references
+CLAUDE.md    project state and conventions; start here
 ```
 
 ## Themes
