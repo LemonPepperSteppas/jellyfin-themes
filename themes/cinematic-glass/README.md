@@ -4,9 +4,9 @@ A theme for **Jellyfin 10.11.x** web. The artwork supplies all the colour; the i
 supplies none. There is no top bar — navigation floats as a frosted pill, card metadata
 sits over the poster instead of under it, and the billboard runs edge to edge.
 
-> **Built, not yet released.** Every module in `src/` is written and `dist/` is built for
-> both profiles. Still outstanding before `v1.0.0`: the embedded font (see below) and the
-> test pass on the real server in `PLAN.md` section 6.
+> **Built, not yet released.** Every module in `src/` is written, the font is embedded, and
+> `dist/` is built for both profiles. The one thing left before `v1.0.0` is the test pass on
+> the real server in `PLAN.md` section 6.
 
 ## Install
 
@@ -61,11 +61,28 @@ is a window, not a cheaper pane.
 
 ## Typography
 
-The theme asks for **Manrope** and currently falls back to `system-ui`. The font is meant to
-be self-hosted and embedded as a `data:` URI in `src/03-fonts.css` &mdash; see `PLAN.md`
-section 3a for why a relative `url()` cannot work across both profiles. That file is still a
-stub, so until it is filled in the theme renders in the system UI font. Everything else is
-unaffected.
+**Manrope**, self-hosted and embedded &mdash; no request leaves the server to render this
+theme, and no Google Fonts dependency.
+
+The font ships in this repo: `assets/manrope-latin.woff2` and `assets/manrope-latin-ext.woff2`
+(Manrope v20, variable `wght 200-800`, the subsets Google Fonts serves), redistributed under
+the SIL Open Font License 1.1 with `assets/OFL.txt` alongside, as that licence requires.
+
+`src/03-fonts.css` is **generated** from those files &mdash; do not edit it:
+
+```
+python build/embed-font.py            # regenerate
+python build/embed-font.py --check    # verify it matches assets/
+```
+
+They are embedded as `data:` URIs rather than referenced with `url()` because a relative URL
+resolves against whichever origin served the stylesheet, and that differs between the two
+profiles &mdash; jsDelivr for Custom CSS, your Jellyfin host for standalone. See `PLAN.md`
+section 3a. It costs about 54 KB of the built file and buys a theme with no external
+dependency at all.
+
+`unicode-range` is kept per subset, so anything outside Latin falls back through the rest of
+the stack in `--cg-font` rather than rendering as boxes.
 
 ## Accents
 
@@ -123,9 +140,8 @@ a port, not a no-op.
 
 ## Open questions
 
-Three, all recorded where the work is:
+Two, both recorded where the work is:
 
-- **The font is not embedded yet.** `src/03-fonts.css` is still a stub; see Typography above.
 - **The detail page keeps its poster column.** The scaffold note for `src/30-detail.css` said
   "no poster column", but that is not one of the four structural moves in `PLAN.md` section 4,
   so the poster stayed and became a floating card. Worth checking against the deck.

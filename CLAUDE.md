@@ -25,16 +25,17 @@ _Last updated: 2026-09-10._
 - **Tags:** none yet. First release will be `cinematic-glass-v1.0.0`.
 - **Cinematic Glass is written, and untested on a real server.** All twelve modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
-  builds both profiles (~88 KB, ~33 KB minified). `accents/` is still just the template,
-  which is the settled decision, not an omission.
-- **Three things stand between here and `cinematic-glass-v1.0.0`:**
-  1. `src/03-fonts.css` is still a stub — it needs the Manrope variable woff2 downloaded
-     and embedded as a `data:` URI (`PLAN.md` section 3a). Until then the theme falls back
-     to `system-ui`, which is the only thing about it that is visibly unfinished.
-  2. The `PLAN.md` section 6 test pass on the real server. Everything so far was verified
+  builds both profiles (~142 KB, ~86 KB minified — the font is most of that). `accents/` is
+  still just the template, which is the settled decision, not an omission.
+- **Manrope is committed and embedded.** `themes/cinematic-glass/assets/*.woff2` (v20,
+  variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
+  `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
+  `python build/embed-font.py`. The theme has no external dependency at runtime.
+- **Two things stand between here and `cinematic-glass-v1.0.0`:**
+  1. The `PLAN.md` section 6 test pass on the real server. Everything so far was verified
      against fixtures rebuilt from the v10.11.8 stylesheets — good for catching specificity
      and parse failures, no substitute for the real DOM.
-  3. Tag and publish.
+  2. Tag and publish.
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
   `PLAN.md` before section 3: the theme overrides the Display-settings theme picker.
@@ -100,7 +101,9 @@ at the target version — it doubles as the canonical list of ~102 themable lega
   committing. It masks comments first, so a comment may name the stock value a variable
   replaces without reading as a colour literal.
 - **`dist/` is committed on purpose** — jsDelivr serves straight from the repo. Never edit
-  it by hand.
+  it by hand. Same for `src/03-fonts.css`, which is generated from `assets/`.
+- **`.gitattributes` normalises everything to LF**, so any new binary asset needs a
+  `binary` line there or git will corrupt it. `*.woff2` is already covered.
 - **Pin tags, never branches**, in install URLs. jsDelivr caches a tag permanently and a
   branch for 7 days; a tag also can't deliver a half-finished push.
 
@@ -112,6 +115,9 @@ python build/build.py                      # both profiles
 python build/build.py --profile custom-css
 python build/build.py --min                # also emit .min.css
 python build/build.py --check              # lint only, writes nothing
+
+python build/embed-font.py                 # regenerate src/03-fonts.css from assets/*.woff2
+python build/embed-font.py --check         # verify it is in step with assets/ (writes nothing)
 
 python design/src/assemble.py              # regenerate the direction deck (from repo root)
 ```
