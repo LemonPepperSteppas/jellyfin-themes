@@ -1247,13 +1247,212 @@ h1, h2, h3,
 
 /* ---- src/30-detail.css ----------------------------------------- */
 /* ==========================================================================
-   Cinematic Glass - Item detail: full-bleed backdrop, logo-art title, no poster column.
+   Cinematic Glass - Item detail: full-bleed backdrop, logo-art title, glass media-info chips.
    --------------------------------------------------------------------------
    Owns: .detailPagePrimaryContainer, .detailRibbon, .itemBackdrop, .detailPageContent
-   
-   TODO: Jellyfin renders .itemBackdrop already - lean on it rather than adding an element.
-         Media-info block becomes floating glass chips.
+
+   From librarybrowser.scss at v10.11.8:
+
+     - .itemBackdrop is height: 40vh with `background-attachment: fixed`, and
+       `.layout-tv & { display: none }` - there is NO backdrop on TV at all, so
+       nothing here may depend on one existing.
+     - .detailLogo is absolutely placed at top: 10vh / right: 25vw and hidden
+       on mobile, on TV, and below 68.75em.
+     - .detailPageContent is padded 32.45vw on the leading side to clear the
+       poster, which floats with `top: 20%`.
+
+   ONE DEVIATION, flagged rather than made quietly. This file's scaffold note
+   said "no poster column". PLAN.md section 4 is the locked list of what makes
+   this direction, and removing the poster is not on it - the four moves are
+   the pill, the full-bleed billboard, metadata over artwork, and real depth.
+   Dropping the poster would also mean unpicking that 32.45vw padding across
+   three breakpoints. So the poster stays and is treated as a floating card
+   with real depth, which serves move #4. Worth a second opinion against the
+   deck; it is a visible choice, not a detail.
    ========================================================================== */
+
+/* --- The hero ------------------------------------------------------------
+   Taller than stock, and dissolving into the page rather than ending on a
+   hard edge. --cg-scrim-hero fades to the ground colour, so there is no seam
+   between artwork and page - which is the whole point of move #2. */
+
+.itemBackdrop {
+    height: 62vh;
+    border-radius: 0;
+}
+
+.layout-mobile .itemBackdrop {
+    height: 42vh;
+}
+
+/* The scrim goes on a pseudo-element rather than in the background shorthand,
+   because .itemBackdrop's background-image is the artwork itself, set inline
+   by the item page. */
+
+.itemBackdrop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--cg-scrim-hero);
+}
+
+/* The leading edge gets a second, softer ramp so text over the artwork has
+   somewhere to sit at any window width. */
+
+.layout-desktop .itemBackdrop::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--cg-scrim-hero-side);
+}
+
+.itemBackdropProgressBar {
+    z-index: var(--cg-z-scrim);
+}
+
+/* --- Ribbon --------------------------------------------------------------
+   Stock is a translucent grey band. Here it is glass, so it reads as another
+   pane of the same material as the header pill. */
+
+.detailRibbon {
+    background: var(--cg-glass-chrome);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+    border-bottom: 1px solid var(--cg-border);
+}
+
+.layout-tv .detailRibbon {
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 0;
+}
+
+/* --- Containers ----------------------------------------------------------
+   .noBackdropTransparency is the class Jellyfin sets when the user has turned
+   backdrops off, and it is also what options/no-backdrops.css leans on. Both
+   need the containers to fall back to a solid ground. */
+
+.noBackdropTransparency .detailPagePrimaryContainer,
+.noBackdropTransparency .detailPageSecondaryContainer {
+    background-color: var(--cg-ground);
+}
+
+/* --- Poster --------------------------------------------------------------
+   Move #4: real depth. The poster is the one element on the page that should
+   look like a physical object sitting on the artwork. */
+
+.detailImageContainer .card .cardBox {
+    border-radius: var(--cg-radius-panel);
+    box-shadow: var(--cg-shadow-3);
+    overflow: hidden;
+}
+
+/* The poster is artwork, so it keeps its own metadata off it - the card
+   overlay from 20-cards.css would put a scrim on a poster that is already
+   the focal point of the page. */
+
+.detailImageContainer .card .cardFooter {
+    display: none;
+}
+
+/* --- Title and logo art -------------------------------------------------- */
+
+.detailLogo {
+    filter: drop-shadow(0 .12em .5em rgb(0, 0, 0));
+}
+
+.itemName,
+.parentName {
+    font-family: var(--cg-font-display);
+    letter-spacing: var(--cg-track-display);
+}
+
+h1.itemName {
+    font-weight: var(--cg-fw-display);
+    line-height: var(--cg-lh-tight);
+}
+
+.parentName {
+    color: var(--cg-muted);
+    font-weight: var(--cg-fw-medium);
+    letter-spacing: var(--cg-track-tight);
+}
+
+/* --- Media-info chips ----------------------------------------------------
+   Stock .mediaInfoText is a flat lilac-grey tint. As chips they read as a row
+   of small glass tiles, which is the direction's vocabulary and also groups
+   the runtime / rating / codec facts visually. */
+
+.mediaInfoText {
+    color: var(--cg-text);
+    background: var(--cg-glass);
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    padding: .18em .7em;
+    font-size: var(--cg-fs-sm);
+    font-weight: var(--cg-fw-medium);
+    letter-spacing: var(--cg-track-tight);
+}
+
+.mediaInfoItem {
+    color: var(--cg-muted);
+}
+
+.mediaInfoIcons {
+    align-items: center;
+    gap: .4em;
+}
+
+.starRatingContainer .material-icons.star {
+    color: var(--cg-star);
+}
+
+/* --- Buttons -------------------------------------------------------------
+   The floating play button is the one true accent fill on the page: light
+   surface, dark ink. Matching upstream's selector shape so specificity ties
+   and load order decides. */
+
+.emby-button.detailFloatingButton {
+    background-color: var(--cg-accent);
+    color: var(--cg-accent-ink);
+    box-shadow: var(--cg-shadow-2);
+}
+
+.layout-tv .emby-button.detailFloatingButton:focus {
+    background-color: var(--cg-accent-light);
+    color: var(--cg-accent-ink);
+}
+
+.btnPlaySimple {
+    border-radius: var(--cg-radius-pill);
+}
+
+/* --- Detail tables and sidebar ------------------------------------------- */
+
+.detailTableBodyRow-shaded:nth-child(even) {
+    background: var(--cg-state-hover);
+}
+
+.metadataSidebarIcon {
+    color: var(--cg-muted);
+}
+
+.itemSelectionPanel {
+    border: 1px solid var(--cg-accent);
+    border-radius: var(--cg-radius-sm);
+}
+
+.selectionCommandsPanel {
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+}
+
+.detailSectionContent a {
+    color: inherit;
+}
 
 /* ---- src/40-episodes.css --------------------------------------- */
 /* ==========================================================================
