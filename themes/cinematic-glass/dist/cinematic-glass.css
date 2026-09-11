@@ -1558,18 +1558,61 @@ h1, h2, h3,
     background-color: var(--cg-ground);
 }
 
-/* --- Title --------------------------------------------------------------
-   The deck's hero title is TEXT set in the display face, not logo art - and
-   Jellyfin's .detailLogo floats top-right at top:10vh/right:25vw, which is
-   nowhere near where the deck puts the title. Rather than drag the logo image
-   across the hero, the logo art is dropped and the item's own name carries it,
-   which is what the deck shows.
+/* --- Title: logo art, falling back to text ------------------------------
+   v0.0.2 hid .detailLogo and let the text name carry the hero, on the
+   reasoning that the deck's `.bb-logo` is a text element. That was reading a
+   mockup limitation as a design decision - a static HTML deck has no per-item
+   logo assets to show. The deck's own comment on that block says what was
+   actually meant:
 
-   To bring logo art back instead, delete this rule and give .detailLogo a
-   bottom-left position - but then the text title needs hiding or they collide. */
+       /* billboard: full-bleed, logo-art title, big buttons *(/)
 
-.detailLogo {
-    display: none;
+   So: logo art when the item has one, the text name when it does not.
+
+   Jellyfin makes that switchable in CSS. From src/controllers/itemDetails/index.js:
+
+       const url = logoImageUrl(item, apiClient, {});
+       if (url) { detailLogo.classList.remove('hide'); … }
+       else     { detailLogo.classList.add('hide'); }
+
+   `.hide` is the signal. `.detailLogo` sits before `.detailPageWrapperContainer`
+   as a sibling, so a `~` combinator reaches the title - no :has(), which the
+   webOS and Tizen browsers cannot be relied on for.
+
+   logoImageUrl falls back to item.ParentLogoImageTag, so an episode shows its
+   series logo while the h3 episode title stays - which is the right split. */
+
+.itemDetailPage .detailLogo:not(.hide) {
+    top: calc(58vh - 10em);
+    right: auto;
+    left: 3.3%;
+    width: min(34vw, 26em);
+    height: 6.6em;
+    background-position: left bottom;
+    background-size: contain;
+    filter: var(--cg-drop-logo);
+}
+
+.layout-mobile .itemDetailPage .detailLogo:not(.hide) {
+    top: calc(46vh - 8em);
+    height: 5em;
+}
+
+/* The text name is hidden with VISIBILITY, not display, and its width is left
+   alone. The ribbon's height is coupled to its negative margin (see the Ribbon
+   note above), so collapsing this box would lift the ribbon off the hero's
+   bottom edge. Keeping the box costs a gap before the buttons and keeps the
+   geometry that three earlier fixes went into.
+
+   Scoped to exactly the conditions where the logo is actually rendered:
+   librarybrowser.scss hides .detailLogo on mobile, on TV, and below 68.75em,
+   and `.hide` alone does not tell us that - without this guard a narrow window
+   would show neither logo nor title. */
+
+@media all and (min-width: 68.75em) {
+    .layout-desktop .detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1 {
+        visibility: hidden;
+    }
 }
 
 /* 52px is the deck's literal value for `.bb-logo` on the detail screen, and
