@@ -22,15 +22,16 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
-- **Tags:** `cinematic-glass-v0.0.5` is current (2026-09-10). Deliberately `0.x` &mdash; the
+- **Tags:** `cinematic-glass-v0.0.6` is current (2026-09-10). Deliberately `0.x` &mdash; the
   design is locked but the feature set is not, so `v1.0.0` is still free.
   Everything before it is superseded and should not be pinned: v0.0.1 kept a poster
   column on the item page, v0.0.2 predates the centred ElegantFin-derived detail
-  composition and the removal of the page veil, v0.0.3 predates the sign-in card, and
-  v0.0.4 still clipped every card's hover shadow square (item 8 below).
+  composition and the removal of the page veil, v0.0.3 predates the sign-in card,
+  v0.0.4 still clipped every card's hover shadow square (item 8), and v0.0.5 had the
+  mobile hero ending on a hard line and the header overlapping page content (item 9).
 - **Cinematic Glass is released and verified on the real server.** All thirteen modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
-  builds both profiles (~181 KB, ~94 KB minified — the font is most of that). `accents/` is
+  builds both profiles (~186 KB, ~95 KB minified — the font is most of that). `accents/` is
   still just the template, which is the settled decision, not an omission.
 - **Manrope is committed and embedded.** `themes/cinematic-glass/assets/*.woff2` (v20,
   variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
@@ -48,6 +49,10 @@ _Last updated: 2026-09-10._
 - **One decision worth a second opinion**, flagged in the file that made it:
   `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp, and
   `PLAN.md` section 3 specifies no such tokens.
+- **The detail page's mobile hero is built differently from desktop's** and that is not
+  drift — see item 9 below and `PLAN.md` section 6, findings 12-14. It shows the same
+  composition (logo art over fading artwork, centred misc info and buttons) by a
+  different mechanism, because the markup underneath is different.
 - **Sign-in is the deck's single glass card**, not Jellyfin's full-bleed picker. The
   container it hangs on is the wrapper `div.padded-left.padded-right.padded-bottom-page`
   inside `#loginPage` - an earlier version of `60-login.css` claimed no such element
@@ -78,7 +83,7 @@ design/     the art-direction deck (generated: python design/src/assemble.py)
 research/   how 10.11 theming actually works + generated reference files
 ```
 
-## The eight things that will make you write wrong CSS
+## The nine things that will make you write wrong CSS
 
 Read `research/jellyfin-10.11-theming.md` before touching a theme. The short version:
 
@@ -127,6 +132,18 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    enumerable from script, and `.itemsContainer .card` (0,2,0) is what measured as
    taking effect. Full write-up: `research/jellyfin-10.11-theming.md` §2c.
 
+9. **Mobile is not a narrower desktop; on the detail page it is the mirror image.** On
+   desktop the artwork is `.backdropImage`, a full-viewport layer, and `.itemBackdrop` is
+   an empty spacer — so the hero's fade is a gradient on the content wrapper. Under
+   `.layout-mobile`, `librarybrowser.scss` puts the picture IN `.itemBackdrop` with no
+   layer underneath, so that gradient has nothing to reveal and the fade must be a mask
+   on `.itemBackdrop` itself. Mobile also pads the hero left by 37.5% to clear a poster
+   (`header-poster-padding`), which this theme hides. **And no page reserves
+   `env(safe-area-inset-top)`** even though `.skinHeader` takes it, so on a notched phone
+   the header lands on the content; `99-fixes.css` re-reserves it. Check `.layout-mobile`
+   separately for anything structural — a narrow desktop window is not the same test,
+   because Jellyfin picks the layout from the user agent, not the width.
+
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:
 `node research/reference/generate-mui-variables.cjs`, needs `@mui/material@6.4.12`).
@@ -174,7 +191,7 @@ python design/src/assemble.py              # regenerate the direction deck (from
 ## Settled decisions — do not relitigate without being asked
 
 - **One repo at the root, not one per theme.** `research/` and `design/` are shared by
-  every theme. Per-theme *tags* (`cinematic-glass-v0.0.5`) give independent release
+  every theme. Per-theme *tags* (`cinematic-glass-v0.0.6`) give independent release
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.

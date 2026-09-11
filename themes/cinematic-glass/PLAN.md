@@ -1,6 +1,6 @@
 # Cinematic Glass — build plan
 
-Status: **released as `cinematic-glass-v0.0.5`** (2026-09-10). Every module in `src/`, all
+Status: **released as `cinematic-glass-v0.0.6`** (2026-09-10). Every module in `src/`, all
 five options and the standalone base layer are done, Manrope is embedded and committed,
 and the theme has been through the section 6 test pass on the live server.
 
@@ -224,8 +224,10 @@ Note `#/login` renders while signed in, so sign-in needs no signed-out browser a
 
 ### What live review found
 
-Eleven bugs so far. **One** of them was visible to a fixture built from the v10.11.8
-stylesheets. That ratio is the argument for this section existing:
+Fourteen bugs so far. **One** was visible to a fixture built blind from the v10.11.8
+stylesheets; the last three were found by building a fixture FROM THE UPSTREAM RULES
+READ AT THE TAG, which is a different thing and is how the mobile work was done at all.
+That distinction is the argument for this section existing:
 
 1. `.cardFooter` not emitted by the card types on home — move #3 silently did nothing.
 2. …and then the *opposite* on sign-in, where `.cardFooter` IS used. Both shapes exist.
@@ -245,6 +247,19 @@ stylesheets. That ratio is the argument for this section existing:
 11. **`contain: content` on `.card` clipping every hover shadow and ring square to the
     card's box.** Paint containment clips what an element draws. Cost two wrong diagnoses
     before it was measured properly; recorded as item 8 in `CLAUDE.md`.
+12. The mobile detail hero ending on a hard horizontal line. Mobile is the MIRROR IMAGE
+    of desktop: there the artwork is `.backdropImage` and `.itemBackdrop` is an empty
+    spacer, so the fade is a gradient on the content wrapper; under `.layout-mobile`
+    the picture is IN `.itemBackdrop` with nothing underneath, so the fade has to be a
+    mask on that element. Recorded as item 9 in `CLAUDE.md`.
+13. The mobile hero padded left 37.5% to clear a poster this theme hides, on
+    `.infoWrapper` and `.mainDetailButtons` — then zeroed on the buttons alone below
+    32em, so the title sat pushed right while the buttons sat flush left.
+14. **Every page clearance under the fixed header being wrong.** Upstream's are fixed
+    `em` values and none of them reserve `env(safe-area-inset-top)`, which the header
+    itself does take — so on a notched phone the header lands on the content. Our taller
+    pill made it worse, and cancelling upstream's `-4.3em` tab pull-up meant DESKTOP home
+    was overlapping by 61px too. Measured, not reported: the owner only saw the phone.
 
 Nine screens, on the live server, signed in as a normal user *and* as admin:
 
@@ -263,7 +278,7 @@ renderer during mockup review, and TV boxes are weaker than this laptop. Ship it
 **A. Custom CSS (primary).** CDN `@import` into **Dashboard → Branding → Custom CSS**:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.5/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.6/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 `@import` must be the first rule in the block. Options go on the lines *after* it.
