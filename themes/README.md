@@ -5,7 +5,7 @@ can be added without touching the first.
 
 ```
 themes/
-  cinematic-glass/     picked by the server's users, Sept 2026; released v0.0.4
+  cinematic-glass/     picked by the server's users, Sept 2026; released v0.0.5
   <next-theme>/        copy the layout below
 ```
 
@@ -51,7 +51,7 @@ tokens are not doing enough work.
 Tags are prefixed per theme, so one theme's release never moves another theme's URL:
 
 ```
-cinematic-glass-v0.0.4
+cinematic-glass-v0.0.5
 <next-theme>-v0.0.1
 ```
 

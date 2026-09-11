@@ -22,14 +22,15 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
-- **Tags:** `cinematic-glass-v0.0.4` is current (2026-09-10). Deliberately `0.x` &mdash; the
+- **Tags:** `cinematic-glass-v0.0.5` is current (2026-09-10). Deliberately `0.x` &mdash; the
   design is locked but the feature set is not, so `v1.0.0` is still free.
   Everything before it is superseded and should not be pinned: v0.0.1 kept a poster
   column on the item page, v0.0.2 predates the centred ElegantFin-derived detail
-  composition and the removal of the page veil, and v0.0.3 predates the sign-in card.
+  composition and the removal of the page veil, v0.0.3 predates the sign-in card, and
+  v0.0.4 still clipped every card's hover shadow square (item 8 below).
 - **Cinematic Glass is released and verified on the real server.** All thirteen modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
-  builds both profiles (~177 KB, ~94 KB minified — the font is most of that). `accents/` is
+  builds both profiles (~181 KB, ~94 KB minified — the font is most of that). `accents/` is
   still just the template, which is the settled decision, not an omission.
 - **Manrope is committed and embedded.** `themes/cinematic-glass/assets/*.woff2` (v20,
   variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
@@ -115,6 +116,16 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    proves nothing about whether a given card type renders it. `20-cards.css` handles
    both. Read the live DOM, on more than one page.
 
+8. **`contain` clips what you draw.** `.card` computes to `contain: content`
+   (= `layout paint style`) and `.skinHeader` to `contain: layout style paint`. **Paint
+   containment clips everything the element draws to its own box, `box-shadow`
+   included** — so a hover ring or lift shadow that reaches outside the box is sliced
+   flat, with no error and no sign of it in the rule you wrote. `20-cards.css` drops
+   `paint` on cards; `10-chrome.css` had to work around the same thing on the header.
+   Note the specificity: a bare `.card` **loses** — the winning declaration is not
+   enumerable from script, and `.itemsContainer .card` (0,2,0) is what measured as
+   taking effect.
+
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:
 `node research/reference/generate-mui-variables.cjs`, needs `@mui/material@6.4.12`).
@@ -162,7 +173,7 @@ python design/src/assemble.py              # regenerate the direction deck (from
 ## Settled decisions — do not relitigate without being asked
 
 - **One repo at the root, not one per theme.** `research/` and `design/` are shared by
-  every theme. Per-theme *tags* (`cinematic-glass-v0.0.4`) give independent release
+  every theme. Per-theme *tags* (`cinematic-glass-v0.0.5`) give independent release
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.

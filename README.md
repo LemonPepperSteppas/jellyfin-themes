@@ -14,9 +14,9 @@ CLAUDE.md    project state and conventions; start here
 
 | Theme | Status |
 |---|---|
-| [Cinematic Glass](themes/cinematic-glass/) | released, `cinematic-glass-v0.0.4` |
+| [Cinematic Glass](themes/cinematic-glass/) | released, `cinematic-glass-v0.0.5` |
 
-Themes are released under per-theme tags (`cinematic-glass-v0.0.4`) and served by jsDelivr
+Themes are released under per-theme tags (`cinematic-glass-v0.0.5`) and served by jsDelivr
 straight from this repo, so one theme's release never moves another's URL.
 
 ## Install
@@ -24,7 +24,7 @@ straight from this repo, so one theme's release never moves another's URL.
 Dashboard &rarr; **Branding** &rarr; Custom CSS, as the first line in the box:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.4/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.5/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 Per-user instead: Settings &rarr; Display &rarr; Custom CSS, which is injected after the

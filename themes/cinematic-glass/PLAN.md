@@ -1,6 +1,6 @@
 # Cinematic Glass — build plan
 
-Status: **released as `cinematic-glass-v0.0.4`** (2026-09-10). Every module in `src/`, all
+Status: **released as `cinematic-glass-v0.0.5`** (2026-09-10). Every module in `src/`, all
 five options and the standalone base layer are done, Manrope is embedded and committed,
 and the theme has been through the section 6 test pass on the live server.
 
@@ -246,7 +246,7 @@ renderer during mockup review, and TV boxes are weaker than this laptop. Ship it
 **A. Custom CSS (primary).** CDN `@import` into **Dashboard → Branding → Custom CSS**:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.4/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.5/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 `@import` must be the first rule in the block. Options go on the lines *after* it.
