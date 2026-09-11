@@ -138,17 +138,32 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    enumerable from script, and `.itemsContainer .card` (0,2,0) is what measured as
    taking effect. Full write-up: `research/jellyfin-10.11-theming.md` §2c.
 
-9. **Mobile is not a narrower desktop; on the detail page it is the mirror image.** On
-   desktop the artwork is `.backdropImage`, a full-viewport layer, and `.itemBackdrop` is
-   an empty spacer — so the hero's fade is a gradient on the content wrapper. Under
-   `.layout-mobile`, `librarybrowser.scss` puts the picture IN `.itemBackdrop` with no
-   layer underneath, so that gradient has nothing to reveal and the fade must be a mask
-   on `.itemBackdrop` itself. Mobile also pads the hero left by 37.5% to clear a poster
-   (`header-poster-padding`), which this theme hides. **And no page reserves
-   `env(safe-area-inset-top)`** even though `.skinHeader` takes it, so on a notched phone
-   the header lands on the content; `99-fixes.css` re-reserves it. Check `.layout-mobile`
-   separately for anything structural — a narrow desktop window is not the same test,
-   because Jellyfin picks the layout from the user agent, not the width.
+9. **Mobile is not a narrower desktop, and on the detail page the difference is set in
+   JAVASCRIPT, not CSS.** `controllers/itemDetails/index.js`:
+
+       if (!layoutManager.mobile && innerWidth >= 1000) setBackdrops(...)
+       else clearBackdrop();                      // <- mobile: the layer is destroyed
+       if (layoutManager.mobile) renderHeaderBackdrop(...)   // image onto #itemBackdrop
+
+   So desktop's artwork is `.backdropImage`, a full-viewport layer inside the fixed
+   `.backdropContainer`, and `.itemBackdrop` is a bare spacer; on mobile that layer does
+   not exist at all and the image is painted onto `.itemBackdrop`. **No stylesheet can
+   bring the layer back** — `30-detail.css` instead makes `.itemBackdrop` itself fixed and
+   full-viewport, and moves the spacing onto the wrapper, so both layouts end up with one
+   mechanism: artwork behind everything, the wrapper's `--cg-veil-page` gradient scrolling
+   up over it. Two traps in doing that, both measured: the layer must be `z-index: 0`, not
+   `-1`, or it falls behind **body's own background** and the page renders black; and the
+   wrapper's top margin **collapses out through `.itemDetailPage`** (upstream gives it
+   `padding-top: 0 !important` and no border), dragging the page and `.detailLogo`'s anchor
+   with it — `display: flow-root` on the page stops that.
+
+   Mobile also pads the hero left by 37.5% to clear a poster (`header-poster-padding`),
+   which this theme hides. **And no page reserves `env(safe-area-inset-top)`** even though
+   `.skinHeader` takes it, so on a notched phone the header lands on the content;
+   `99-fixes.css` re-reserves it — excluding `.itemDetailPage`, which IS a `.libraryPage`
+   and whose hero must run under the pill. Check `.layout-mobile` separately for anything
+   structural: a narrow desktop window is not the same test, because Jellyfin picks the
+   layout from the user agent, not the width.
 
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:

@@ -59,28 +59,84 @@
     background-image: none;
 }
 
-/* Mobile carries the artwork ON this element (see --cg-fade-backdrop), so the
-   fade is a mask here rather than a gradient on the wrapper below. Without it
-   the picture stops dead on a horizontal line and the ribbon's slab starts.
+/* MOBILE USES DESKTOP'S MECHANISM, because on mobile Jellyfin does not build
+   the layer desktop's mechanism relies on.
 
-   HEIGHT MATCHES DESKTOP'S, by arithmetic rather than by eye. Desktop is
-   `calc(100vh - 27vh - 14vh)` = 59vh, measured from the top of the viewport.
-   Mobile's backdrop starts 3rem down - librarybrowser.scss gives it
-   `margin-top: 3rem` to clear the header - so the same expression minus that
-   margin puts its BOTTOM EDGE at the same 59vh, which is what the eye reads as
-   "the hero fills the screen". At 45vh it was visibly the smaller of the two.
+   Read from src/controllers/itemDetails/index.js at v10.11.8:
 
-   --hero-h is local to this rule set on purpose: the logo below has to land
-   against the same number, and two hand-written calcs would drift. */
+       function renderBackdrop(page, item) {
+           if (!layoutManager.mobile && innerWidth >= 1000) { setBackdrops(...) }
+           else { clearBackdrop(); }          // <- mobile
+       }
+       if (layoutManager.mobile) { renderHeaderBackdrop(page, item, apiClient); }
+
+   So on desktop the artwork is .backdropImage - an absolute layer filling
+   .backdropContainer, which is `position: fixed; inset: 0; z-index: -1` - and
+   it is THE WHOLE PAGE BACKGROUND, with .itemBackdrop left as a bare spacer
+   that only positions the ribbon. Verified on the real server: .backdropImage
+   measured 1054x759 on a 1064x759 window, the artwork running under the
+   floating pill and behind the overview.
+
+   On mobile clearBackdrop() destroys that layer outright and renderHeaderBackdrop
+   paints the image onto #itemBackdrop instead, which CSS then sizes as a band.
+   No stylesheet can bring the layer back - the element does not exist. What CSS
+   CAN do is make the one element that has the image behave like it: fixed,
+   full-viewport, behind everything. Then the spacing that .itemBackdrop used to
+   provide in flow moves onto the wrapper, exactly as desktop's spacer does.
+
+   Consequences of this, all deliberate:
+     - The 3rem top margin goes. It existed to push a band clear of the header;
+       a full-bleed background is supposed to run under the header, as desktop's
+       does.
+     - The mask goes. It faded a band into the page; with artwork behind the
+       whole page the fade is the wrapper's own gradient scrolling over it,
+       which is what --cg-veil-page is and what desktop uses. One mechanism for
+       both layouts now, not two. */
+
+/* --hero-h is where the reading matter begins: the same expression desktop uses
+   for its .itemBackdrop spacer, so both layouts break at the same point of the
+   frame. The wrapper's offset and the logo's anchor both read it, because two
+   hand-written copies of one number drift. */
 
 .layout-mobile .itemDetailPage {
-    --hero-h: calc(100vh - 27vh - 14vh - 3rem);
+    --hero-h: calc(100vh - 27vh - 14vh);
+
+    /* flow-root, so the wrapper's top margin below cannot COLLAPSE out through
+       this element. Upstream gives .itemDetailPage `padding-top: 0 !important`
+       and no border, which is exactly the condition for a first child's top
+       margin to escape its parent: measured, the whole page slid down to
+       --hero-h and took .detailLogo's anchor with it, putting the logo a
+       screen and a half below the fold. A BFC keeps the margin inside, and
+       costs nothing else - the page computes to `block` otherwise. */
+    display: flow-root;
 }
 
 .layout-mobile .itemDetailPage .itemBackdrop {
-    height: var(--hero-h);
-    -webkit-mask-image: var(--cg-fade-backdrop);
-    mask-image: var(--cg-fade-backdrop);
+    position: fixed;
+    inset: 0;
+    z-index: var(--cg-z-backdrop);
+    width: 100%;
+    height: 100vh;
+    margin-top: 0;
+    background-position: center center;
+    background-size: cover;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+/* The layer is at z 0 and the reading matter is lifted to 1, rather than the
+   layer going to -1 the way upstream's .backdropContainer does. Measured: a
+   negative z-index puts the artwork behind BODY'S OWN BACKGROUND, which is
+   opaque, so the page came out black. z 0 keeps it in the positioned layer
+   above every page-level fill and below anything given a z of its own.
+
+   The wrapper has to be positioned to take a z-index at all; .detailRibbon is
+   already `position: relative; z-index: 2` upstream, but .detailPageContent
+   below it is static and would otherwise sit UNDER the artwork. */
+
+.layout-mobile .itemDetailPage .detailPageWrapperContainer {
+    position: relative;
+    z-index: var(--cg-z-base);
 }
 
 /* The fade. Transparent where the hero is, so the artwork reads at full
@@ -91,9 +147,27 @@
     padding-top: 0;
 }
 
-.layout-desktop .itemDetailPage .detailPageWrapperContainer {
+/* ONE mechanism now, both layouts: the wrapper's own gradient scrolls up over
+   the fixed artwork and covers it progressively. Desktop always did this; mobile
+   used to need a mask instead, because its artwork was a band rather than a
+   layer. It is a layer on both now.
+
+   min-height for both too: the gradient's stops are measured down its own box,
+   so a short overview would leave the ramp unfinished and the reading matter
+   sitting on bright artwork. 46vh guarantees it completes. */
+
+.itemDetailPage .detailPageWrapperContainer {
     min-height: 46vh;
     background-image: var(--cg-veil-page);
+}
+
+/* Desktop's spacer is .itemBackdrop, still in flow at --hero-h. Mobile's has
+   just left the flow to become the background, so the same offset moves here.
+   margin, not padding: the gradient's box then starts where the reading matter
+   does, which is what makes it transparent over the hero. */
+
+.layout-mobile .itemDetailPage .detailPageWrapperContainer {
+    margin-top: var(--hero-h);
 }
 
 /* --- The stack ----------------------------------------------------------
@@ -126,16 +200,13 @@
     margin-top: 0;
 }
 
-/* Mobile's ribbon is `display: block; position: relative` in flow under the
-   backdrop - none of desktop's `margin-top: -7.2em` applies - so it has to be
-   lifted deliberately. -7em puts the title inside the masked region - the
-   bottom 45% of the backdrop, since --cg-fade-backdrop is opaque to 55% - so
-   it reads over the fading artwork the way it does on desktop instead of below
-   it on flat ground. The mask's stops are percentages, so this holds at any
-   hero height. */
+/* No lift on mobile any more. It existed to drag the title back up onto a band
+   of artwork that ended partway down the screen; the artwork now runs behind
+   the whole page, so the title sits below --hero-h and is over it regardless -
+   which is exactly where desktop's sits. */
 
 .layout-mobile .itemDetailPage .detailRibbon {
-    margin-top: -7em;
+    margin-top: 0;
 }
 
 /* --- Mobile gets the desktop composition --------------------------------
@@ -180,7 +251,7 @@
 
 .layout-mobile .itemDetailPage .detailLogo:not(.hide) {
     display: block;
-    top: calc(var(--hero-h) - 7em);
+    top: var(--hero-h);
     right: auto;
     left: 5%;
     width: 90%;
