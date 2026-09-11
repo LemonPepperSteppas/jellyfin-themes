@@ -1709,6 +1709,64 @@ h1, h2, h3,
     margin-top: -7em;
 }
 
+/* --- Mobile gets the desktop composition --------------------------------
+   It did not, and the reason was a poster that is not there. Upstream pads
+   the hero left to clear the poster art - `header-poster-padding`, 37.5% on a
+   phone - on .infoWrapper AND on .mainDetailButtons, then zeroes it on the
+   buttons alone below 32em. So on a phone the title sat pushed right by more
+   than a third of the screen while the buttons sat flush left: two different
+   alignments in one hero, and neither of them centred.
+
+   .detailImageContainer is display: none in this theme, so there is nothing
+   to clear on any layout. Both paddings go, and .infoWrapper's grid - which
+   this file already sets for every layout - then centres the stack the way it
+   does on desktop.
+
+   Specificity: upstream writes these as `.layout-mobile [dir="ltr"] .x`,
+   which is (0,3,0). Matching that and loading later is what wins; a bare
+   `.itemDetailPage .mainDetailButtons` at (0,2,0) loses, which is why the
+   centring rule further down this file was not reaching mobile. */
+
+.layout-mobile .itemDetailPage .infoWrapper,
+.layout-mobile .itemDetailPage .mainDetailButtons {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* --- Logo art on mobile -------------------------------------------------
+   librarybrowser.scss hides .detailLogo under .layout-mobile and again below
+   68.75em. Desktop shows logo art with the text name as fallback, and "the
+   same as desktop" means the phone should too.
+
+   Geometry follows the desktop rule's trick: translateY(-100%) makes `top`
+   the logo's BOTTOM edge, so the artwork can be any height without moving
+   the baseline. Anchored to the foot of the backdrop, less the ribbon's lift,
+   so it lands where the title would have been.
+
+   The text name is hidden only where the logo actually renders. `.detailLogo`
+   is a previous SIBLING of .detailPageWrapperContainer, so `~` reaches the
+   title without :has(), which webOS and Tizen cannot be relied on for, and
+   `.hide` - which Jellyfin sets when the item has no logo - keeps the text
+   for items that have none. */
+
+.layout-mobile .itemDetailPage .detailLogo:not(.hide) {
+    display: block;
+    top: calc(45vh - 7em);
+    right: auto;
+    left: 5%;
+    width: 90%;
+    height: 12vh;
+    margin: 0;
+    transform: translateY(-100%);
+    background-position: center bottom;
+    background-size: contain;
+    filter: var(--cg-drop-logo);
+}
+
+.layout-mobile .detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1 {
+    display: none;
+}
+
 /* --- No poster column ---------------------------------------------------
    The deck has none, and neither does ElegantFin for films. Both copies go:
    the desktop one and the mobile one inside .infoWrapper. */
@@ -1759,18 +1817,6 @@ h1, h2, h3,
     background-position: bottom;
     background-size: contain;
     filter: var(--cg-drop-logo);
-}
-
-.layout-mobile .itemDetailPage .detailLogo:not(.hide) {
-    top: 45vh;
-    left: 1em;
-    right: auto;
-    width: calc(100vw - 2em);
-    max-height: 17vh;
-    margin: auto 0;
-    transform: none;
-    background-position: bottom;
-    background-size: contain;
 }
 
 /* The text name is hidden only where the logo actually renders.
