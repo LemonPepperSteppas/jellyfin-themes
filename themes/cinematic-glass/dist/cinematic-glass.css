@@ -1483,20 +1483,33 @@ h1, h2, h3,
 }
 
 /* --- Ribbon -------------------------------------------------------------
-   Upstream lays this out as a centred flex ROW - info on one side, buttons on
-   the other. The deck stacks them bottom-left, so it becomes a column. No
-   glass here: the ribbon now sits on the artwork and the scrim is what lifts
+   Stays a flex ROW, which is upstream's layout, and this is the one place the
+   deck does not get followed exactly. The deck stacks the buttons under the
+   tagline; doing that here breaks the page.
+
+   Why: the ribbon's box height and its negative margin are coupled - the box
+   is 107px and the margin is -107.136px, and the margin is what lands its
+   bottom on the hero's. Stacking the children makes them taller than that box
+   without changing the margin, so they spill out of the bottom. Measured on an
+   episode page: the buttons ended 111px INSIDE .detailPagePrimaryContent,
+   printed over the Video / Audio / Subtitles rows.
+
+   As a row it fits the box with 20px to spare. `align-items: flex-end` sits
+   the buttons on the same baseline as the title block, which is nearer the
+   deck than upstream's `center`.
+
+   No glass: the ribbon is on the artwork now, and the hero scrim is what lifts
    the text off it. */
 
 .detailRibbon {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .5em;
+    align-items: flex-end;
+    gap: 1.5em;
     background: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border-bottom: 0;
 }
+
 
 .detailRibbon .infoWrapper {
     max-width: 44em;
@@ -1504,6 +1517,7 @@ h1, h2, h3,
 
 .detailRibbon .mainDetailButtons {
     gap: .3em;
+    flex-shrink: 0;
 }
 
 /* --- Backdrops off ------------------------------------------------------
