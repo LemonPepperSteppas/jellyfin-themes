@@ -40,27 +40,19 @@ html[data-theme] {
 
 /* THE ARTWORK IS NOT ON .backgroundContainer. Jellyfin paints it on
    .backdropImage inside .backdropContainer - a full-viewport absolute layer -
-   and .backgroundContainer sits OVER that as the veil. Worth knowing before
-   trying to style a backdrop: on an item page .itemBackdrop often carries no
-   image at all and is only a spacer.
+   and .backgroundContainer sits OVER that. Worth knowing before trying to
+   style a backdrop: on an item page .itemBackdrop often carries no image at
+   all and is only a spacer.
 
-   So the veil is a gradient rather than a flat fill, because it is the single
-   layer with the artwork behind it: nearly clear at the top so the picture
-   reads, solid ground at the bottom where text sits. Stacking separate scrims
-   to do that is what turned the detail page nearly black. */
+   The veil stays FLAT and light. An earlier pass put a gradient here and a
+   mask on .backdropImage to fade the detail hero; both were removed after
+   reading ElegantFin's source, which does neither on desktop. It fades the
+   artwork by covering it with a gradient on the CONTENT wrapper as that
+   scrolls up - see 30-detail.css. Doing it here as well just darkened the
+   picture twice. */
 
 .backgroundContainer.withBackdrop {
-    background-color: transparent;
-    background-image: var(--cg-veil-backdrop);
-}
-
-/* And the artwork itself fades out rather than being covered - a mask takes
-   the pixels away, where a scrim can only put something opaque on top. This is
-   what removes the hard horizontal edge at the bottom of a backdrop. */
-
-.backdropImage {
-    -webkit-mask-image: var(--cg-mask-backdrop);
-    mask-image: var(--cg-mask-backdrop);
+    background-color: var(--cg-veil);
 }
 
 /* --- Type ----------------------------------------------------------------
