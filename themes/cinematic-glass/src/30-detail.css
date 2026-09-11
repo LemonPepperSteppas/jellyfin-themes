@@ -143,8 +143,24 @@
 }
 
 
+/* Sized to its content, with no cap. The 44em cap that was here truncated
+   "The Legend of Aang: The Last Airbender" to "The Legend of Aang: Th…" - the
+   title wanted 1020px, the cap gave it 655, and the ribbon had 971px of unused
+   width sitting to the right of it. The cap was a habit from the days of the
+   poster column; without a poster there is nothing to leave room for.
+
+   `flex: 0 1 auto` rather than upstream's `flex: 1 0 0`, so the block hugs the
+   title instead of filling the row and shoving the buttons out to the far edge
+   of a 1910px window. It still shrinks - and the title still falls back to
+   upstream's ellipsis - if a title is long enough to need it.
+
+   The title cannot simply wrap instead: the ribbon's height is fixed at 107px
+   and coupled to its negative margin, so a second line of 56px type would
+   spill onto the content below. See the Ribbon note above. */
+
 .detailRibbon .infoWrapper {
-    max-width: 44em;
+    max-width: none;
+    flex: 0 1 auto;
 }
 
 .detailRibbon .mainDetailButtons {
