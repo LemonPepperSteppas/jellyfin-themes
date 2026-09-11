@@ -1521,16 +1521,22 @@ h1, h2, h3,
                  .nameContainer / .itemMiscInfo
                .mainDetailButtons
 
-   Because the backdrop is a SIBLING of the content rather than a wrapper, the
-   overlay is done by taking it out of flow and padding the content down into
-   it. That keeps the overlap independent of how tall the ribbon happens to be
-   for a given item, which a negative margin would not. */
+   JELLYFIN ALREADY OVERLAYS THE RIBBON, which took a live measurement to
+   notice. `.detailRibbon` carries `margin-top: -107.136px` on a ribbon that is
+   107.125px tall - exactly -1x its own height - so its bottom lands precisely
+   on the backdrop's bottom edge, whatever height the backdrop is given. That
+   is the whole mechanism, and it is upstream's.
+
+   The first attempt at this fought it: the backdrop was taken out of flow and
+   the content padded down to meet it. With the backdrop no longer occupying
+   space, that negative margin pulled the ribbon to -107px - off the top of the
+   page. Leaving the backdrop in flow and simply setting its height gets the
+   overlay for free and adapts to any ribbon height.
+
+   So all this file does is: set the hero's height, ramp it, and clear the two
+   paddings that only existed to make room for the poster. */
 
 .itemDetailPage .itemBackdrop {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
     height: 58vh;
     border-radius: 0;
 }
@@ -1543,15 +1549,6 @@ h1, h2, h3,
     background-image: var(--cg-scrim-hero);
 }
 
-/* Pushes the ribbon into the lower part of the hero. Deck puts the body block
-   at roughly the halfway mark of the hero; 30vh of a 58vh hero lands there. */
-
-.itemDetailPage .detailPageWrapperContainer {
-    position: relative;
-    z-index: var(--cg-z-base);
-    padding-top: 30vh;
-}
-
 /* A 58vh hero eats most of a phone screen before a word of content, so mobile
    gets a shorter one and the push-down comes down with it, keeping the title
    at the same relative depth (~52% of the hero).
@@ -1560,13 +1557,11 @@ h1, h2, h3,
    while it was in flow under the header. Now that it is absolute and starts at
    the top of the page, that offset just leaves a band of bare ground above it. */
 
+/* A 58vh hero eats most of a phone screen before a word of content. The
+   ribbon follows it down on its own. */
+
 .layout-mobile .itemDetailPage .itemBackdrop {
     height: 46vh;
-    margin-top: 0;
-}
-
-.layout-mobile .itemDetailPage .detailPageWrapperContainer {
-    padding-top: 24vh;
 }
 
 /* --- No poster column ---------------------------------------------------
@@ -1584,7 +1579,14 @@ h1, h2, h3,
    edge as the title above it - at var(--cg-page-pad) the body sat ~34px
    inboard of the title and the column read as misaligned. */
 
-.detailPageContent {
+/* TWO elements carry the poster's 32.45vw clearance, not one. .detailPageContent
+   is the documented one; .detailRibbon gets it too, which is why the title
+   first came out 623px inboard on a 1910px window with the poster already
+   hidden. 3.3% is upstream's own `.padded-left`, so title, buttons and body
+   all land on the same edge. */
+
+.detailPageContent,
+.detailRibbon.padded-left.padded-right {
     padding-left: 3.3%;
     padding-right: 3.3%;
 }
@@ -1614,15 +1616,14 @@ h1, h2, h3,
 }
 
 /* --- Backdrops off ------------------------------------------------------
-   .noBackdropTransparency is Jellyfin's own "no backdrops" setting and is what
-   options/no-backdrops.css leans on; .layout-tv hides .itemBackdrop outright
-   upstream. In both cases there is no hero to overlay, so the push-down has to
-   go or the page opens with a screen of empty ground. */
+   CAUTION: `.noBackdropTransparency` is NOT "the user turned backdrops off".
+   Jellyfin puts it on #itemDetailPage unconditionally - it is there right now,
+   on a page showing a backdrop, alongside `.selfBackdropPage`. An earlier
+   version of this file used it as the no-backdrop signal and silently disabled
+   the hero treatment on every detail page.
 
-.layout-tv .itemDetailPage .detailPageWrapperContainer,
-.noBackdropTransparency .detailPageWrapperContainer {
-    padding-top: 0;
-}
+   It is still the right hook for making the containers opaque, which is all it
+   is used for below - never for deciding whether a hero exists. */
 
 .noBackdropTransparency .detailPagePrimaryContainer,
 .noBackdropTransparency .detailPageSecondaryContainer {
