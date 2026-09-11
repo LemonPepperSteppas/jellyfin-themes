@@ -133,6 +133,7 @@
    the text off it. */
 
 .detailRibbon {
+    flex-direction: row;
     align-items: flex-end;
     gap: 1.5em;
     background: none;
