@@ -42,6 +42,6 @@
 /* 2. Take the ramp off the artwork. Below the poster the text sits on the
    page ground, so there is nothing to lift it off. */
 
-.cardScalable::after {
+.cardContent::after {
     background-image: none;
 }

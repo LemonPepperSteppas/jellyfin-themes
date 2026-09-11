@@ -167,7 +167,7 @@
    80-misc.css: 20-cards.css ramps the bottom of every card so a title can sit
    over artwork, and here the title is not over the artwork any more. */
 
-#loginPage #divUsers .cardScalable::after {
+#loginPage #divUsers .cardContent::after {
     background-image: none;
 }
 

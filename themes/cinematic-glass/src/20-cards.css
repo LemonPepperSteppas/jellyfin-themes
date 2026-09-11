@@ -31,7 +31,7 @@
 
    Here the two text lines are DIRECT CHILDREN of .cardBox with no wrapper at
    all. That rules out putting one scrim behind one box, which is why the scrim
-   lives on .cardScalable::after and serves both shapes.
+   lives on .cardContent::after and serves both shapes.
 
    Lesson worth keeping: a selector's presence in Jellyfin's SCSS proves
    nothing about whether a given card renders it, and checking one screen
@@ -75,18 +75,39 @@
    the image. Contrast over a pale poster is the risk here; the ramp is
    weighted so its opaque end is under the text. */
 
-/* The scrim rides on .cardScalable, which is the element that owns the
-   artwork's box. .cardOverlayContainer is a later sibling inside it and so
-   still paints above; .cardScalable's `overflow: hidden` above clips the ramp
-   to the card's rounded corners. */
+/* THE SCRIM RIDES ON .cardContent, NOT .cardScalable, and the reason is a
+   stacking context. .cardImageContainer.cardContent carries `contain: strict`
+   upstream - which includes `paint`, so it is a stacking context - and it
+   takes no z-index of its own. Put the ramp on .cardScalable::after at z 1 and
+   it out-ranks that whole container at z 0, which means it covers EVERYTHING
+   inside it, including .innerCardFooter.
 
-.cardScalable::after {
+   .innerCardFooter is where Jellyfin puts the resume progress bar on a
+   Continue Watching card: a 4px strip pinned to `bottom: 0`, exactly where
+   this ramp is at its most opaque (0.88 black). Measured on the real server,
+   the bar was reduced to a barely-visible grey stub. Raising the footer's own
+   z-index does nothing - it is sealed inside .cardContent's context, so the
+   ramp has to be inside that context too.
+
+   .cardContent has `contain: paint` and this file's radius, so it clips the
+   ramp to the card's rounded corners the same way .cardScalable did.
+   .cardOverlayContainer is outside .cardContent and later in the tree, so it
+   still paints above. */
+
+.cardContent::after {
     content: "";
     position: absolute;
     inset: 0;
     z-index: var(--cg-z-base);
     pointer-events: none;
     background-image: var(--cg-scrim-card);
+}
+
+/* Above the ramp, at the same level as the text lines further down. Upstream
+   gives it z-index 1, which ties with the ramp and loses on paint order. */
+
+.innerCardFooter {
+    z-index: var(--cg-z-scrim);
 }
 
 /* The text lines are siblings of .cardScalable, not children, so they are
@@ -113,7 +134,7 @@
    There the text lines are grandchildren of .cardBox and the rules above never
    reach them, so the wrapper itself is what gets lifted.
 
-   No background here: .cardScalable::after already supplies the ramp for both
+   No background here: .cardContent::after already supplies the ramp for both
    shapes. Upstream pads this 0.3em/0.5em as a row below the artwork. */
 
 .cardBox > .cardFooter {
@@ -140,7 +161,7 @@
 
 /* .innerCardFooter is Jellyfin's own over-artwork strip - on this build it
    carries the resume progress bar rather than text. It stays transparent,
-   because .cardScalable::after already supplies the ramp and a second one
+   because .cardContent::after already supplies the ramp and a second one
    here would double up on exactly the same pixels. */
 
 .innerCardFooter,

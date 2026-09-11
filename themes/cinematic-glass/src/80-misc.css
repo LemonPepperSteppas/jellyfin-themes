@@ -90,7 +90,7 @@
    to a row; posters and square art go five, because at 32% a 2:3 poster would
    be over 500px tall and you would scroll past two of them.
 
-   The scrim comes off. 20-cards.css ramps the bottom of every .cardScalable so
+   The scrim comes off. 20-cards.css ramps the bottom of every .cardContent so
    titles can sit over artwork - useful on a library shelf, actively wrong in a
    picker, where it darkens the very thing being chosen. */
 
@@ -114,7 +114,7 @@
     }
 }
 
-.imageEditorCard .cardScalable::after {
+.imageEditorCard .cardContent::after {
     background-image: none;
 }
 

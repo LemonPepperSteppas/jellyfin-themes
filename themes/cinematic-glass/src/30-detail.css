@@ -705,7 +705,7 @@ h1.parentName {
     border-radius: 50%;
 }
 
-#castCollapsible .cardScalable::after {
+#castCollapsible .cardContent::after {
     background-image: none;
 }
 
