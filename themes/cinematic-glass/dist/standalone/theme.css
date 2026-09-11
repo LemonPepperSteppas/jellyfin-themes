@@ -1901,8 +1901,13 @@ h1.parentName {
     order: 3;
 }
 
+/* Capped. Left to fill its grid column these run 1780px wide on a 1910px
+   window, and a two-item list that wide is mostly empty space - the label ends
+   up at one end of the room and its value at the other. */
+
 .itemDetailPage .itemDetailsGroup,
 .itemDetailPage .trackSelections {
+    max-width: 46em;
     padding: .9em 1.15em;
     border: 1px solid var(--cg-border);
     border-radius: var(--cg-radius-panel);
@@ -1911,17 +1916,21 @@ h1.parentName {
     -webkit-backdrop-filter: var(--cg-blur);
 }
 
-/* Label left, value right - the pairing reads faster than a ragged two-column
-   list, and it is what stops "Studios" with eight entries from pushing its own
-   label off the line. */
+/* A two-column grid, not space-between. Upstream and ElegantFin both use
+   space-between here, which throws the value to the far edge of whatever width
+   the row happens to have - fine in a narrow column, absurd at 1780px. A fixed
+   label column keeps every value on the same left edge, so the pairs read down
+   the card instead of across it, and a long "Studios" list wraps in its own
+   column rather than shoving its label around. */
 
 .itemDetailPage .detailsGroupItem {
-    display: flex;
+    display: grid;
+    grid-template-columns: 7.5em 1fr;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 1.5em;
+    gap: .2em 1.25em;
     padding: .35em 0;
     border-bottom: 1px solid var(--cg-border);
+    text-align: left;
 }
 
 .itemDetailPage .detailsGroupItem:last-child {
@@ -1935,7 +1944,7 @@ h1.parentName {
 }
 
 .itemDetailPage .detailsGroupItem .content {
-    text-align: right;
+    text-align: left;
 }
 
 .itemDetailPage .trackSelections .selectContainer {
