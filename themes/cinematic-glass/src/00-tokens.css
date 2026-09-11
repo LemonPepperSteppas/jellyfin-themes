@@ -194,6 +194,17 @@
                         rgba(0, 0, 0, .45) 74%,
                         rgba(0, 0, 0, 0) 100%);
 
+    /* The veil above is on a FIXED layer, so it is anchored to the viewport and
+       scrolls out from under the content. This one goes on the detail page's
+       content wrapper, which scrolls with the page, so the reading matter has
+       ground under it however far down you are. Two layers because they solve
+       two different problems; one cannot do both. */
+
+    --cg-veil-page: linear-gradient(180deg,
+                        rgba(8, 10, 13, 0) 0,
+                        rgba(8, 10, 13, .8) 10vh,
+                        rgb(8, 10, 13) 26vh);
+
     --cg-veil-backdrop: linear-gradient(0deg,
                         rgb(8, 10, 13) 0%,
                         rgba(8, 10, 13, .92) 16%,

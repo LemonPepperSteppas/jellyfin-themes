@@ -357,8 +357,17 @@ h1.parentName {
     background-color: transparent;
 }
 
-/* No gradient here: the veil over the artwork does that work in one place,
-   in 02-base.css. Adding a second ramp on this wrapper stacked with it. */
+/* This DOES need its own ramp, and it is not a duplicate of the veil in
+   02-base.css. That one rides a fixed, viewport-anchored layer, so it handles
+   the hero but scrolls out from under the content - leaving the cast and the
+   fact cards sitting on full-strength artwork. This one scrolls with the page.
+
+   They do not stack: this is transparent at its top, exactly where the fixed
+   veil has already reached solid ground. */
+
+.itemDetailPage .detailPageWrapperContainer {
+    background-image: var(--cg-veil-page);
+}
 
 /* --- Facts as cards -----------------------------------------------------
    .detailSection is a plain block upstream. As a two-column grid it can put
