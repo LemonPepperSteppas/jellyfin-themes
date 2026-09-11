@@ -5,7 +5,7 @@ can be added without touching the first.
 
 ```
 themes/
-  cinematic-glass/     picked by the server's users, Sept 2026
+  cinematic-glass/     picked by the server's users, Sept 2026; released v0.0.2
   <next-theme>/        copy the layout below
 ```
 
@@ -17,10 +17,12 @@ Every theme folder follows the same shape:
 README.md          what it is, how to install, what the options do
 PLAN.md            the build plan and the approved token spec
 src/               numbered modules (00 -> 99), concatenated in filename order
+assets/            binaries the theme ships (fonts) + their licences
 accents/           optional colourway swaps; _template.css to copy
 options/           opt-in behaviour modules, imported AFTER the base theme
 standalone/        extra base layer + install docs for the registered-theme profile
 build/build.py     concatenates src/ into dist/
+build/*.py         other generators; anything they emit into src/ is committed
 dist/              the built files people import; never edited by hand, but committed
                    (jsDelivr serves straight from the repo)
 ```
@@ -62,7 +64,8 @@ for a theme whose feature set has actually settled.
 
 ## Starting a new theme
 
-1. `cp -r cinematic-glass <new-slug>` and empty `src/`, `accents/`, `options/`, `dist/`
+1. `cp -r cinematic-glass <new-slug>` and empty `src/`, `assets/`, `accents/`, `options/`,
+   `dist/`
 2. Rewrite `PLAN.md` sections 3 and 4 — the token spec and the structural moves
 3. Update `NAME`, `SLUG` at the top of `build/build.py`
 4. Work down the build order in `PLAN.md`

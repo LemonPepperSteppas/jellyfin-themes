@@ -1,8 +1,12 @@
 # Cinematic Glass — build plan
 
-Status: **written, untested on a real server.** Every module in `src/`, all five options
-and the standalone base layer are done, Manrope is embedded, and `dist/` builds for both
-profiles. Outstanding: the section 6 test pass, and the tag.
+Status: **released as `cinematic-glass-v0.0.2`** (2026-09-10). Every module in `src/`, all
+five options and the standalone base layer are done, Manrope is embedded and committed,
+and the theme has been through the section 6 test pass on the live server.
+
+Outstanding, neither blocking: a transcoding session, and TV focus rings on real hardware.
+
+`v0.0.1` is superseded — its detail page did not match the deck. See section 4a.
 
 Target: **Jellyfin 10.11.8** (verified against `jellyfin-web` @ `v10.11.8`; the whole 10.11.x
 line shares an identical file tree, so 10.11.5–10.11.11 are all in scope).
@@ -120,6 +124,25 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 2. **Full-bleed billboard** on home — artwork runs edge to edge behind everything.
 3. **Metadata over artwork**, not under it — card titles sit on a gradient scrim.
 4. **Real depth** — 22px backdrop blur on chrome, genuine drop shadows on cards.
+
+## 4a. Section 4 is not the whole specification
+
+Learned the expensive way in v0.0.1. Section 4 lists the four moves that, if dropped,
+stop this being Cinematic Glass. It is **not** a complete description of the design, and
+reading it as one is how the detail page shipped with a poster column and its title in a
+band under the artwork — neither of which the deck has.
+
+The deck is the design. Its detail screen is `K.billboard()`: a full-bleed hero carrying
+title, tagline and buttons ON the artwork, no poster. Rebuilt to match in v0.0.2.
+
+When prose and the deck disagree, **render the deck and look at it** — two minutes:
+
+```bash
+cd design && python -m http.server
+```
+
+The published copy is at the artifact link in CLAUDE.md, but note viewers of that link
+see a pinned earlier revision, so `design/src/` is the authority.
 
 ## 5. Build order
 

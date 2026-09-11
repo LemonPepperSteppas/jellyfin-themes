@@ -23,6 +23,10 @@ wraps everything in a MUI `<AppBar>` + `<AppDrawer>`. The dashboard is 100% MUI.
 untouched; a theme that only targets `--jf-*` leaves the main library UI untouched.
 A complete theme needs both.
 
+**But read &sect;2b before planning around that.** The dashboard cannot be reached by
+custom CSS at all, whatever you write, so the `--jf-*` work only pays off on the
+registered-theme profile and in the experimental layout's chrome.
+
 ## 2. The MUI variable layer (the part nobody is using)
 
 `src/themes/themes.ts` builds the MUI theme with:
@@ -179,6 +183,15 @@ slamming `!important`. A GitHub code search for `jf-palette` across all of GitHu
 *no* community theme — only jellyfin-web itself and a few plugins. `MuiAppBar-root`
 appears in ElegantFin and Jellyfish, but as structural patches, not as a variable strategy.
 Driving the MUI layer through `--jf-*` is a genuinely open lane.
+
+**Amended 2026-09-10, after building one.** That lane is narrower than this survey
+implies, and the reason is &sect;2b: the dashboard receives no custom CSS, so none of these
+themes *could* have reached it through the install they all ship with. The open lane is
+real but it only opens on the registered-theme profile, plus the experimental layout's
+app bar and drawer, which `apps/experimental` does mount `CustomCss` for.
+
+Worth stating plainly because the original wording reads as "nobody thought of this",
+when the truth is closer to "the standard install cannot do it".
 
 ## 6. Version landscape
 

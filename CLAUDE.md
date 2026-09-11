@@ -26,27 +26,30 @@ _Last updated: 2026-09-10._
   design is locked but the feature set is not, so `v1.0.0` is still free.
   `v0.0.1` is superseded and should not be pinned: its item-detail page kept a poster
   column and put the title below the artwork, neither of which matches the deck.
-- **Cinematic Glass is written, and untested on a real server.** All twelve modules in
+- **Cinematic Glass is released and verified on the real server.** All thirteen modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
-  builds both profiles (~142 KB, ~86 KB minified — the font is most of that). `accents/` is
+  builds both profiles (~157 KB, ~88 KB minified — the font is most of that). `accents/` is
   still just the template, which is the settled decision, not an omission.
 - **Manrope is committed and embedded.** `themes/cinematic-glass/assets/*.woff2` (v20,
   variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
   `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
   `python build/embed-font.py`. The theme has no external dependency at runtime.
-- **Shipped. What is left is optional:**
-  1. The `PLAN.md` section 6 test pass is **effectively done** (2026-09-10): every screen
-     checked on the live server, plus mobile confirmed on a real device by the server
-     owner. Only a transcoding session and TV focus rings on real hardware remain, and
-     neither blocks a release. Six bugs came out of it — see `PLAN.md` section 6.
-  2. Tag and publish.
+- **Shipped. What is left is optional:** a transcoding session, and TV focus rings on real
+  hardware. Everything else in `PLAN.md` section 6 is checked, on the live server, plus
+  mobile confirmed on a real device by the server owner. Seven bugs came out of that pass;
+  six of them were invisible to fixtures built from the v10.11.8 stylesheets, which is why
+  **fixtures are no longer treated as verification for anything structural.**
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
   `PLAN.md` before section 3: the theme overrides the Display-settings theme picker.
-- **Two decisions worth a second opinion**, both flagged in the files that made them:
-  `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp (section 3
-  specifies no such tokens), and `30-detail.css` kept the poster column its scaffold note
-  said to drop, because removing it is not one of the four moves in `PLAN.md` section 4.
+- **One decision worth a second opinion**, flagged in the file that made it:
+  `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp, and
+  `PLAN.md` section 3 specifies no such tokens.
+- **The detail page was rebuilt in v0.0.2** to match the deck: full-bleed billboard hero,
+  title on the artwork, no poster column. v0.0.1 had it wrong because I read `PLAN.md`
+  section 4 as the whole specification when it is only the list of what must not be
+  dropped. **The deck is the design** — render it (`python -m http.server` in `design/`)
+  before arguing with it from prose.
 - **Design is locked.** The seven-direction deck was shown to the server's users and they
   picked Cinematic Glass. Token values are transcribed in `PLAN.md` section 3 — use those,
   do not re-derive them. Deck source: `design/src/`; published page:
