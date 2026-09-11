@@ -59,8 +59,14 @@
     background-image: none;
 }
 
+/* Mobile carries the artwork ON this element (see --cg-fade-backdrop), so the
+   fade is a mask here rather than a gradient on the wrapper below. Without it
+   the picture stops dead on a horizontal line and the ribbon's slab starts. */
+
 .layout-mobile .itemDetailPage .itemBackdrop {
     height: 45vh;
+    -webkit-mask-image: var(--cg-fade-backdrop);
+    mask-image: var(--cg-fade-backdrop);
 }
 
 /* The fade. Transparent where the hero is, so the artwork reads at full
@@ -89,14 +95,31 @@
     max-width: none;
 }
 
-.layout-desktop .itemDetailPage .detailRibbon {
-    flex-direction: column;
-    min-height: 25vh;
-    margin-top: 0;
+/* The ribbon's SKIN applies to every layout; only its geometry is per-layout.
+   themes/dark/theme.scss paints it `rgba(32, 32, 32, .8)`, and on mobile that
+   was the grey slab sitting under the artwork with the title marooned in it. */
+
+.itemDetailPage .detailRibbon {
     background: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border-bottom: 0;
+}
+
+.layout-desktop .itemDetailPage .detailRibbon {
+    flex-direction: column;
+    min-height: 25vh;
+    margin-top: 0;
+}
+
+/* Mobile's ribbon is `display: block; position: relative` in flow under the
+   backdrop - none of desktop's `margin-top: -7.2em` applies - so it has to be
+   lifted deliberately. -7em puts the title inside the masked region, which is
+   the bottom 45% of a 45vh backdrop, so it reads over the fading artwork the
+   way it does on desktop instead of below it on flat ground. */
+
+.layout-mobile .itemDetailPage .detailRibbon {
+    margin-top: -7em;
 }
 
 /* --- No poster column ---------------------------------------------------
