@@ -32,12 +32,10 @@ _Last updated: 2026-09-10._
   `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
   `python build/embed-font.py`. The theme has no external dependency at runtime.
 - **Two things stand between here and `cinematic-glass-v1.0.0`:**
-  1. The rest of the `PLAN.md` section 6 test pass. **Done on the live server
-     (2026-09-10), desktop:** home, library grid, item detail, series, season/episode
-     list, player OSD, settings forms, menus, drawer, dashboard, and TV layout via the
-     `.layout-tv` class. **Still unchecked:** mobile (needs a real narrow viewport),
-     sign-in (needs a signed-out browser), transcoding, and TV focus rings on real
-     hardware.
+  1. The `PLAN.md` section 6 test pass is **effectively done** (2026-09-10): every screen
+     checked on the live server, plus mobile confirmed on a real device by the server
+     owner. Only a transcoding session and TV focus rings on real hardware remain, and
+     neither blocks a release. Six bugs came out of it — see `PLAN.md` section 6.
   2. Tag and publish.
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in

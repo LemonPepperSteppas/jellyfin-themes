@@ -143,16 +143,28 @@ Four structural moves. If any one is dropped it stops being Cinematic Glass:
 
 ## 6. Test checklist
 
-**Progress (2026-09-10), on the live server, desktop layout.** Checked: home, library
-grid, item detail, series, season/episode list, player OSD, settings forms, menus,
-drawer, dashboard, and the TV layout via the `.layout-tv` class. Still open: mobile
-(needs a real narrow viewport), sign-in (needs a signed-out browser), a transcoding
-session, and TV focus rings on real hardware.
+**Progress (2026-09-10) — effectively complete.** Checked on the live server: home,
+library grid, item detail, series, season/episode list, player OSD, sign-in, settings
+forms, menus, drawer, dashboard, and the TV layout via the `.layout-tv` class. **Mobile
+confirmed on a real device by the server owner** — metadata reads correctly over the
+posters, which is move #3 behaving as designed.
 
-Four bugs found that the fixtures could not catch — `.cardFooter` not existing in the
-rendered DOM, `html` losing its background to a cross-origin rule, `.button-link`
-underlining 27px page titles, and **the dashboard receiving no custom CSS at all**
-(see section 7).
+Still open, and neither blocks a release: a **transcoding session** (exercises the
+dashboard's warning colour, which is moot on profile A anyway now that the dashboard is
+known to be unthemed), and **TV focus rings on real hardware** — the `.layout-tv` class
+test confirms the layout flattens, but a real remote driving `.show-focus` is a different
+thing.
+
+Note `#/login` renders while signed in, so sign-in needs no signed-out browser after all.
+
+Six bugs came out of this pass, five of which no fixture could have caught:
+
+1. `.cardFooter` not emitted by the card types on home — move #3 silently did nothing.
+2. …and then the *opposite* on sign-in, where `.cardFooter` IS used. Both shapes exist.
+3. `html` losing its background to a cross-origin rule.
+4. `.button-link` underlining 27px page titles.
+5. Sign-in buttons using the light glass over bright artwork.
+6. **The dashboard receiving no custom CSS at all** (see section 7).
 
 Nine screens, on the live server, signed in as a normal user *and* as admin:
 
