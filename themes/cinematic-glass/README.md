@@ -4,17 +4,20 @@ A theme for **Jellyfin 10.11.x** web. The artwork supplies all the colour; the i
 supplies none. There is no top bar — navigation floats as a frosted pill, card metadata
 sits over the poster instead of under it, and the billboard runs edge to edge.
 
-> **Released as `cinematic-glass-v0.0.1`.** Every module is written, the font is embedded,
+> **Released as `cinematic-glass-v0.0.2`.** Every module is written, the font is embedded,
 > and the whole thing has been through the `PLAN.md` section 6 test pass on a real server.
 > The `0.x` version is deliberate: the design is settled but the feature set is not, so
 > expect additions before `v1.0.0`.
+>
+> `v0.0.1` is superseded &mdash; its item-detail page did not match the approved design.
+> Do not pin it.
 
 ## Install
 
 Dashboard → **Branding** → Custom CSS. `@import` must be the first line in the box.
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.2/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 > Pin a tag, never a branch. jsDelivr caches a tag permanently, so a tag can never serve
@@ -55,8 +58,8 @@ Each is an extra `@import` on a line *after* the base theme. They are served str
 the repo rather than from `dist/`, since they are single files with nothing to concatenate:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/dist/cinematic-glass.css");
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/options/no-blur.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.2/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.2/themes/cinematic-glass/options/no-blur.css");
 ```
 
 | Module | Effect |

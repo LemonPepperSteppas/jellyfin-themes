@@ -22,8 +22,10 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
-- **Tags:** `cinematic-glass-v0.0.1` is the first release (2026-09-10). Deliberately
-  `0.x` &mdash; the design is locked but the feature set is not, so `v1.0.0` is still free.
+- **Tags:** `cinematic-glass-v0.0.2` is current (2026-09-10). Deliberately `0.x` &mdash; the
+  design is locked but the feature set is not, so `v1.0.0` is still free.
+  `v0.0.1` is superseded and should not be pinned: its item-detail page kept a poster
+  column and put the title below the artwork, neither of which matches the deck.
 - **Cinematic Glass is written, and untested on a real server.** All twelve modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
   builds both profiles (~142 KB, ~86 KB minified — the font is most of that). `accents/` is
@@ -144,7 +146,7 @@ python design/src/assemble.py              # regenerate the direction deck (from
 ## Settled decisions — do not relitigate without being asked
 
 - **One repo at the root, not one per theme.** `research/` and `design/` are shared by
-  every theme. Per-theme *tags* (`cinematic-glass-v0.0.1`) give independent release
+  every theme. Per-theme *tags* (`cinematic-glass-v0.0.2`) give independent release
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.

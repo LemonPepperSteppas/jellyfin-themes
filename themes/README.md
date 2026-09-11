@@ -49,7 +49,7 @@ tokens are not doing enough work.
 Tags are prefixed per theme, so one theme's release never moves another theme's URL:
 
 ```
-cinematic-glass-v0.0.1
+cinematic-glass-v0.0.2
 <next-theme>-v0.0.1
 ```
 
