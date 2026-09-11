@@ -1397,12 +1397,6 @@ h1, h2, h3,
    ========================================================================== */
 
 /* --- The hero -----------------------------------------------------------
-   Rebuilt 2026-09-10 to match the approved deck, which it did not before: the
-   deck's detail screen is K.billboard() - a full-bleed hero carrying the
-   title, tagline and buttons ON the artwork - with NO poster column at all.
-   What shipped in v0.0.1 kept Jellyfin's poster and left the title in a band
-   underneath. Deck source: design/src/dirs.py, D["glass"]["screens"]["detail"].
-
    Measured off the rendered deck: hero 360px on a 951px stage (~38% of width),
    body block at left 34px / bottom 26px, title 52px/800 at -0.03em, tagline
    13px, actions in a row with a 10px gap.
@@ -1449,14 +1443,6 @@ h1, h2, h3,
     background-image: var(--cg-scrim-hero);
 }
 
-/* A 58vh hero eats most of a phone screen before a word of content, so mobile
-   gets a shorter one and the push-down comes down with it, keeping the title
-   at the same relative depth (~52% of the hero).
-
-   Upstream also gives the mobile backdrop `margin-top: 3rem`, which made sense
-   while it was in flow under the header. Now that it is absolute and starts at
-   the top of the page, that offset just leaves a band of bare ground above it. */
-
 /* A 58vh hero eats most of a phone screen before a word of content. The
    ribbon follows it down on its own. */
 
@@ -1473,11 +1459,6 @@ h1, h2, h3,
 .detailImageContainer {
     display: none;
 }
-
-/* 3.3% is upstream's own `.padded-left` / `.padded-right`, which the ribbon
-   already carries. Matching it is what puts the body text on the same left
-   edge as the title above it - at var(--cg-page-pad) the body sat ~34px
-   inboard of the title and the column read as misaligned. */
 
 /* TWO elements carry the poster's 32.45vw clearance, not one. .detailPageContent
    is the documented one; .detailRibbon gets it too, which is why the title
