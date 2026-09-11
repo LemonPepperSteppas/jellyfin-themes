@@ -151,11 +151,20 @@
        from --cg-ground: a gradient stop is not the place to take that
        compat risk, and these must stay in sync with --cg-ground by hand. */
 
-    --cg-scrim-hero: linear-gradient(to top,
-                        rgb(8, 10, 13) 0%,
-                        rgba(8, 10, 13, .85) 22%,
-                        rgba(8, 10, 13, .35) 55%,
-                        rgba(8, 10, 13, 0) 100%);
+    /* Two ramps, transcribed from the approved deck's `.bb-scrim`
+       (design/src/make.py, billboard()): a 78deg wedge off the leading edge so
+       the title has a dark bed at any window width, over a bottom ramp that
+       dissolves into the ground. Read off the rendered deck rather than
+       re-derived, the same way PLAN.md section 3's palette was. */
+
+    --cg-scrim-hero: linear-gradient(78deg,
+                        rgba(0, 0, 0, .88) 8%,
+                        rgba(0, 0, 0, .5) 40%,
+                        rgba(0, 0, 0, 0) 72%),
+                     linear-gradient(0deg,
+                        rgb(8, 10, 13) 1%,
+                        rgba(0, 0, 0, .15) 34%,
+                        rgba(0, 0, 0, 0) 62%);
 
     --cg-scrim-hero-side: linear-gradient(to right,
                         rgb(8, 10, 13) 0%,
@@ -1359,7 +1368,7 @@ h1, h2, h3,
 
 /* ---- src/30-detail.css ----------------------------------------- */
 /* ==========================================================================
-   Cinematic Glass - Item detail: full-bleed backdrop, logo-art title, glass media-info chips.
+   Cinematic Glass - Item detail: billboard hero, title on the artwork, no poster column.
    --------------------------------------------------------------------------
    Owns: .detailPagePrimaryContainer, .detailRibbon, .itemBackdrop, .detailPageContent
 
@@ -1373,35 +1382,60 @@ h1, h2, h3,
      - .detailPageContent is padded 32.45vw on the leading side to clear the
        poster, which floats with `top: 20%`.
 
-   ONE DEVIATION, flagged rather than made quietly. This file's scaffold note
-   said "no poster column". PLAN.md section 4 is the locked list of what makes
-   this direction, and removing the poster is not on it - the four moves are
-   the pill, the full-bleed billboard, metadata over artwork, and real depth.
-   Dropping the poster would also mean unpicking that 32.45vw padding across
-   three breakpoints. So the poster stays and is treated as a floating card
-   with real depth, which serves move #4. Worth a second opinion against the
-   deck; it is a visible choice, not a detail.
+   HISTORY, because it cost a release. v0.0.1 shipped this screen with
+   Jellyfin's poster column intact and the title in a band below the artwork.
+   The scaffold note had said "no poster column" and I overrode it, reasoning
+   that PLAN.md section 4 lists four structural moves and the poster is not
+   among them. That was wrong: section 4 lists what must not be DROPPED, not
+   everything the design specifies, and the deck is the design. Checked after
+   the fact - the deck's detail screen is K.billboard(), a full-bleed hero
+   carrying title, tagline and buttons ON the artwork, with no poster anywhere.
+
+   Rule that follows: when the deck and a reading of PLAN.md disagree, render
+   the deck and look at it. It is two minutes - `python -m http.server` in
+   design/ and open theme-directions.html.
    ========================================================================== */
 
-/* --- The hero ------------------------------------------------------------
-   Taller than stock, and dissolving into the page rather than ending on a
-   hard edge. --cg-scrim-hero fades to the ground colour, so there is no seam
-   between artwork and page - which is the whole point of move #2. */
+/* --- The hero -----------------------------------------------------------
+   Rebuilt 2026-09-10 to match the approved deck, which it did not before: the
+   deck's detail screen is K.billboard() - a full-bleed hero carrying the
+   title, tagline and buttons ON the artwork - with NO poster column at all.
+   What shipped in v0.0.1 kept Jellyfin's poster and left the title in a band
+   underneath. Deck source: design/src/dirs.py, D["glass"]["screens"]["detail"].
 
-.itemBackdrop {
-    height: 62vh;
+   Measured off the rendered deck: hero 360px on a 951px stage (~38% of width),
+   body block at left 34px / bottom 26px, title 52px/800 at -0.03em, tagline
+   13px, actions in a row with a 10px gap.
+
+   The markup makes this workable. From src/controllers/itemDetails/index.html:
+
+       #itemDetailPage
+         #itemBackdrop.itemBackdrop        <- top-level sibling
+         .detailLogo                        <- top-level sibling
+         .detailPageWrapperContainer
+           .detailPagePrimaryContainer
+             .detailImageContainer.hide-mobile        <- desktop poster
+             .detailRibbon
+               .infoWrapper
+                 .detailImageContainer.hide-desktop.hide-tv  <- mobile poster
+                 .nameContainer / .itemMiscInfo
+               .mainDetailButtons
+
+   Because the backdrop is a SIBLING of the content rather than a wrapper, the
+   overlay is done by taking it out of flow and padding the content down into
+   it. That keeps the overlap independent of how tall the ribbon happens to be
+   for a given item, which a negative margin would not. */
+
+.itemDetailPage .itemBackdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 58vh;
     border-radius: 0;
 }
 
-.layout-mobile .itemBackdrop {
-    height: 42vh;
-}
-
-/* The scrim goes on a pseudo-element rather than in the background shorthand,
-   because .itemBackdrop's background-image is the artwork itself, set inline
-   by the item page. */
-
-.itemBackdrop::after {
+.itemDetailPage .itemBackdrop::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -1409,72 +1443,110 @@ h1, h2, h3,
     background-image: var(--cg-scrim-hero);
 }
 
-/* The leading edge gets a second, softer ramp so text over the artwork has
-   somewhere to sit at any window width. */
+/* Pushes the ribbon into the lower part of the hero. Deck puts the body block
+   at roughly the halfway mark of the hero; 30vh of a 58vh hero lands there. */
 
-.layout-desktop .itemBackdrop::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: var(--cg-scrim-hero-side);
+.itemDetailPage .detailPageWrapperContainer {
+    position: relative;
+    z-index: var(--cg-z-base);
+    padding-top: 30vh;
 }
 
-.itemBackdropProgressBar {
-    z-index: var(--cg-z-scrim);
+/* A 58vh hero eats most of a phone screen before a word of content, so mobile
+   gets a shorter one and the push-down comes down with it, keeping the title
+   at the same relative depth (~52% of the hero).
+
+   Upstream also gives the mobile backdrop `margin-top: 3rem`, which made sense
+   while it was in flow under the header. Now that it is absolute and starts at
+   the top of the page, that offset just leaves a band of bare ground above it. */
+
+.layout-mobile .itemDetailPage .itemBackdrop {
+    height: 46vh;
+    margin-top: 0;
 }
 
-/* --- Ribbon --------------------------------------------------------------
-   Stock is a translucent grey band. Here it is glass, so it reads as another
-   pane of the same material as the header pill. */
+.layout-mobile .itemDetailPage .detailPageWrapperContainer {
+    padding-top: 24vh;
+}
+
+/* --- No poster column ---------------------------------------------------
+   The deck has none. Both copies go: the desktop one and the mobile one
+   inside .infoWrapper. With them gone, .detailPageContent's 32.45vw leading
+   pad - which existed only to clear the poster - becomes a large empty margin,
+   so it comes back to the page padding. */
+
+.detailImageContainer {
+    display: none;
+}
+
+/* 3.3% is upstream's own `.padded-left` / `.padded-right`, which the ribbon
+   already carries. Matching it is what puts the body text on the same left
+   edge as the title above it - at var(--cg-page-pad) the body sat ~34px
+   inboard of the title and the column read as misaligned. */
+
+.detailPageContent {
+    padding-left: 3.3%;
+    padding-right: 3.3%;
+}
+
+/* --- Ribbon -------------------------------------------------------------
+   Upstream lays this out as a centred flex ROW - info on one side, buttons on
+   the other. The deck stacks them bottom-left, so it becomes a column. No
+   glass here: the ribbon now sits on the artwork and the scrim is what lifts
+   the text off it. */
 
 .detailRibbon {
-    background: var(--cg-glass-chrome);
-    backdrop-filter: var(--cg-blur);
-    -webkit-backdrop-filter: var(--cg-blur);
-    border-bottom: 1px solid var(--cg-border);
-}
-
-.layout-tv .detailRibbon {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5em;
     background: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     border-bottom: 0;
 }
 
-/* --- Containers ----------------------------------------------------------
-   .noBackdropTransparency is the class Jellyfin sets when the user has turned
-   backdrops off, and it is also what options/no-backdrops.css leans on. Both
-   need the containers to fall back to a solid ground. */
+.detailRibbon .infoWrapper {
+    max-width: 44em;
+}
+
+.detailRibbon .mainDetailButtons {
+    gap: .3em;
+}
+
+/* --- Backdrops off ------------------------------------------------------
+   .noBackdropTransparency is Jellyfin's own "no backdrops" setting and is what
+   options/no-backdrops.css leans on; .layout-tv hides .itemBackdrop outright
+   upstream. In both cases there is no hero to overlay, so the push-down has to
+   go or the page opens with a screen of empty ground. */
+
+.layout-tv .itemDetailPage .detailPageWrapperContainer,
+.noBackdropTransparency .detailPageWrapperContainer {
+    padding-top: 0;
+}
 
 .noBackdropTransparency .detailPagePrimaryContainer,
 .noBackdropTransparency .detailPageSecondaryContainer {
     background-color: var(--cg-ground);
 }
 
-/* --- Poster --------------------------------------------------------------
-   Move #4: real depth. The poster is the one element on the page that should
-   look like a physical object sitting on the artwork. */
+/* --- Title --------------------------------------------------------------
+   The deck's hero title is TEXT set in the display face, not logo art - and
+   Jellyfin's .detailLogo floats top-right at top:10vh/right:25vw, which is
+   nowhere near where the deck puts the title. Rather than drag the logo image
+   across the hero, the logo art is dropped and the item's own name carries it,
+   which is what the deck shows.
 
-.detailImageContainer .card .cardBox {
-    border-radius: var(--cg-radius-panel);
-    box-shadow: var(--cg-shadow-3);
-    overflow: hidden;
-}
+   To bring logo art back instead, delete this rule and give .detailLogo a
+   bottom-left position - but then the text title needs hiding or they collide. */
 
-/* The poster is artwork, so it keeps its own metadata off it - the card
-   overlay from 20-cards.css would put a scrim on a poster that is already
-   the focal point of the page. */
-
-.detailImageContainer .card .cardFooter {
+.detailLogo {
     display: none;
 }
 
-/* --- Title and logo art -------------------------------------------------- */
-
-.detailLogo {
-    filter: var(--cg-drop-logo);
-}
+/* The deck sets 52px on a 951px stage - about 5.5% of the stage width - so
+   this tracks the viewport rather than fixing a pixel size that would be
+   enormous on a phone and small on a desktop. Capped at 60px, because past
+   that a long title starts wrapping into the artwork on a wide monitor. */
 
 .itemName,
 .parentName {
@@ -1482,15 +1554,28 @@ h1, h2, h3,
     letter-spacing: var(--cg-track-display);
 }
 
-h1.itemName {
+h1.itemName,
+h1.parentName {
+    font-size: clamp(2rem, 5vw, 3.75rem);
     font-weight: var(--cg-fw-display);
-    line-height: var(--cg-lh-tight);
+    line-height: .98;
+    margin-bottom: .2em;
 }
 
-.parentName {
+/* The series name above an episode title stays small and quiet - it is
+   orientation, not the headline. */
+
+.detailRibbon h3.itemName,
+.detailRibbon .parentName:not(h1) {
+    font-size: var(--cg-fs-lg);
     color: var(--cg-muted);
     font-weight: var(--cg-fw-medium);
     letter-spacing: var(--cg-track-tight);
+}
+
+.itemMiscInfo {
+    color: var(--cg-muted);
+    font-size: var(--cg-fs-sm);
 }
 
 /* Jellyfin puts .button-link on both kinds of link: the small inline ones

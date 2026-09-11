@@ -142,11 +142,20 @@
        from --cg-ground: a gradient stop is not the place to take that
        compat risk, and these must stay in sync with --cg-ground by hand. */
 
-    --cg-scrim-hero: linear-gradient(to top,
-                        rgb(8, 10, 13) 0%,
-                        rgba(8, 10, 13, .85) 22%,
-                        rgba(8, 10, 13, .35) 55%,
-                        rgba(8, 10, 13, 0) 100%);
+    /* Two ramps, transcribed from the approved deck's `.bb-scrim`
+       (design/src/make.py, billboard()): a 78deg wedge off the leading edge so
+       the title has a dark bed at any window width, over a bottom ramp that
+       dissolves into the ground. Read off the rendered deck rather than
+       re-derived, the same way PLAN.md section 3's palette was. */
+
+    --cg-scrim-hero: linear-gradient(78deg,
+                        rgba(0, 0, 0, .88) 8%,
+                        rgba(0, 0, 0, .5) 40%,
+                        rgba(0, 0, 0, 0) 72%),
+                     linear-gradient(0deg,
+                        rgb(8, 10, 13) 1%,
+                        rgba(0, 0, 0, .15) 34%,
+                        rgba(0, 0, 0, 0) 62%);
 
     --cg-scrim-hero-side: linear-gradient(to right,
                         rgb(8, 10, 13) 0%,

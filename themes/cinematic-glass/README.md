@@ -153,11 +153,8 @@ a port, not a no-op.
 
 ## Open questions
 
-Two, both recorded where the work is:
+One, recorded where the work is:
 
-- **The detail page keeps its poster column.** The scaffold note for `src/30-detail.css` said
-  "no poster column", but that is not one of the four structural moves in `PLAN.md` section 4,
-  so the poster stayed and became a floating card. Worth checking against the deck.
 - **Nothing has been tested on the real server.** Rendering was verified against fixtures
   built from the v10.11.8 stylesheets, which is not the same thing. `PLAN.md` section 6 is
   the checklist.
