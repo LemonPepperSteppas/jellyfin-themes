@@ -2401,23 +2401,33 @@ h1.parentName {
 
 /* ---- src/60-login.css ------------------------------------------ */
 /* ==========================================================================
-   Cinematic Glass - Sign-in: full-bleed artwork behind a centred glass card.
+   Cinematic Glass - Sign-in: full-bleed artwork behind ONE centred glass card.
    --------------------------------------------------------------------------
-   Owns: #loginPage, .loginForm, .userItem, #quickConnect*
+   Owns: #loginPage, .manualLoginForm, .readOnlyContent, #divUsers, #quickConnect*
 
-   Markup confirmed from src/controllers/session/login/index.html at v10.11.8:
+   THE DECK IS THE DESIGN. `design/src/dirs.py` builds this screen as
+   signin("card"): artwork, a veil at rgba(8,10,13,.72), and a single narrow
+   glass card holding the lockup, a row of round avatars, the fields, the
+   check and the button. Everything below is that mockup translated onto the
+   markup Jellyfin actually ships.
+
+   Markup confirmed live on the server at v10.11.8:
 
        #loginPage.page.standalonePage.backdropPage
-         > .manualLoginForm   (username + password, hidden by default)
-         > .visualLoginForm   (user avatars, .itemsContainer.vertical-wrap.centered)
+         > div.padded-left.padded-right.padded-bottom-page.margin-auto-y
+             > form.manualLoginForm      (h1, two .inputContainer, check, submit)
+             > div.visualLoginForm       (h1, #divUsers - the avatars)
+             > div.readOnlyContent       (Manual Login / Quick Connect / Forgot)
 
-   The user avatars are ordinary cards, so 20-cards.css already gives them
-   their radius, shadow and scrim - nothing here restates that.
+   Jellyfin swaps between the manual form and the visual picker; .readOnlyContent
+   stays under both. There is no state in which all of it shows at once, so the
+   deck's single card is rendered as ONE card that both states live inside.
 
-   This is the first screen anyone sees, and on a fresh install it is the only
-   screen where the theme has to look right with no library artwork behind it.
-   So the glass card is legible against the plain ground as well as against a
-   backdrop; it does not rely on there being a picture.
+   CORRECTING AN EARLIER NOTE IN THIS FILE: it claimed "there is no element
+   wrapping the title, the users and the buttons together", and only the manual
+   form got a pane. That was wrong - the .padded-left wrapper above is exactly
+   that element. It was missed because the wrapper is 1793px wide and looked
+   like the page rather than a container.
    ========================================================================== */
 
 #loginPage {
@@ -2425,28 +2435,33 @@ h1.parentName {
 }
 
 /* .backdropPage is the class Jellyfin puts on pages that show artwork behind
-   the content. Veiled, so a login form stays readable over anything. */
+   the content. This is the ONE screen in the theme that keeps a full-page
+   veil: 02-base.css removed it everywhere else so artwork runs at full
+   strength, but a sign-in form has to stay readable over a poster collage and
+   there is no artwork here worth protecting - it is the branding splashscreen.
+
+   --cg-veil is rgba(8,10,13,.72), which is the deck's --m-login-veil to the
+   digit. Measured on the real server and already correct before this pass. */
 
 #loginPage.backdropPage {
     background-color: var(--cg-veil);
 }
 
 /* --- The card ------------------------------------------------------------
-   Only the MANUAL form gets a pane, and that is a limitation rather than a
-   choice. Measured on the real server: .visualLoginForm - the user picker -
-   is full-bleed (1793px of a 1920px viewport), the buttons live in a separate
-   .readOnlyContent sibling outside it, and there is no element wrapping the
-   title, the users and the buttons together. So there is nothing to put a
-   centred card around without inventing layout.
+   The deck's .card-l: min(374px,100%) at a 1184px frame, 30px/28px padding,
+   --m-login-card fill, --m-border hairline, --m-radius-lg, --m-lift-lg, and
+   --m-surface-blur. Scaled to this root font (14.88px against the mockup's
+   13px base) 374px lands at ~28em.
 
-   The user picker therefore sits directly on the veiled backdrop, and the
-   legibility work is done by the veil on #loginPage.backdropPage, the card
-   scrims from 20-cards.css, and the dark glass on the buttons below. */
+   Selector note: the wrapper is addressed by its utility classes, which is
+   the only handle it has - no id, no semantic class. `#loginPage >` makes it
+   (1,2,0), enough to beat .padded-left's own 3.3% padding. If upstream ever
+   renames those classes the card simply does not appear and the screen falls
+   back to today's full-bleed layout, which is a soft failure, not a break. */
 
-.manualLoginForm,
-.loginForm {
+#loginPage > .padded-left.padded-right {
     box-sizing: border-box;
-    width: min(100% - (var(--cg-page-pad) * 2), 26em);
+    width: min(100% - (var(--cg-page-pad) * 2), 28em);
     margin-inline: auto;
     padding: 2em 1.75em;
     border: 1px solid var(--cg-border);
@@ -2457,23 +2472,183 @@ h1.parentName {
     box-shadow: var(--cg-shadow-3);
 }
 
-#loginPage .sectionTitle {
+/* The manual form used to BE the card. It is inside one now, so it goes bare -
+   a card inside a card is the thing this screen looked like before. Its own
+   .margin-auto-x caps it at 26em, which would leave it floating inside a
+   wider parent. */
+
+#loginPage .manualLoginForm {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+
+/* --- Alignment -----------------------------------------------------------
+   The deck's card is left-aligned throughout: the lockup, the avatar row, the
+   field labels and the Quick Connect line all start at the same rule. Jellyfin
+   centres all three (h1 text-align, #divUsers.centered, the flex wrapper round
+   the manual h1), so each is turned back.
+
+   Individual avatars stay centred inside their own column, which is also what
+   the deck does - .user is text-align:center inside a flex-start row. */
+
+#loginPage .visualLoginForm > h1,
+#loginPage .manualLoginForm .sectionTitle {
     font-family: var(--cg-font-display);
     font-weight: var(--cg-fw-display);
-    font-size: var(--cg-fs-xl);
+    font-size: var(--cg-fs-lg);
     letter-spacing: var(--cg-track-display);
     line-height: var(--cg-lh-tight);
+    text-align: start;
     color: var(--cg-text);
-    margin-bottom: .6em;
+    margin: 0 0 1.1em;
+}
+
+#loginPage .manualLoginForm > .padded-left {
+    display: block;
+    padding: 0;
+}
+
+/* --- The avatar row ------------------------------------------------------
+   The deck: 56px circles in 66px columns with a 12px gap, the name below in
+   muted 11.5px, and an accent ring on whoever is selected. Jellyfin renders
+   these as ordinary square cards ~199px wide, which is a library poster's
+   footprint on a screen that is choosing between three people.
+
+   Scaled off the same 1.14 ratio as the card: a 4.8em column, which the
+   square aspect makes the circle's diameter too once the gutter below is
+   gone. Four fit on a row inside the card; more wrap, which is the behaviour
+   .vertical-wrap already has. */
+
+#loginPage #divUsers.itemsContainer {
+    justify-content: flex-start;
+    gap: .85em;
+}
+
+#loginPage #divUsers > .card {
+    width: 4.8em;
+    padding: 0;
+    margin: 0;
+}
+
+/* .cardBox carries upstream's gutter as a MARGIN - `8px 8px 26.784px`, the
+   bottom one from .cardBox-bottompadded reserving room for a footer that this
+   file has just put back in flow. Zeroed here rather than fought: the row gap
+   above is the only spacing this needs, and the 26px would otherwise hang
+   under every name. */
+
+#loginPage #divUsers .cardBox {
+    margin: 0;
+}
+
+/* Round. .cardScalable owns the artwork box and clips it, so the radius has to
+   land on every box in the stack or a square corner shows through. */
+
+#loginPage #divUsers .cardBox,
+#loginPage #divUsers .cardScalable,
+#loginPage #divUsers .cardPadder,
+#loginPage #divUsers .cardContent,
+#loginPage #divUsers .cardImage {
+    border-radius: 50%;
+}
+
+/* The scrim comes off, for the same reason it comes off the image pickers in
+   80-misc.css: 20-cards.css ramps the bottom of every card so a title can sit
+   over artwork, and here the title is not over the artwork any more. */
+
+#loginPage #divUsers .cardScalable::after {
+    background-image: none;
+}
+
+/* The name goes back under the circle. Move #3 in 20-cards.css lifts
+   .cardFooter onto the image - right for a poster, wrong for a face. */
+
+#loginPage #divUsers .cardBox > .cardFooter {
+    position: static;
+    padding: .5em 0 0;
+    background: none;
+}
+
+#loginPage #divUsers .cardText {
+    font-size: var(--cg-fs-xs);
+    color: var(--cg-muted);
+    text-align: center;
+}
+
+/* The ring. Jellyfin marks no user as current on this screen, so there is
+   nothing to give the deck's `.user.on` treatment to - it goes to hover and
+   focus instead, which is the same signal at the moment it is useful.
+
+   A ring, not a border, and it composes with the shadow .cardScalable already
+   carries. Two reasons over the deck's literal `border: 2px solid`: a border
+   would be an `!important` fight (measured - a bare 2px border on .cardContent
+   does not land even at (1,2,0), and the winning sheet is cross-origin), and a
+   ring costs no layout, so nothing shifts when it appears. box-shadow also
+   follows border-radius on the old TV browsers, which `outline` does not. */
+
+#loginPage #divUsers .cardScalable {
+    transition: box-shadow var(--cg-dur-fast) var(--cg-ease);
+}
+
+#loginPage #divUsers .card:hover .cardScalable {
+    box-shadow: 0 0 0 2px var(--cg-accent), var(--cg-shadow-2);
+}
+
+/* Focus keeps the theme's own two-ring treatment from 02-base.css, just moved
+   onto the round element. Left on the button it draws a RECTANGLE around a
+   circle - the button is 71x95 because it also contains the name, so there is
+   no radius that would fit it. */
+
+#loginPage #divUsers .card:focus,
+#loginPage #divUsers .card.show-focus:focus,
+#loginPage #divUsers .card:focus-visible {
+    box-shadow: none;
+}
+
+#loginPage #divUsers .card:focus .cardScalable,
+#loginPage #divUsers .card.show-focus:focus .cardScalable,
+#loginPage #divUsers .card:focus-visible .cardScalable {
+    box-shadow: var(--cg-focus-ring), var(--cg-shadow-2);
+}
+
+/* --- Fields --------------------------------------------------------------
+   The deck's .field label: uppercase, 10.5px, tracked, --m-faint, above an
+   input with a --m-border-strong hairline. 02-base.css already gives these
+   labels --cg-muted; on the card they want to sit back further than that.
+
+   Scoped to #loginPage on purpose. The tracked-caps label is this screen's
+   treatment in the deck, not a house style for every form in the product. */
+
+#loginPage .inputLabel,
+#loginPage .inputLabelUnfocused {
+    font-size: var(--cg-fs-xs);
+    font-weight: var(--cg-fw-bold);
+    letter-spacing: var(--cg-track-caps);
+    text-transform: uppercase;
+    color: var(--cg-faint);
+}
+
+#loginPage .emby-input {
+    border-color: var(--cg-border-strong);
 }
 
 /* --- Buttons -------------------------------------------------------------
    The submit button is the accent's proper use: a light fill with dark ink.
    Everything else on this screen is a quieter glass button, so there is
-   exactly one obvious thing to press. */
+   exactly one obvious thing to press.
 
-#loginPage .button-submit,
-.loginForm .button-submit {
+   Radius stays --cg-radius-pill. The deck draws every .btn at 14px, but this
+   theme settled on pills for buttons across all thirteen modules and shipped
+   that way; making sign-in the one screen with 14px buttons would be matching
+   the mockup by breaking the product. */
+
+#loginPage .button-submit {
     background: var(--cg-accent);
     color: var(--cg-accent-ink);
     border-radius: var(--cg-radius-pill);
@@ -2486,21 +2661,26 @@ h1.parentName {
     color: var(--cg-accent-ink);
 }
 
-/* --cg-glass-chrome, not --cg-glass. These sit directly on the sign-in
-   backdrop - a bright poster collage on this server - and the light tint
-   washed out against it exactly the way the header pill did before
-   10-chrome.css switched. Anything floating on artwork takes the dark base. */
+/* --cg-glass, not --cg-glass-chrome, and no blur of their own.
+
+   THIS REVERSES AN EARLIER DECISION IN THIS FILE, and the reason is that the
+   premise changed. These buttons used to sit directly on the sign-in backdrop,
+   where a light tint washed out against a bright poster collage exactly the
+   way the header pill did - so they took the dark base. They now sit on the
+   card, which is already dark glass, and the deck's own secondary button on
+   .card-l is --m-surface: the light tint. Nesting a blur inside a blurred
+   surface buys nothing and costs compositing on the weak clients. */
 
 #loginPage .raised.cancel,
 #loginPage .btnManual,
 #loginPage .btnQuick,
 #loginPage .btnForgotPassword,
 #loginPage .btnSelectServer {
-    background: var(--cg-glass-chrome);
-    backdrop-filter: var(--cg-blur);
-    -webkit-backdrop-filter: var(--cg-blur);
+    background: var(--cg-glass);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     color: var(--cg-text);
-    border: 1px solid var(--cg-border);
+    border: 1px solid var(--cg-border-strong);
     border-radius: var(--cg-radius-pill);
 }
 
@@ -2510,26 +2690,31 @@ h1.parentName {
 #loginPage .btnForgotPassword:hover,
 #loginPage .btnSelectServer:hover {
     background: var(--cg-state-active);
-    border-color: var(--cg-border-strong);
+    border-color: var(--cg-accent);
 }
 
-/* --- User picker ---------------------------------------------------------
-   .visualLoginForm holds the avatars. Centred upstream via
-   .itemsContainer.vertical-wrap.centered. */
+/* .readOnlyContent is the secondary stack under whichever form is showing.
+   Upstream spaces the buttons with margins that assumed a full-width block.
 
-.visualLoginForm .cardText {
-    text-align: center;
+   Margins rather than a grid gap: the last child is .loginDisclaimerContainer,
+   which is empty on most servers, and a gap would still reserve a row's worth
+   of space above nothing at the foot of the card. */
+
+#loginPage .readOnlyContent {
+    margin-top: 1.4em;
+    margin-bottom: 0;
 }
 
-.userItem,
-#divUsers .card {
-    text-align: center;
+#loginPage .readOnlyContent > .emby-button {
+    margin: 0 0 .5em;
 }
 
 /* --- Quick Connect -------------------------------------------------------
    PLAN.md is explicit that the code is part of the design and must not be
    hidden. It is set as a large tabular-figure display so it can be read off
-   a screen from across a room and typed on a phone without a mistake.
+   a screen from across a room and typed on a phone without a mistake. The
+   deck's .qc puts it above a rule at the foot of the card; the rule is on
+   .loginDisclaimerContainer below, which is where the card actually ends.
 
    Selector note: the Quick Connect code lives in a React route in 10.11, and
    its markup was not confirmable from the tag the way the login page was, so
@@ -2551,24 +2736,42 @@ h1.parentName {
     font-weight: var(--cg-fw-display);
 }
 
-/* --- Disclaimer ---------------------------------------------------------- */
+/* --- Disclaimer ----------------------------------------------------------
+   Empty on most servers - including this one - and upstream still gives the
+   container a 24px top margin, which inside a card is 24px of nothing at the
+   foot of it. The margin moves onto the text, so it only exists when there is
+   text to space.
 
-.loginDisclaimerContainer,
-.loginDisclaimer {
+   Not `.loginDisclaimerContainer:empty { display: none }`: the container is
+   never empty, it always holds an empty .loginDisclaimer div. Selecting a
+   parent by its child's emptiness needs :has(), which this theme does not use
+   (webOS and Tizen). Zeroing the margin gets the same result without it. */
+
+#loginPage .loginDisclaimerContainer {
+    margin: 0;
+}
+
+.loginDisclaimer:not(:empty) {
+    margin-top: 1.2em;
     color: var(--cg-muted);
     font-size: var(--cg-fs-sm);
-    text-align: center;
+    text-align: start;
 }
 
 /* --- TV ------------------------------------------------------------------
    Sign-in on a TV is done with a remote, so the blur goes and the card gets a
-   solid surface - the focus ring has to be the loudest thing on screen. */
+   solid surface - the focus ring has to be the loudest thing on screen. The
+   card also widens, because a 28em panel on a 10-foot display is a stamp. */
 
-.layout-tv .manualLoginForm,
-.layout-tv .loginForm {
+.layout-tv #loginPage > .padded-left.padded-right {
+    width: min(100% - (var(--cg-page-pad) * 2), 40em);
     background-color: var(--cg-elevated);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+}
+
+.layout-tv #loginPage #divUsers > .card {
+    width: 8em;
 }
 
 /* ---- src/70-dashboard.css -------------------------------------- */
@@ -3213,4 +3416,32 @@ h1.parentName {
 .programCell:focus {
     background-color: var(--cg-accent) !important;
     color: var(--cg-accent-ink) !important;
+}
+
+/* jellyfin-web 10.11.8, src/styles/librarybrowser.scss:
+       .content-primary, .padded-bottom-page, .page, .pageWithAbsoluteTabs .pageTabContent {
+           padding-bottom: calc(env(safe-area-inset-bottom) + 5em) !important; }
+
+   That is 74px of dead space at the foot of a page, which is right when the
+   element IS the page and wrong when 60-login.css has just turned it into a
+   374px card - the sign-in card came out with a third of its height empty
+   below the buttons. The wrapper carries .padded-bottom-page only because it
+   is normally the page body. */
+
+#loginPage > .padded-left.padded-right {
+    padding-bottom: 2em !important;
+}
+
+/* jellyfin-web 10.11.8, the sign-in user cards.
+
+   .cardBox-bottompadded reserves 1.8em under the artwork for a footer row.
+   60-login.css puts the user's name back into flow directly under the circle,
+   so that reservation becomes 26px hanging below every name inside the card.
+
+   !important because the declaration is: raising specificity to (2,3,0) did
+   not move it, and the winning sheet is cross-origin so its rules cannot be
+   enumerated from script - the same wall 02-base.css hit on `html`. */
+
+#loginPage #divUsers .cardBox {
+    margin-bottom: 0 !important;
 }

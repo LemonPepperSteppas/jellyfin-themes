@@ -113,3 +113,31 @@
     background-color: var(--cg-accent) !important;
     color: var(--cg-accent-ink) !important;
 }
+
+/* jellyfin-web 10.11.8, src/styles/librarybrowser.scss:
+       .content-primary, .padded-bottom-page, .page, .pageWithAbsoluteTabs .pageTabContent {
+           padding-bottom: calc(env(safe-area-inset-bottom) + 5em) !important; }
+
+   That is 74px of dead space at the foot of a page, which is right when the
+   element IS the page and wrong when 60-login.css has just turned it into a
+   374px card - the sign-in card came out with a third of its height empty
+   below the buttons. The wrapper carries .padded-bottom-page only because it
+   is normally the page body. */
+
+#loginPage > .padded-left.padded-right {
+    padding-bottom: 2em !important;
+}
+
+/* jellyfin-web 10.11.8, the sign-in user cards.
+
+   .cardBox-bottompadded reserves 1.8em under the artwork for a footer row.
+   60-login.css puts the user's name back into flow directly under the circle,
+   so that reservation becomes 26px hanging below every name inside the card.
+
+   !important because the declaration is: raising specificity to (2,3,0) did
+   not move it, and the winning sheet is cross-origin so its rules cannot be
+   enumerated from script - the same wall 02-base.css hit on `html`. */
+
+#loginPage #divUsers .cardBox {
+    margin-bottom: 0 !important;
+}
