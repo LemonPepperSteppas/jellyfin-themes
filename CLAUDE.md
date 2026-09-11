@@ -45,6 +45,10 @@ _Last updated: 2026-09-10._
 - **One decision worth a second opinion**, flagged in the file that made it:
   `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp, and
   `PLAN.md` section 3 specifies no such tokens.
+- **The detail page follows ElegantFin's centred composition, not the deck** - the owner's
+  call after comparing both on the real server; see `PLAN.md` section 4b. Do not "restore"
+  it to the deck. It also shows LOGO ART with the text title as fallback, which the deck's
+  own `/* logo-art title */` comment asked for.
 - **The detail page was rebuilt in v0.0.2** to match the deck: full-bleed billboard hero,
   title on the artwork, no poster column. v0.0.1 had it wrong because I read `PLAN.md`
   section 4 as the whole specification when it is only the list of what must not be

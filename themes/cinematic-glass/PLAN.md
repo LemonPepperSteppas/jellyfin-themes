@@ -144,6 +144,27 @@ cd design && python -m http.server
 The published copy is at the artifact link in CLAUDE.md, but note viewers of that link
 see a pinned earlier revision, so `design/src/` is the authority.
 
+## 4b. The detail page follows ElegantFin, not the deck
+
+**Decided 2026-09-10 by the server owner**, after seeing both side by side on the
+real server. The item-detail page uses ElegantFin's CENTRED composition - logo,
+facts and actions stacked and centred under a 70vh hero - rather than the deck's
+left-aligned body block at `left: 34px`.
+
+Everything else is still ours: palette, type, scrim, glass, the achromatic accent.
+What was adopted is the arrangement, not the code. ElegantFin is GPL-2.0; its CSS
+was read to understand one mechanism and none of it is copied.
+
+That mechanism is worth knowing before touching `30-detail.css`. Jellyfin gives
+`.detailRibbon` a JS-set `margin-top` of exactly -1x its own height, which is what
+lifts it onto the backdrop. Clearing it drops the ribbon below the hero **and
+removes a coupling that had constrained every earlier version of this file** - it
+is why the ribbon could not be a column and why a hidden title had to keep its
+line box.
+
+So: this is not drift from the deck to be tidied away. It is a decision, and
+section 4 still governs the other three moves.
+
 ## 5. Build order
 
 - [x] `00-tokens.css` — palette, geometry, blur, motion scales
