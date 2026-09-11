@@ -1403,41 +1403,25 @@ h1, h2, h3,
    ========================================================================== */
 
 /* --- The hero -----------------------------------------------------------
-   Measured off the rendered deck: hero 360px on a 951px stage (~38% of width),
-   body block at left 34px / bottom 26px, title 52px/800 at -0.03em, tagline
-   13px, actions in a row with a 10px gap.
+   CENTRED COMPOSITION, adopted from ElegantFin at the server owner's request
+   after comparing the two side by side. This is a deliberate divergence from
+   the deck, which specifies a left-aligned body block at `left: 34px`. The
+   colour system, type, scrim and glass are all still ours; what was taken is
+   the arrangement.
 
-   The markup makes this workable. From src/controllers/itemDetails/index.html:
+   ElegantFin is GPL-2.0. Its CSS was read to understand the mechanism and none
+   of it is copied - the rules below are written against our own tokens.
 
-       #itemDetailPage
-         #itemBackdrop.itemBackdrop        <- top-level sibling
-         .detailLogo                        <- top-level sibling
-         .detailPageWrapperContainer
-           .detailPagePrimaryContainer
-             .detailImageContainer.hide-mobile        <- desktop poster
-             .detailRibbon
-               .infoWrapper
-                 .detailImageContainer.hide-desktop.hide-tv  <- mobile poster
-                 .nameContainer / .itemMiscInfo
-               .mainDetailButtons
-
-   JELLYFIN ALREADY OVERLAYS THE RIBBON, which took a live measurement to
-   notice. `.detailRibbon` carries `margin-top: -107.136px` on a ribbon that is
-   107.125px tall - exactly -1x its own height - so its bottom lands precisely
-   on the backdrop's bottom edge, whatever height the backdrop is given. That
-   is the whole mechanism, and it is upstream's.
-
-   The first attempt at this fought it: the backdrop was taken out of flow and
-   the content padded down to meet it. With the backdrop no longer occupying
-   space, that negative margin pulled the ribbon to -107px - off the top of the
-   page. Leaving the backdrop in flow and simply setting its height gets the
-   overlay for free and adapts to any ribbon height.
-
-   So all this file does is: set the hero's height, ramp it, and clear the two
-   paddings that only existed to make room for the poster. */
+   The mechanism worth knowing, because it is what makes centring possible at
+   all: Jellyfin gives .detailRibbon a JS-set `margin-top` of exactly -1x its
+   own height, which is what normally lifts it onto the backdrop. Every earlier
+   layout in this file had to work around that coupling - it is why the ribbon
+   could not become a column, and why the hidden title had to keep its line box.
+   Clearing the margin drops the ribbon below the hero and takes the coupling
+   with it, which is what buys a free hand with the layout. */
 
 .itemDetailPage .itemBackdrop {
-    height: 58vh;
+    height: 70vh;
     border-radius: 0;
 }
 
@@ -1449,37 +1433,59 @@ h1, h2, h3,
     background-image: var(--cg-scrim-hero);
 }
 
-/* A 58vh hero eats most of a phone screen before a word of content. The
-   ribbon follows it down on its own. */
-
 .layout-mobile .itemDetailPage .itemBackdrop {
     height: 46vh;
 }
 
+/* --- The stack ----------------------------------------------------------
+   The container becomes a centred column: logo, then facts, then actions.
+   .detailPagePrimaryContent is stretched back out and re-aligned left, because
+   the overview and the detail tables below are reading matter, not a masthead. */
+
+.itemDetailPage .detailPagePrimaryContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.itemDetailPage .detailPagePrimaryContent {
+    align-self: stretch;
+    text-align: left;
+}
+
+/* Clearing the negative margin is the whole trick - see the note above. */
+
+.itemDetailPage .detailRibbon {
+    margin-top: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5em;
+    min-height: 22vh;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 0;
+}
+
+.itemDetailPage .detailRibbon .infoWrapper {
+    max-width: none;
+    flex: 0 1 auto;
+    text-align: center;
+}
+
 /* --- No poster column ---------------------------------------------------
-   The deck has none. Both copies go: the desktop one and the mobile one
-   inside .infoWrapper. With them gone, .detailPageContent's 32.45vw leading
-   pad - which existed only to clear the poster - becomes a large empty margin,
-   so it comes back to the page padding. */
+   The deck has none, and neither does ElegantFin for films. Both copies go:
+   the desktop one and the mobile one inside .infoWrapper. */
 
 .detailImageContainer {
     display: none;
 }
 
-/* THREE elements carry the poster's 32.45vw clearance, not one.
-   .detailPageContent is the documented one; .detailRibbon and
-   .detailPagePrimaryContent have it too. With the poster hidden, each is just
-   a 623px gutter on a 1910px window - which is where the title, and then the
-   body text, kept reappearing after the first two fixes.
-
-   Specificity matters here. librarybrowser.scss sets these inside
-   `[dir="ltr"] &` / `[dir="rtl"] &` blocks, so the real selector is (0,2,0)
-   and a bare `.detailPageContent` at (0,1,0) loses to it. The `.itemDetailPage`
-   prefix ties at (0,2,0) and wins on load order, and stays direction-agnostic
-   rather than restating both dir blocks.
-
-   3.3% is upstream's own `.padded-left`, so title, buttons and body share an
-   edge. */
+/* THREE elements carry the poster's 32.45vw clearance, and upstream sets it
+   inside `[dir="ltr"] &` blocks - so the real selector is (0,2,0) and a bare
+   class loses to it. The .itemDetailPage prefix ties and wins on load order. */
 
 .itemDetailPage .detailPageContent,
 .itemDetailPage .detailPagePrimaryContent,
@@ -1488,70 +1494,12 @@ h1, h2, h3,
     padding-right: 3.3%;
 }
 
-/* --- Ribbon -------------------------------------------------------------
-   Stays a flex ROW, which is upstream's layout, and this is the one place the
-   deck does not get followed exactly. The deck stacks the buttons under the
-   tagline; doing that here breaks the page.
-
-   Why: the ribbon's box height and its negative margin are coupled - the box
-   is 107px and the margin is -107.136px, and the margin is what lands its
-   bottom on the hero's. Stacking the children makes them taller than that box
-   without changing the margin, so they spill out of the bottom. Measured on an
-   episode page: the buttons ended 111px INSIDE .detailPagePrimaryContent,
-   printed over the Video / Audio / Subtitles rows.
-
-   As a row it fits the box with 20px to spare. `align-items: flex-end` sits
-   the buttons on the same baseline as the title block, which is nearer the
-   deck than upstream's `center`.
-
-   No glass: the ribbon is on the artwork now, and the hero scrim is what lifts
-   the text off it. */
-
-.detailRibbon {
-    flex-direction: row;
-    align-items: flex-end;
-    gap: 1.5em;
-    background: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: 0;
-}
-
-
-/* Sized to its content, with no cap. The 44em cap that was here truncated
-   "The Legend of Aang: The Last Airbender" to "The Legend of Aang: Th…" - the
-   title wanted 1020px, the cap gave it 655, and the ribbon had 971px of unused
-   width sitting to the right of it. The cap was a habit from the days of the
-   poster column; without a poster there is nothing to leave room for.
-
-   `flex: 0 1 auto` rather than upstream's `flex: 1 0 0`, so the block hugs the
-   title instead of filling the row and shoving the buttons out to the far edge
-   of a 1910px window. It still shrinks - and the title still falls back to
-   upstream's ellipsis - if a title is long enough to need it.
-
-   The title cannot simply wrap instead: the ribbon's height is fixed at 107px
-   and coupled to its negative margin, so a second line of 56px type would
-   spill onto the content below. See the Ribbon note above. */
-
-.detailRibbon .infoWrapper {
-    max-width: none;
-    flex: 0 1 auto;
-}
-
-.detailRibbon .mainDetailButtons {
-    gap: .3em;
-    flex-shrink: 0;
-}
-
 /* --- Backdrops off ------------------------------------------------------
    CAUTION: `.noBackdropTransparency` is NOT "the user turned backdrops off".
-   Jellyfin puts it on #itemDetailPage unconditionally - it is there right now,
-   on a page showing a backdrop, alongside `.selfBackdropPage`. An earlier
-   version of this file used it as the no-backdrop signal and silently disabled
-   the hero treatment on every detail page.
-
-   It is still the right hook for making the containers opaque, which is all it
-   is used for below - never for deciding whether a hero exists. */
+   Jellyfin puts it on #itemDetailPage unconditionally - it is there on a page
+   actively showing a backdrop, alongside `.selfBackdropPage`. An earlier
+   version used it as the no-backdrop signal and silently disabled the hero on
+   every detail page. It is only a hook for making containers opaque. */
 
 .noBackdropTransparency .detailPagePrimaryContainer,
 .noBackdropTransparency .detailPageSecondaryContainer {
@@ -1559,83 +1507,59 @@ h1, h2, h3,
 }
 
 /* --- Title: logo art, falling back to text ------------------------------
-   v0.0.2 hid .detailLogo and let the text name carry the hero, on the
-   reasoning that the deck's `.bb-logo` is a text element. That was reading a
-   mockup limitation as a design decision - a static HTML deck has no per-item
-   logo assets to show. The deck's own comment on that block says what was
-   actually meant:
-
-       /* billboard: full-bleed, logo-art title, big buttons *(/)
-
-   So: logo art when the item has one, the text name when it does not.
-
-   Jellyfin makes that switchable in CSS. From src/controllers/itemDetails/index.js:
+   Logo art when the item has one, the text name when it does not. Jellyfin
+   makes that switchable: src/controllers/itemDetails/index.js does
 
        const url = logoImageUrl(item, apiClient, {});
-       if (url) { detailLogo.classList.remove('hide'); … }
+       if (url) { detailLogo.classList.remove('hide'); ... }
        else     { detailLogo.classList.add('hide'); }
 
-   `.hide` is the signal. `.detailLogo` sits before `.detailPageWrapperContainer`
-   as a sibling, so a `~` combinator reaches the title - no :has(), which the
-   webOS and Tizen browsers cannot be relied on for.
+   `.detailLogo` sits before `.detailPageWrapperContainer` as a sibling, so a
+   `~` combinator reaches the title - no :has(), which the webOS and Tizen
+   browsers cannot be relied on for.
 
    logoImageUrl falls back to item.ParentLogoImageTag, so an episode shows its
-   series logo while the h3 episode title stays - which is the right split. */
+   series logo while its own h3 title stays.
 
-/* Height is in em with no vh cap on purpose: the box's bottom edge is
-   `top + height`, so a viewport-dependent height would slide the logo up and
-   down the hero as the window resizes. Fixed em keeps its baseline at
-   58vh - 4em, which is the gap that clears the meta line beneath it.
-
-   background-position is `left bottom`, so logos of different aspect ratios
-   all sit on that same baseline rather than floating in the middle of the box. */
+   `translateY(-100%)` makes `top` the logo's BOTTOM edge, so changing its
+   height never moves its baseline - which a top-plus-height pair does. */
 
 .itemDetailPage .detailLogo:not(.hide) {
-    top: calc(58vh - 13.5em);
-    right: auto;
-    left: 3.3%;
-    width: min(42vw, 36em);
-    height: 9.5em;
-    background-position: left bottom;
+    top: calc(70vh - 3em);
+    right: 0;
+    left: 0;
+    margin-inline: auto;
+    transform: translateY(-100%);
+    width: min(44vw, 38em);
+    height: 22vh;
+    background-position: center bottom;
     background-size: contain;
     filter: var(--cg-drop-logo);
 }
 
 .layout-mobile .itemDetailPage .detailLogo:not(.hide) {
-    top: calc(46vh - 10em);
-    height: 7em;
+    top: calc(46vh - 2em);
+    width: calc(100% - 2em);
+    height: 15vh;
 }
 
-/* The text name is hidden with VISIBILITY, not display: the ribbon's height is
-   coupled to its negative margin (see the Ribbon note above), and removing this
-   box from flow would lift the ribbon off the hero's bottom edge.
+/* The text name is hidden only where the logo is actually rendered.
+   librarybrowser.scss hides .detailLogo on mobile, on TV and below 68.75em,
+   and `.hide` does not tell us that - without this guard a narrow window would
+   show neither logo nor title.
 
-   `max-width: 0` collapses the width while the line box - and so the ribbon's
-   107px height - survives; measured both ways on the live server, ribbon height
-   and its flush bottom are identical with and without it. Without the collapse
-   the invisible title reserves its full width and strands the buttons in the
-   middle of the hero, 500px from anything they belong to.
-
-   Scoped to exactly the conditions where the logo is actually rendered:
-   librarybrowser.scss hides .detailLogo on mobile, on TV, and below 68.75em,
-   and `.hide` alone does not tell us that - without this guard a narrow window
-   would show neither logo nor title. */
+   display: none is safe now. It was not before: while the ribbon carried its
+   negative margin, taking this box out of flow lifted the ribbon off the
+   hero's bottom edge, so the title had to stay with visibility: hidden. With
+   the margin cleared there is nothing left to preserve. */
 
 @media all and (min-width: 68.75em) {
     .layout-desktop .detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1 {
-        visibility: hidden;
-        max-width: 0;
-        overflow: hidden;
+        display: none;
     }
 }
 
-/* 52px is the deck's literal value for `.bb-logo` on the detail screen, and
-   3.25rem is that. It tracks the viewport below desktop widths so it is not
-   52px on a phone, but the cap matches the deck rather than overshooting it -
-   an earlier 60px cap was me scaling the deck's 951px stage up to a real
-   1910px window, which reads as too big at that size.
-
-   line-height .98 and the text-shadow are the deck's too. */
+/* --- Type ---------------------------------------------------------------- */
 
 .itemName,
 .parentName {
@@ -1652,9 +1576,6 @@ h1.parentName {
     text-shadow: var(--cg-shadow-title);
 }
 
-/* The series name above an episode title stays small and quiet - it is
-   orientation, not the headline. */
-
 .detailRibbon h3.itemName,
 .detailRibbon .parentName:not(h1) {
     font-size: var(--cg-fs-lg);
@@ -1666,17 +1587,8 @@ h1.parentName {
 .itemMiscInfo {
     color: var(--cg-muted);
     font-size: var(--cg-fs-sm);
+    justify-content: center;
 }
-
-/* Jellyfin puts .button-link on both kinds of link: the small inline ones
-   (IMDb, genres, people) and the page title itself, which is an <a> inside
-   h1.parentName. 02-base.css underlines .button-link because an achromatic
-   accent leaves nothing else to mark a link with - but on a 27px display
-   title that underline reads as a mistake.
-
-   Seen on the real server. Scoped off inside .nameContainer only, where size
-   and position already say "this is the thing you clicked to get here", and
-   kept on hover so the target is still obviously live. */
 
 .nameContainer .button-link {
     text-decoration: none;
@@ -1686,6 +1598,45 @@ h1.parentName {
     text-decoration: underline;
     text-decoration-color: var(--cg-border-strong);
 }
+
+/* --- Actions ------------------------------------------------------------
+   Centred, with the primary action carrying a label instead of being one more
+   anonymous glyph in a row of six. Jellyfin already puts the action's name in
+   the button's `title` attribute - "Play", "Resume" - so `content: attr(title)`
+   reads it without this file needing to know which state the item is in. */
+
+.itemDetailPage .mainDetailButtons {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .3em;
+}
+
+.itemDetailPage .mainDetailButtons .btnPlay,
+.itemDetailPage .mainDetailButtons .btnResume {
+    flex-direction: row;
+    align-items: center;
+    gap: .1em;
+    padding: .5em 1.15em;
+    border-radius: var(--cg-radius-pill);
+    background: var(--cg-accent);
+    color: var(--cg-accent-ink);
+    font-weight: var(--cg-fw-bold);
+    box-shadow: var(--cg-shadow-2);
+}
+
+.itemDetailPage .mainDetailButtons .btnPlay::after,
+.itemDetailPage .mainDetailButtons .btnResume::after {
+    content: attr(title);
+    font-size: var(--cg-fs-base);
+    letter-spacing: var(--cg-track-tight);
+    padding-inline-end: .2em;
+}
+
+.itemDetailPage .mainDetailButtons .btnPlay:hover,
+.itemDetailPage .mainDetailButtons .btnResume:hover {
+    background: var(--cg-accent-light);
+}
+
 
 /* --- Media-info chips ----------------------------------------------------
    Stock .mediaInfoText is a flat lilac-grey tint. As chips they read as a row
