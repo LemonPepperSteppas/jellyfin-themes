@@ -9,8 +9,23 @@ sits over the poster instead of under it, and the billboard runs edge to edge.
 > The `0.x` version is deliberate: the design is settled but the feature set is not, so
 > expect additions before `v1.0.0`.
 >
-> `v0.0.1` is superseded &mdash; its item-detail page did not match the approved design.
-> Do not pin it.
+> Every earlier tag is superseded and should not be pinned: `v0.0.1`'s item-detail page did
+> not match the approved design, `v0.0.2` predates the centred detail composition, `v0.0.3`
+> predates the sign-in card, and `v0.0.4` still clipped every card's hover shadow square.
+
+Three screens are rebuilt rather than restyled, and are worth knowing about before you
+decide whether this is the theme you want:
+
+- **Sign-in** is one narrow glass card over veiled artwork &mdash; the lockup, a row of
+  round avatars, the fields and the buttons, all in a single panel, instead of Jellyfin's
+  full-width row of square user tiles.
+- **Item detail** is a centred composition: logo art over a full-bleed backdrop that fades
+  into the page, with no poster column. This follows ElegantFin rather than the deck, which
+  was the server owner's call after seeing both live; `PLAN.md` section 4b has the
+  reasoning.
+- **The image editor and image search dialogs** are treated as pickers rather than
+  shelves: bigger thumbnails, no scrim over the artwork, and the provider line under the
+  image instead of on it.
 
 ## Install
 
@@ -154,10 +169,19 @@ Built and tested against **10.11.8**. The 10.11.x line shares an identical file 
 variable-driven rather than a pile of `!important`, that port should be small — but it is
 a port, not a no-op.
 
-## Open questions
+## What is still open
 
-One, recorded where the work is:
+Everything in `PLAN.md` section 6 has been checked on a live 10.11.8 server &mdash; every
+screen, signed in as a normal user and as admin, plus mobile on a real device. Two items
+are outstanding and neither blocks a release:
 
-- **Nothing has been tested on the real server.** Rendering was verified against fixtures
-  built from the v10.11.8 stylesheets, which is not the same thing. `PLAN.md` section 6 is
-  the checklist.
+- **A transcoding session**, which exercises the dashboard's warning colour. Moot on the
+  `@import` profile anyway, since custom CSS never reaches the dashboard.
+- **TV focus rings on real hardware.** Testing via the `.layout-tv` class confirms the
+  layout flattens, but a remote actually driving `.show-focus` is a different thing.
+
+Live review is also where essentially every real bug came from. Fixtures built from the
+v10.11.8 stylesheets caught one of eleven, because the questions that matter &mdash; which
+card shape a given screen emits, what `contain` clips, which upstream declarations are
+`!important` &mdash; are answered by the DOM, not by the stylesheet. **Read the live DOM,
+on more than one page.**

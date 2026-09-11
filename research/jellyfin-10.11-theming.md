@@ -119,6 +119,41 @@ const id = dashboard ? dashboardTheme : theme;
 if (id) setThemeUrl(getThemeUrl(id));
 ```
 
+## 2c. CSS containment clips what you draw
+
+Not a Jellyfin-specific quirk, but the place it bites hardest in this codebase, and the
+kind of thing that reads as "my rule isn't working" rather than as what it is.
+
+Jellyfin sets containment on two of the elements a theme most wants to add depth to:
+
+| Element | Value | Includes `paint`? |
+|---|---|---|
+| `.card` | `contain: content` (= `layout paint style`) | yes |
+| `.skinHeader` | `contain: layout style paint` | yes |
+
+**Paint containment clips everything the element draws to its own box** — backgrounds,
+outlines and `box-shadow` included. Anything that reaches outside the border box is cut
+off flat at the edge, silently: no error, nothing odd in the computed style of the rule
+you wrote, and the shadow still shows up in DevTools as applied. What you see is a hard
+square edge where a soft one should be.
+
+Symptoms this produced here:
+
+- A hover ring 2px outside a 71px avatar, sliced flat on the left, right and top.
+- A drop shadow offset 24px down with a 60px blur, drawn *inside* the card's bounds and
+  clipped square — which reads as a dark rectangle behind the card rather than as a
+  shadow under it.
+
+The fix is to drop `paint` and keep the rest: `contain: layout style` preserves the part
+that actually pays off on a grid of a few hundred cards, and neither `layout` nor `style`
+affects what is drawn outside the box.
+
+**Specificity note, measured on a live 10.11.8 server:** a bare `.card` **loses** — the
+computed value stays `content` — while `.itemsContainer .card` (0,2,0) takes effect. No
+readable rule in the document declares `contain` on that element, and the winning sheet
+cannot be enumerated from script, so this is out-specified rather than diagnosed. The same
+wall appears on `html`'s background colour (see `themes/cinematic-glass/src/02-base.css`).
+
 ## 3. How custom CSS is injected
 
 `src/components/CustomCss.tsx`:

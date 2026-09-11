@@ -6,7 +6,9 @@ and the theme has been through the section 6 test pass on the live server.
 
 Outstanding, neither blocking: a transcoding session, and TV focus rings on real hardware.
 
-`v0.0.1` is superseded — its detail page did not match the deck. See section 4a.
+Every earlier tag is superseded: `v0.0.1`'s detail page did not match the deck (section 4a),
+`v0.0.2` predates the centred composition (4b), `v0.0.3` predates the sign-in card (4c), and
+`v0.0.4` still clipped every card's hover shadow square (`CLAUDE.md` item 8).
 
 Target: **Jellyfin 10.11.8** (verified against `jellyfin-web` @ `v10.11.8`; the whole 10.11.x
 line shares an identical file tree, so 10.11.5–10.11.11 are all in scope).
@@ -195,20 +197,20 @@ section 4 still governs the other three moves.
 - [x] `30-detail.css` — backdrop hero, logo title, glass media-info chips
 - [x] `40-episodes.css`
 - [x] `50-player.css` — floating control panel
-- [x] `60-login.css`
+- [x] `60-login.css` — the deck's single glass card; see section 4c
 - [x] `70-dashboard.css` — MUI structure only
 - [x] `80-misc.css` — dialogs, menus, toasts, forms
-- [~] `99-fixes.css` — in use: two upstream `!important` declarations beaten
+- [~] `99-fixes.css` — in use: fifteen rules, every one beating an upstream `!important`
 - [x] `options/no-blur.css` — shipped with v1; all five options written
 - [x] `standalone/00-jellyfin-base.css` — base coverage for the registered variant
-- [ ] Test pass on the real server, all nine screens
-- [ ] Tag and publish
+- [x] Test pass on the real server, all nine screens
+- [x] Tag and publish
 
 ## 6. Test checklist
 
-**Progress (2026-09-10) — effectively complete.** Checked on the live server: home,
-library grid, item detail, series, season/episode list, player OSD, sign-in, settings
-forms, menus, drawer, dashboard, and the TV layout via the `.layout-tv` class. **Mobile
+**Done.** Checked on the live server: home, library grid, item detail, series,
+season/episode list, player OSD, sign-in, settings forms, menus, drawer, dashboard, the
+metadata editor's image dialogs, and the TV layout via the `.layout-tv` class. **Mobile
 confirmed on a real device by the server owner** — metadata reads correctly over the
 posters, which is move #3 behaving as designed.
 
@@ -220,7 +222,10 @@ thing.
 
 Note `#/login` renders while signed in, so sign-in needs no signed-out browser after all.
 
-Six bugs came out of this pass, five of which no fixture could have caught:
+### What live review found
+
+Eleven bugs so far. **One** of them was visible to a fixture built from the v10.11.8
+stylesheets. That ratio is the argument for this section existing:
 
 1. `.cardFooter` not emitted by the card types on home — move #3 silently did nothing.
 2. …and then the *opposite* on sign-in, where `.cardFooter` IS used. Both shapes exist.
@@ -228,6 +233,18 @@ Six bugs came out of this pass, five of which no fixture could have caught:
 4. `.button-link` underlining 27px page titles.
 5. Sign-in buttons using the light glass over bright artwork.
 6. **The dashboard receiving no custom CSS at all** (see section 7).
+7. The detail page going nearly black — three layers darkening the artwork at once, one
+   of them a mask on `.itemBackdrop`, which on an item page carries no image at all.
+8. The image editor and image search dialogs rendering posters at 104px, with the card
+   scrim darkening the very thing being chosen.
+9. The sign-in screen having no card, because this file's own note claimed the wrapper to
+   hang one on did not exist. It did. See section 4c.
+10. The Jellyfin mark sitting left of centre in the header pill: the logo variant of
+    `.pageTitle` is a fixed 14.4em box with the banner positioned `0 50%`, so a 102px
+    image left 128px of dead box — invisible in a full-width bar, obvious in a pill.
+11. **`contain: content` on `.card` clipping every hover shadow and ring square to the
+    card's box.** Paint containment clips what an element draws. Cost two wrong diagnoses
+    before it was measured properly; recorded as item 8 in `CLAUDE.md`.
 
 Nine screens, on the live server, signed in as a normal user *and* as admin:
 

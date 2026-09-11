@@ -38,9 +38,10 @@ _Last updated: 2026-09-10._
   `python build/embed-font.py`. The theme has no external dependency at runtime.
 - **Shipped. What is left is optional:** a transcoding session, and TV focus rings on real
   hardware. Everything else in `PLAN.md` section 6 is checked, on the live server, plus
-  mobile confirmed on a real device by the server owner. Seven bugs came out of that pass;
-  six of them were invisible to fixtures built from the v10.11.8 stylesheets, which is why
-  **fixtures are no longer treated as verification for anything structural.**
+  mobile confirmed on a real device by the server owner. Eleven bugs have come out of live
+  review so far and only one of them was visible to a fixture built from the v10.11.8
+  stylesheets, which is why **fixtures are no longer treated as verification for anything
+  structural.** `PLAN.md` section 6 lists them.
 - **The MUI layer is verified.** All six colour schemes fall to our variables and no stock
   Jellyfin blue survives in the 233 `--jf-*` names MUI declares. Consequence recorded in
   `PLAN.md` before section 3: the theme overrides the Display-settings theme picker.
@@ -77,7 +78,7 @@ design/     the art-direction deck (generated: python design/src/assemble.py)
 research/   how 10.11 theming actually works + generated reference files
 ```
 
-## The seven things that will make you write wrong CSS
+## The eight things that will make you write wrong CSS
 
 Read `research/jellyfin-10.11-theming.md` before touching a theme. The short version:
 
@@ -124,7 +125,7 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    `paint` on cards; `10-chrome.css` had to work around the same thing on the header.
    Note the specificity: a bare `.card` **loses** — the winning declaration is not
    enumerable from script, and `.itemsContainer .card` (0,2,0) is what measured as
-   taking effect.
+   taking effect. Full write-up: `research/jellyfin-10.11-theming.md` §2c.
 
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:
