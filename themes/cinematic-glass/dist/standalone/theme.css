@@ -747,15 +747,22 @@ html[data-theme] {
    style a backdrop: on an item page .itemBackdrop often carries no image at
    all and is only a spacer.
 
-   The veil stays FLAT and light. An earlier pass put a gradient here and a
-   mask on .backdropImage to fade the detail hero; both were removed after
-   reading ElegantFin's source, which does neither on desktop. It fades the
-   artwork by covering it with a gradient on the CONTENT wrapper as that
-   scrolls up - see 30-detail.css. Doing it here as well just darkened the
-   picture twice. */
+   NO VEIL. The artwork runs at full strength, which is the server owner's
+   call and also what move #2 argues for - the artwork supplies the colour and
+   the interface supplies none. ElegantFin sets nothing here either.
+
+   What keeps text legible over it is per-element rather than a blanket wash:
+   the content wrapper's own gradient on detail pages (30-detail.css), the card
+   scrims from 20-cards.css, --cg-glass-chrome on anything floating, and
+   --cg-shadow-title on the hero title. An earlier pass also tried a gradient
+   here plus a mask on .backdropImage; both were removed, because darkening the
+   picture in three places at once is what turned the detail page black.
+
+   --cg-veil itself is still used, by #loginPage.backdropPage in 60-login.css,
+   where a sign-in form does have to stay readable over a poster collage. */
 
 .backgroundContainer.withBackdrop {
-    background-color: var(--cg-veil);
+    background-color: transparent;
 }
 
 /* --- Type ----------------------------------------------------------------
