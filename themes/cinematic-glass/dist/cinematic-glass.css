@@ -1344,6 +1344,35 @@ h1, h2, h3,
    A lift, not a tint. Pointer only: .layout-tv drives focus, not hover, and
    upstream already scales focused cards by 1.07. */
 
+/* .card computes to `contain: content` - shorthand for `layout paint style` -
+   and PAINT CONTAINMENT CLIPS EVERYTHING THE ELEMENT DRAWS TO ITS OWN BOX,
+   box-shadow included. So the lift's shadow below was being cut off square at
+   the card's edge instead of spreading past it, and on the sign-in avatars
+   the hover ring was sliced flat on the left, right and top where it reaches
+   2px outside a 71px card. That is the "circle gets cut off" the server owner
+   reported, and it was the visible symptom all along.
+
+   Only `paint` is dropped. Layout and style containment are the parts that
+   earn their keep on a grid of a few hundred cards, and neither affects what
+   is drawn outside the box. Same trap CLAUDE.md records for .skinHeader,
+   whose `contain: layout style paint` is why 10-chrome.css could not simply
+   float the header.
+
+   (0,2,0), NOT a bare `.card`. Measured on the real server: `.card` at (0,1,0)
+   loses and the computed value stays `content`, while `.itemsContainer .card`
+   wins. No readable rule anywhere in the document declares `contain` on this
+   element - the winning sheet cannot be enumerated from script - so this is
+   out-specified rather than diagnosed, the same way 02-base.css had to handle
+   `html`. .itemsContainer is every grid and rail, and #divUsers on sign-in,
+   which is exactly where the lift and the ring live.
+
+   Not inside the hover media query below: the ring is a focus state too, and
+   keyboard and TV users reach it without a pointer. */
+
+.itemsContainer .card {
+    contain: layout style;
+}
+
 @media (hover: hover) and (pointer: fine) {
     .card .cardBox {
         transition: transform var(--cg-dur) var(--cg-ease),
