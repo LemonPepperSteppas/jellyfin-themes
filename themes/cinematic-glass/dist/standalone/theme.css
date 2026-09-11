@@ -284,6 +284,29 @@ body {
 
     --cg-veil: rgba(8, 10, 13, .72);
 
+    /* Detail pages dissolve rather than ending on an edge. Two parts:
+
+       --cg-mask-hero is a MASK on .itemBackdrop, so the artwork's own pixels
+       fade out instead of being covered by something opaque. A scrim can only
+       ever approximate that, which is what left a visible line across the page
+       at the hero's bottom.
+
+       --cg-veil-detail goes on the content wrapper below it. It starts fully
+       transparent so Jellyfin's own page-level backdrop keeps showing through
+       behind the text, then ramps to solid ground further down where the
+       reading matter is. */
+
+    --cg-mask-hero: linear-gradient(180deg,
+                        rgb(0, 0, 0) 0%,
+                        rgb(0, 0, 0) 46%,
+                        rgba(0, 0, 0, .55) 76%,
+                        rgba(0, 0, 0, 0) 100%);
+
+    --cg-veil-detail: linear-gradient(180deg,
+                        rgba(8, 10, 13, 0) 0,
+                        rgba(8, 10, 13, .55) 20vh,
+                        rgb(8, 10, 13) 58vh);
+
     /* --- States ----------------------------------------------------------
        The accent is achromatic by design: the artwork supplies the colour and
        the interface supplies none. Two consequences decide these values.
@@ -1521,8 +1544,10 @@ h1, h2, h3,
    with it, which is what buys a free hand with the layout. */
 
 .itemDetailPage .itemBackdrop {
-    height: 70vh;
+    height: 74vh;
     border-radius: 0;
+    -webkit-mask-image: var(--cg-mask-hero);
+    mask-image: var(--cg-mask-hero);
 }
 
 .itemDetailPage .itemBackdrop::after {
@@ -1602,10 +1627,7 @@ h1, h2, h3,
    version used it as the no-backdrop signal and silently disabled the hero on
    every detail page. It is only a hook for making containers opaque. */
 
-.noBackdropTransparency .detailPagePrimaryContainer,
-.noBackdropTransparency .detailPageSecondaryContainer {
-    background-color: var(--cg-ground);
-}
+
 
 /* --- Title: logo art, falling back to text ------------------------------
    Logo art when the item has one, the text name when it does not. Jellyfin
@@ -1626,7 +1648,7 @@ h1, h2, h3,
    height never moves its baseline - which a top-plus-height pair does. */
 
 .itemDetailPage .detailLogo:not(.hide) {
-    top: calc(70vh - 3em);
+    top: calc(74vh - 3em);
     right: 0;
     left: 0;
     margin-inline: auto;
@@ -1810,6 +1832,199 @@ h1.parentName {
 
 .detailSectionContent a {
     color: inherit;
+}
+
+/* --- Below the hero -----------------------------------------------------
+   The rest of ElegantFin's detail page, on our palette. Its arrangement, our
+   tokens; none of its CSS is copied (it is GPL-2.0).
+
+   Four things make that page what it is, and only the first is the hero:
+
+     1. Nothing ends on a hard edge - see the fade notes above.
+     2. Jellyfin's OWN page-level backdrop stays visible behind the whole
+        page, faint, rather than being covered below the hero.
+     3. The facts are two bordered cards side by side, not a flat list.
+     4. Cast are circles.
+
+   Point 2 needed no new element: Jellyfin already paints the item's backdrop
+   on `.backgroundContainer.withBackdrop`, fixed and full-viewport, on every
+   `.selfBackdropPage`. Our own containers were covering it with opaque ground
+   - which is exactly what produced the line this was asked to fix. */
+
+.noBackdropTransparency .detailPagePrimaryContainer,
+.noBackdropTransparency .detailPageSecondaryContainer {
+    background-color: transparent;
+}
+
+.itemDetailPage .detailPageWrapperContainer {
+    background-image: var(--cg-veil-detail);
+}
+
+/* --- Facts as cards -----------------------------------------------------
+   .detailSection is a plain block upstream. As a two-column grid it can put
+   the item's own facts beside its media streams instead of stacking two
+   label-value lists that read as one long column of small print.
+
+   Source order is .trackSelections, then .detailSectionContent, then
+   .itemDetailsGroup, so `order` does the arranging - overview across the top,
+   then facts left and streams right. Everything else spans the full width and
+   sorts after. */
+
+.layout-desktop .itemDetailPage .detailSection {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    column-gap: 2em;
+    row-gap: 1em;
+    align-items: start;
+}
+
+.layout-desktop .itemDetailPage .detailSection > * {
+    grid-column: 1 / -1;
+    order: 4;
+}
+
+.layout-desktop .itemDetailPage .detailSectionContent {
+    order: 1;
+}
+
+.layout-desktop .itemDetailPage .itemDetailsGroup {
+    grid-column: 1;
+    order: 2;
+}
+
+.layout-desktop .itemDetailPage .trackSelections {
+    grid-column: 2;
+    order: 3;
+}
+
+.itemDetailPage .itemDetailsGroup,
+.itemDetailPage .trackSelections {
+    padding: .9em 1.15em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-panel);
+    background-color: var(--cg-glass);
+    backdrop-filter: var(--cg-blur);
+    -webkit-backdrop-filter: var(--cg-blur);
+}
+
+/* Label left, value right - the pairing reads faster than a ragged two-column
+   list, and it is what stops "Studios" with eight entries from pushing its own
+   label off the line. */
+
+.itemDetailPage .detailsGroupItem {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5em;
+    padding: .35em 0;
+    border-bottom: 1px solid var(--cg-border);
+}
+
+.itemDetailPage .detailsGroupItem:last-child {
+    border-bottom: 0;
+}
+
+.itemDetailPage .detailsGroupItem .label {
+    color: var(--cg-muted);
+    font-weight: var(--cg-fw-medium);
+    flex: none;
+}
+
+.itemDetailPage .detailsGroupItem .content {
+    text-align: right;
+}
+
+.itemDetailPage .trackSelections .selectContainer {
+    margin-bottom: .5em;
+}
+
+.itemDetailPage .trackSelections .selectContainer:last-child {
+    margin-bottom: 0;
+}
+
+/* --- External links as chips --------------------------------------------
+   IMDb / TheTVDB / TMDB are a row of destinations, not prose, so they read as
+   a set of small targets rather than three underlined words in a sentence.
+   02-base.css underlines .button-link on purpose - an achromatic accent leaves
+   nothing else to mark a link with - so that has to come off here explicitly. */
+
+.itemDetailPage .itemExternalLinks a.button-link {
+    display: inline-block;
+    margin: 0 .3em .35em 0;
+    padding: .2em .75em;
+    border: 1px solid var(--cg-border);
+    border-radius: var(--cg-radius-pill);
+    background-color: var(--cg-glass);
+    color: var(--cg-muted);
+    font-size: var(--cg-fs-xs);
+    font-weight: var(--cg-fw-medium);
+    text-decoration: none;
+}
+
+.itemDetailPage .itemExternalLinks a.button-link:hover {
+    color: var(--cg-text);
+    border-color: var(--cg-border-strong);
+    background-color: var(--cg-state-active);
+    text-decoration: none;
+}
+
+/* --- Tagline and overview ------------------------------------------------ */
+
+.itemDetailPage .tagline {
+    color: var(--cg-text);
+    font-size: var(--cg-fs-md);
+    font-style: italic;
+    font-weight: var(--cg-fw-medium);
+    margin-bottom: .35em;
+}
+
+.itemDetailPage .overview {
+    color: var(--cg-muted);
+    max-width: 90ch;
+    line-height: var(--cg-lh-base);
+}
+
+/* --- Cast as circles ----------------------------------------------------
+   #castCollapsible and .personCard are both stable hooks, so this needs no
+   :has() - which the webOS and Tizen browsers cannot be relied on for.
+
+   Person cards are portrait (the padder is 150%), so the padder is squared
+   before the radius is applied or the circles come out as ellipses. The name
+   and role go back UNDER the image: a face is not artwork with a title on it,
+   and move #3 does not apply to a headshot. */
+
+#castCollapsible .cardPadder {
+    padding-bottom: 100%;
+}
+
+#castCollapsible .cardScalable,
+#castCollapsible .cardImageContainer,
+#castCollapsible .cardBox,
+#castCollapsible .cardContent {
+    border-radius: 50%;
+}
+
+#castCollapsible .cardScalable::after {
+    background-image: none;
+}
+
+#castCollapsible .cardBox > .cardText {
+    position: static;
+    bottom: auto;
+    padding: 0 .2em;
+    text-align: center;
+}
+
+#castCollapsible .cardBox > .cardText-first {
+    margin-top: .6em;
+}
+
+#castCollapsible .cardBox {
+    box-shadow: none;
+}
+
+#castCollapsible .cardScalable {
+    box-shadow: var(--cg-shadow-1);
 }
 
 /* ---- src/40-episodes.css --------------------------------------- */
