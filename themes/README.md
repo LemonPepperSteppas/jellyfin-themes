@@ -49,12 +49,16 @@ tokens are not doing enough work.
 Tags are prefixed per theme, so one theme's release never moves another theme's URL:
 
 ```
-cinematic-glass-v1.0.0
-<next-theme>-v1.0.0
+cinematic-glass-v0.0.1
+<next-theme>-v0.0.1
 ```
 
 Build, commit `dist/`, tag, push the tag. jsDelivr picks it up on first request and caches
 it permanently, so a tag is never re-pointed &mdash; cut a new one instead.
+
+Start a theme at `v0.0.1`, not `v1.0.0`. A tag is immutable once jsDelivr has served it, so
+the version number is the only thing left to signal "this will still move". Save `v1.0.0`
+for a theme whose feature set has actually settled.
 
 ## Starting a new theme
 

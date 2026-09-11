@@ -16,7 +16,7 @@ CLAUDE.md    project state and conventions; start here
 |---|---|
 | [Cinematic Glass](themes/cinematic-glass/) | scaffolded, not yet built |
 
-Themes are released under per-theme tags (`cinematic-glass-v1.0.0`) and served by jsDelivr
+Themes are released under per-theme tags (`cinematic-glass-v0.0.1`) and served by jsDelivr
 straight from this repo, so one theme's release never moves another's URL.
 
 ## Why the research folder exists

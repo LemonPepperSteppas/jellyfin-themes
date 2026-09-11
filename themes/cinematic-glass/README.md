@@ -4,20 +4,21 @@ A theme for **Jellyfin 10.11.x** web. The artwork supplies all the colour; the i
 supplies none. There is no top bar — navigation floats as a frosted pill, card metadata
 sits over the poster instead of under it, and the billboard runs edge to edge.
 
-> **Built, not yet released.** Every module in `src/` is written, the font is embedded, and
-> `dist/` is built for both profiles. The one thing left before `v1.0.0` is the test pass on
-> the real server in `PLAN.md` section 6.
+> **Released as `cinematic-glass-v0.0.1`.** Every module is written, the font is embedded,
+> and the whole thing has been through the `PLAN.md` section 6 test pass on a real server.
+> The `0.x` version is deliberate: the design is settled but the feature set is not, so
+> expect additions before `v1.0.0`.
 
 ## Install
 
 Dashboard → **Branding** → Custom CSS. `@import` must be the first line in the box.
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
-> The tag above does not exist yet &mdash; nothing is built. It becomes live the moment
-> `cinematic-glass-v1.0.0` is tagged and pushed.
+> Pin a tag, never a branch. jsDelivr caches a tag permanently, so a tag can never serve
+> you a half-finished push &mdash; and can never be re-pointed either. New release, new tag.
 
 Per-user instead of server-wide: Settings → Display → Custom CSS. User CSS is injected
 after server CSS, so it wins. Applies to Jellyfin Web only — not Android, Swiftfin or the
@@ -54,8 +55,8 @@ Each is an extra `@import` on a line *after* the base theme. They are served str
 the repo rather than from `dist/`, since they are single files with nothing to concatenate:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/dist/cinematic-glass.css");
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v1.0.0/themes/cinematic-glass/options/no-blur.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.1/themes/cinematic-glass/options/no-blur.css");
 ```
 
 | Module | Effect |

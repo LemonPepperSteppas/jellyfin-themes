@@ -22,7 +22,8 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
-- **Tags:** none yet. First release will be `cinematic-glass-v1.0.0`.
+- **Tags:** `cinematic-glass-v0.0.1` is the first release (2026-09-10). Deliberately
+  `0.x` &mdash; the design is locked but the feature set is not, so `v1.0.0` is still free.
 - **Cinematic Glass is written, and untested on a real server.** All twelve modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
   builds both profiles (~142 KB, ~86 KB minified — the font is most of that). `accents/` is
@@ -31,7 +32,7 @@ _Last updated: 2026-09-10._
   variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
   `src/03-fonts.css` is GENERATED from them — never hand-edit it; run
   `python build/embed-font.py`. The theme has no external dependency at runtime.
-- **Two things stand between here and `cinematic-glass-v1.0.0`:**
+- **Shipped. What is left is optional:**
   1. The `PLAN.md` section 6 test pass is **effectively done** (2026-09-10): every screen
      checked on the live server, plus mobile confirmed on a real device by the server
      owner. Only a transcoding session and TV focus rings on real hardware remain, and
@@ -143,7 +144,7 @@ python design/src/assemble.py              # regenerate the direction deck (from
 ## Settled decisions — do not relitigate without being asked
 
 - **One repo at the root, not one per theme.** `research/` and `design/` are shared by
-  every theme. Per-theme *tags* (`cinematic-glass-v1.0.0`) give independent release
+  every theme. Per-theme *tags* (`cinematic-glass-v0.0.1`) give independent release
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.
