@@ -22,6 +22,12 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
+- **`cinematic-glass-v0.0.6` HAS A KNOWN REGRESSION - do not pin it.** Its page-clearance
+  fix caught the item detail page, whose class list is `page libraryPage itemDetailPage
+  noSecondaryNavPage selfBackdropPage` - it IS a `.libraryPage` - so every detail page
+  shipped with the hero pushed down behind a band of empty ground. Fixed on `main`;
+  `99-fixes.css` now excludes `.itemDetailPage` explicitly. Cut a tag before telling
+  anyone to update.
 - **Tags:** `cinematic-glass-v0.0.6` is current (2026-09-10). Deliberately `0.x` &mdash; the
   design is locked but the feature set is not, so `v1.0.0` is still free.
   Everything before it is superseded and should not be pinned: v0.0.1 kept a poster

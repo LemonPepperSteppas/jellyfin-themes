@@ -180,7 +180,16 @@
     padding-top: calc(env(safe-area-inset-top) + 4.5em + var(--cg-header-gap)) !important;
 }
 
-.libraryPage {
+/* :not(.itemDetailPage) because the detail page IS a .libraryPage - its class
+   list is `page libraryPage itemDetailPage noSecondaryNavPage selfBackdropPage`.
+   Upstream relies on source order for this: `.itemDetailPage { padding-top: 0 }`
+   comes after `.libraryPage { padding-top: 7em }` in the same file and wins the
+   tie. A rule in THIS file is later still, so without the exclusion the hero
+   gets pushed down the page behind a band of empty ground - which is exactly
+   what v0.0.6 shipped. Written as :not() rather than re-asserting the zero,
+   so it cannot be undone by anything added below. */
+
+.libraryPage:not(.itemDetailPage) {
     padding-top: calc(env(safe-area-inset-top) + 7em + var(--cg-header-gap)) !important;
 }
 
@@ -194,5 +203,5 @@
     }
 }
 
-/* .itemDetailPage is `padding-top: 0 !important` upstream and stays that way -
-   its hero is supposed to run under the pill. */
+/* .itemDetailPage keeps upstream's `padding-top: 0 !important` - its hero is
+   supposed to run under the pill, which is the whole point of the composition. */

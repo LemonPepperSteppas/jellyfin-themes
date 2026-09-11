@@ -61,10 +61,24 @@
 
 /* Mobile carries the artwork ON this element (see --cg-fade-backdrop), so the
    fade is a mask here rather than a gradient on the wrapper below. Without it
-   the picture stops dead on a horizontal line and the ribbon's slab starts. */
+   the picture stops dead on a horizontal line and the ribbon's slab starts.
+
+   HEIGHT MATCHES DESKTOP'S, by arithmetic rather than by eye. Desktop is
+   `calc(100vh - 27vh - 14vh)` = 59vh, measured from the top of the viewport.
+   Mobile's backdrop starts 3rem down - librarybrowser.scss gives it
+   `margin-top: 3rem` to clear the header - so the same expression minus that
+   margin puts its BOTTOM EDGE at the same 59vh, which is what the eye reads as
+   "the hero fills the screen". At 45vh it was visibly the smaller of the two.
+
+   --hero-h is local to this rule set on purpose: the logo below has to land
+   against the same number, and two hand-written calcs would drift. */
+
+.layout-mobile .itemDetailPage {
+    --hero-h: calc(100vh - 27vh - 14vh - 3rem);
+}
 
 .layout-mobile .itemDetailPage .itemBackdrop {
-    height: 45vh;
+    height: var(--hero-h);
     -webkit-mask-image: var(--cg-fade-backdrop);
     mask-image: var(--cg-fade-backdrop);
 }
@@ -114,9 +128,11 @@
 
 /* Mobile's ribbon is `display: block; position: relative` in flow under the
    backdrop - none of desktop's `margin-top: -7.2em` applies - so it has to be
-   lifted deliberately. -7em puts the title inside the masked region, which is
-   the bottom 45% of a 45vh backdrop, so it reads over the fading artwork the
-   way it does on desktop instead of below it on flat ground. */
+   lifted deliberately. -7em puts the title inside the masked region - the
+   bottom 45% of the backdrop, since --cg-fade-backdrop is opaque to 55% - so
+   it reads over the fading artwork the way it does on desktop instead of below
+   it on flat ground. The mask's stops are percentages, so this holds at any
+   hero height. */
 
 .layout-mobile .itemDetailPage .detailRibbon {
     margin-top: -7em;
@@ -164,7 +180,7 @@
 
 .layout-mobile .itemDetailPage .detailLogo:not(.hide) {
     display: block;
-    top: calc(45vh - 7em);
+    top: calc(var(--hero-h) - 7em);
     right: auto;
     left: 5%;
     width: 90%;
