@@ -22,13 +22,14 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
-- **Tags:** `cinematic-glass-v0.0.2` is current (2026-09-10). Deliberately `0.x` &mdash; the
+- **Tags:** `cinematic-glass-v0.0.3` is current (2026-09-10). Deliberately `0.x` &mdash; the
   design is locked but the feature set is not, so `v1.0.0` is still free.
-  `v0.0.1` is superseded and should not be pinned: its item-detail page kept a poster
-  column and put the title below the artwork, neither of which matches the deck.
+  `v0.0.1` and `v0.0.2` are superseded and should not be pinned: v0.0.1 kept a poster
+  column on the item page, and v0.0.2 predates the centred ElegantFin-derived detail
+  composition, the removal of the page veil, and the enlarged image pickers.
 - **Cinematic Glass is released and verified on the real server.** All thirteen modules in
   `src/`, all five `options/`, and `standalone/00-jellyfin-base.css` are done; `dist/`
-  builds both profiles (~157 KB, ~88 KB minified — the font is most of that). `accents/` is
+  builds both profiles (~164 KB, ~91 KB minified — the font is most of that). `accents/` is
   still just the template, which is the settled decision, not an omission.
 - **Manrope is committed and embedded.** `themes/cinematic-glass/assets/*.woff2` (v20,
   variable, latin + latin-ext) with `OFL.txt`, redistributed under OFL-1.1.
@@ -45,6 +46,10 @@ _Last updated: 2026-09-10._
 - **One decision worth a second opinion**, flagged in the file that made it:
   `01-mui-vars.css` maps MUI's `secondary` and `info` onto the neutral ramp, and
   `PLAN.md` section 3 specifies no such tokens.
+- **The image editor and image search dialogs are pickers, not shelves** - `80-misc.css`
+  widens `.imageEditorCard` (32% wide art / 18% portrait), drops the card scrim, and puts
+  `.cardFooter` back into flow under the image. Stock rendered posters at 104px and the
+  20-cards.css overlay treatment made the provider line unreadable over pale artwork.
 - **The detail page follows ElegantFin's centred composition, not the deck** - the owner's
   call after comparing both on the real server; see `PLAN.md` section 4b. Do not "restore"
   it to the deck. It also shows LOGO ART with the text title as fallback, which the deck's
@@ -153,7 +158,7 @@ python design/src/assemble.py              # regenerate the direction deck (from
 ## Settled decisions — do not relitigate without being asked
 
 - **One repo at the root, not one per theme.** `research/` and `design/` are shared by
-  every theme. Per-theme *tags* (`cinematic-glass-v0.0.2`) give independent release
+  every theme. Per-theme *tags* (`cinematic-glass-v0.0.3`) give independent release
   cadence; `git subtree split` can extract a theme with history later if needed.
 - **CDN `@import` is the primary install**; the registered-theme (`standalone`) variant is
   a documented extra. The server owner has Dashboard access but not filesystem access.
