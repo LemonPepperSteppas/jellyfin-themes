@@ -230,6 +230,12 @@ body {
 
     --cg-drop-logo:     drop-shadow(0 .12em .5em rgba(0, 0, 0, .85));
 
+    /* The deck's `.bb-logo` text-shadow, verbatim. A hero title sits directly
+       on artwork, and the scrim is thin at the top of the text - this is what
+       keeps it readable where the picture is bright behind a letter. */
+
+    --cg-shadow-title:  0 2px 24px rgba(0, 0, 0, .6);
+
     /* --- Scrims ----------------------------------------------------------
        Metadata-over-artwork is structural move #3, and this ramp is the only
        thing making it legible over an arbitrary poster. Composite rather than
@@ -1666,10 +1672,13 @@ h1, h2, h3,
     display: none;
 }
 
-/* The deck sets 52px on a 951px stage - about 5.5% of the stage width - so
-   this tracks the viewport rather than fixing a pixel size that would be
-   enormous on a phone and small on a desktop. Capped at 60px, because past
-   that a long title starts wrapping into the artwork on a wide monitor. */
+/* 52px is the deck's literal value for `.bb-logo` on the detail screen, and
+   3.25rem is that. It tracks the viewport below desktop widths so it is not
+   52px on a phone, but the cap matches the deck rather than overshooting it -
+   an earlier 60px cap was me scaling the deck's 951px stage up to a real
+   1910px window, which reads as too big at that size.
+
+   line-height .98 and the text-shadow are the deck's too. */
 
 .itemName,
 .parentName {
@@ -1679,10 +1688,11 @@ h1, h2, h3,
 
 h1.itemName,
 h1.parentName {
-    font-size: clamp(2rem, 5vw, 3.75rem);
+    font-size: clamp(2rem, 5vw, 3.25rem);
     font-weight: var(--cg-fw-display);
     line-height: .98;
     margin-bottom: .2em;
+    text-shadow: var(--cg-shadow-title);
 }
 
 /* The series name above an episode title stays small and quiet - it is

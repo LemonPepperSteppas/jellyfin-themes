@@ -121,6 +121,12 @@
 
     --cg-drop-logo:     drop-shadow(0 .12em .5em rgba(0, 0, 0, .85));
 
+    /* The deck's `.bb-logo` text-shadow, verbatim. A hero title sits directly
+       on artwork, and the scrim is thin at the top of the text - this is what
+       keeps it readable where the picture is bright behind a letter. */
+
+    --cg-shadow-title:  0 2px 24px rgba(0, 0, 0, .6);
+
     /* --- Scrims ----------------------------------------------------------
        Metadata-over-artwork is structural move #3, and this ramp is the only
        thing making it legible over an arbitrary poster. Composite rather than
