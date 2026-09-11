@@ -1,6 +1,6 @@
 # Cinematic Glass — build plan
 
-Status: **released as `cinematic-glass-v0.0.3`** (2026-09-10). Every module in `src/`, all
+Status: **released as `cinematic-glass-v0.0.4`** (2026-09-10). Every module in `src/`, all
 five options and the standalone base layer are done, Manrope is embedded and committed,
 and the theme has been through the section 6 test pass on the live server.
 
@@ -144,6 +144,25 @@ cd design && python -m http.server
 The published copy is at the artifact link in CLAUDE.md, but note viewers of that link
 see a pinned earlier revision, so `design/src/` is the authority.
 
+## 4c. Sign-in IS the deck, and the wrapper to hang it on exists
+
+Same mistake as 4a, one screen over, found in v0.0.4. The deck builds this screen as
+`signin("card")` in `design/src/dirs.py`: veiled artwork and ONE narrow glass card
+holding the lockup, a row of round avatars, the fields, the check and the button.
+Through v0.0.3 the live page had none of that composition - a full-bleed 1793px row of
+199px square user cards, a centred h1 the width of the viewport, and 804px button bars,
+with a pane only around the manual form.
+
+`60-login.css` said that was forced, because "there is no element wrapping the title,
+the users and the buttons together". There is:
+
+    div.padded-left.padded-right.padded-bottom-page.margin-auto-y
+
+It was missed because it is 1793px wide and reads as the page rather than as a
+container. It is now the card, and both login states live inside it. The lesson is the
+one in 4a with a different face: **the markup was not the constraint, the reading of it
+was.** Measure the wrapper before concluding a composition is impossible.
+
 ## 4b. The detail page follows ElegantFin, not the deck
 
 **Decided 2026-09-10 by the server owner**, after seeing both side by side on the
@@ -227,7 +246,7 @@ renderer during mockup review, and TV boxes are weaker than this laptop. Ship it
 **A. Custom CSS (primary).** CDN `@import` into **Dashboard → Branding → Custom CSS**:
 
 ```css
-@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.3/themes/cinematic-glass/dist/cinematic-glass.css");
+@import url("https://cdn.jsdelivr.net/gh/LemonPepperSteppas/jellyfin-themes@cinematic-glass-v0.0.4/themes/cinematic-glass/dist/cinematic-glass.css");
 ```
 
 `@import` must be the first rule in the block. Options go on the lines *after* it.

@@ -296,12 +296,13 @@
 
    Margins rather than a grid gap: the last child is .loginDisclaimerContainer,
    which is empty on most servers, and a gap would still reserve a row's worth
-   of space above nothing at the foot of the card. */
+   of space above nothing at the foot of the card.
 
-#loginPage .readOnlyContent {
-    margin-top: 1.4em;
-    margin-bottom: 0;
-}
+   Upstream's own 0.5em/1em margins on .readOnlyContent itself are !important
+   and are LEFT ALONE deliberately. 1.4em above the button stack would match the deck's
+   rhythm better, but buying 13px of air with a third entry in 99-fixes.css is
+   not a trade worth making, and the card measures 49px of slack at the top
+   against 53px at the foot as it stands. */
 
 #loginPage .readOnlyContent > .emby-button {
     margin: 0 0 .5em;
