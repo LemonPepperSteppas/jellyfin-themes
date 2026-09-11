@@ -45,19 +45,18 @@
    Clearing the margin drops the ribbon below the hero and takes the coupling
    with it, which is what buys a free hand with the layout. */
 
+/* .itemBackdrop CARRIES NO IMAGE on an item page - it is a spacer, and its
+   only job here is deciding how far down the logo and facts sit. The artwork
+   is .backdropImage, a full-viewport layer handled in 02-base.css.
+
+   This had a mask and a scrim on it for a while. Both were acting on an empty
+   box, while the real artwork was being darkened by three separate layers at
+   once, which is what turned this page nearly black. */
+
 .itemDetailPage .itemBackdrop {
     height: 74vh;
     border-radius: 0;
-    -webkit-mask-image: var(--cg-mask-hero);
-    mask-image: var(--cg-mask-hero);
-}
-
-.itemDetailPage .itemBackdrop::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: var(--cg-scrim-hero);
+    background-image: none;
 }
 
 .layout-mobile .itemDetailPage .itemBackdrop {
@@ -358,9 +357,8 @@ h1.parentName {
     background-color: transparent;
 }
 
-.itemDetailPage .detailPageWrapperContainer {
-    background-image: var(--cg-veil-detail);
-}
+/* No gradient here: the veil over the artwork does that work in one place,
+   in 02-base.css. Adding a second ramp on this wrapper stacked with it. */
 
 /* --- Facts as cards -----------------------------------------------------
    .detailSection is a plain block upstream. As a two-column grid it can put

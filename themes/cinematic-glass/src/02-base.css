@@ -38,8 +38,29 @@ html[data-theme] {
     background-color: var(--cg-ground);
 }
 
+/* THE ARTWORK IS NOT ON .backgroundContainer. Jellyfin paints it on
+   .backdropImage inside .backdropContainer - a full-viewport absolute layer -
+   and .backgroundContainer sits OVER that as the veil. Worth knowing before
+   trying to style a backdrop: on an item page .itemBackdrop often carries no
+   image at all and is only a spacer.
+
+   So the veil is a gradient rather than a flat fill, because it is the single
+   layer with the artwork behind it: nearly clear at the top so the picture
+   reads, solid ground at the bottom where text sits. Stacking separate scrims
+   to do that is what turned the detail page nearly black. */
+
 .backgroundContainer.withBackdrop {
-    background-color: var(--cg-veil);
+    background-color: transparent;
+    background-image: var(--cg-veil-backdrop);
+}
+
+/* And the artwork itself fades out rather than being covered - a mask takes
+   the pixels away, where a scrim can only put something opaque on top. This is
+   what removes the hard horizontal edge at the bottom of a backdrop. */
+
+.backdropImage {
+    -webkit-mask-image: var(--cg-mask-backdrop);
+    mask-image: var(--cg-mask-backdrop);
 }
 
 /* --- Type ----------------------------------------------------------------
