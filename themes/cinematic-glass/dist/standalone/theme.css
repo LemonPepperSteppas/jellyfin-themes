@@ -2851,6 +2851,18 @@ h1.parentName {
     background-image: none;
 }
 
+/* Taking the scrim off leaves the provider line - "TheTVDB / 680 x 1000 - en"
+   - sitting on raw artwork, which is unreadable over a pale poster. On a shelf
+   the answer is the scrim; in a picker it is to stop overlapping at all. Move
+   #3 in 20-cards.css lifts .cardFooter onto the image; here it goes back into
+   flow, so the image is whole and the label sits under it. */
+
+.imageEditorCard .cardBox > .cardFooter {
+    position: static;
+    padding: .4em .3em 0;
+    background: none;
+}
+
 /* --- Toasts --------------------------------------------------------------
    Stock is a light grey box. A toast lands over artwork as often as not, so
    it gets the same glass as everything else that floats. */
