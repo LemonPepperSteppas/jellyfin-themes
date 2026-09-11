@@ -207,27 +207,39 @@
    logoImageUrl falls back to item.ParentLogoImageTag, so an episode shows its
    series logo while the h3 episode title stays - which is the right split. */
 
+/* Height is in em with no vh cap on purpose: the box's bottom edge is
+   `top + height`, so a viewport-dependent height would slide the logo up and
+   down the hero as the window resizes. Fixed em keeps its baseline at
+   58vh - 4em, which is the gap that clears the meta line beneath it.
+
+   background-position is `left bottom`, so logos of different aspect ratios
+   all sit on that same baseline rather than floating in the middle of the box. */
+
 .itemDetailPage .detailLogo:not(.hide) {
-    top: calc(58vh - 10em);
+    top: calc(58vh - 13.5em);
     right: auto;
     left: 3.3%;
-    width: min(34vw, 26em);
-    height: 6.6em;
+    width: min(42vw, 36em);
+    height: 9.5em;
     background-position: left bottom;
     background-size: contain;
     filter: var(--cg-drop-logo);
 }
 
 .layout-mobile .itemDetailPage .detailLogo:not(.hide) {
-    top: calc(46vh - 8em);
-    height: 5em;
+    top: calc(46vh - 10em);
+    height: 7em;
 }
 
-/* The text name is hidden with VISIBILITY, not display, and its width is left
-   alone. The ribbon's height is coupled to its negative margin (see the Ribbon
-   note above), so collapsing this box would lift the ribbon off the hero's
-   bottom edge. Keeping the box costs a gap before the buttons and keeps the
-   geometry that three earlier fixes went into.
+/* The text name is hidden with VISIBILITY, not display: the ribbon's height is
+   coupled to its negative margin (see the Ribbon note above), and removing this
+   box from flow would lift the ribbon off the hero's bottom edge.
+
+   `max-width: 0` collapses the width while the line box - and so the ribbon's
+   107px height - survives; measured both ways on the live server, ribbon height
+   and its flush bottom are identical with and without it. Without the collapse
+   the invisible title reserves its full width and strands the buttons in the
+   middle of the hero, 500px from anything they belong to.
 
    Scoped to exactly the conditions where the logo is actually rendered:
    librarybrowser.scss hides .detailLogo on mobile, on TV, and below 68.75em,
@@ -237,6 +249,8 @@
 @media all and (min-width: 68.75em) {
     .layout-desktop .detailLogo:not(.hide) ~ .detailPageWrapperContainer .nameContainer h1 {
         visibility: hidden;
+        max-width: 0;
+        overflow: hidden;
     }
 }
 
