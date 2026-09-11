@@ -1095,6 +1095,26 @@ h1, h2, h3,
     color: var(--cg-text);
 }
 
+/* The logo variant is an empty h3 carrying the banner as a background image,
+   and upstream gives it a FIXED 14.4em box with `background-position: 0 50%`.
+
+   Measured on the real server: the box is 230px, the banner is 1302x378, and
+   `contain` at the h3's 29.6px height draws it 102px wide - so the logo sits
+   hard left with 128px of dead box to its right. Inside a full-width bar that
+   is invisible. Inside a pill that hugs its contents it is the whole pill:
+   the pill reads centred while the mark inside it reads left of centre, which
+   is what the server owner saw on the sign-in screen.
+
+   Centred, and the box tightened to hold the default banner at full height
+   with room to spare. A custom banner wider than about 4.7:1 would be scaled
+   down by `contain` rather than clipped, so this degrades softly. */
+
+.headerTop .pageTitleWithLogo {
+    width: 9em;
+    margin-inline: 0;
+    background-position: center;
+}
+
 /* --- Section tabs --------------------------------------------------------
    A second, smaller pill under the first. librarybrowser.scss pulls
    .headerTabs up with `margin-top: -4.3em` above 100em wide and centres it;
