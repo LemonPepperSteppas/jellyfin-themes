@@ -146,12 +146,19 @@
 }
 
 /* Round. .cardScalable owns the artwork box and clips it, so the radius has to
-   land on every box in the stack or a square corner shows through. */
+   land on every box in the stack or a square corner shows through - upstream
+   puts the avatar itself on .cardImageContainer at --cg-radius-card, and only
+   .cardContent's `overflow: hidden` keeps its corners off the circle.
 
-#loginPage #divUsers .cardBox,
+   NOT .cardBox. That one wraps the circle AND the name, so it is 71x95, and
+   `border-radius: 50%` on a box that is not square gives an ELLIPSE - which
+   then shapes anything drawn from its border box, including the hover shadow
+   below. It is the column, not the artwork. */
+
 #loginPage #divUsers .cardScalable,
 #loginPage #divUsers .cardPadder,
 #loginPage #divUsers .cardContent,
+#loginPage #divUsers .cardImageContainer,
 #loginPage #divUsers .cardImage {
     border-radius: 50%;
 }
@@ -196,6 +203,21 @@
 
 #loginPage #divUsers .card:hover .cardScalable {
     box-shadow: 0 0 0 2px var(--cg-accent), var(--cg-shadow-2);
+}
+
+/* 20-cards.css lifts a hovered card and drops --cg-shadow-3 under it. That is
+   a shelf move: a poster rises off the page and the shadow sells the height.
+   Here it lands on .cardBox - the 71x95 column - so a 60px-blur shadow offset
+   24px down pools around a 71px circle and reads as a dark patch behind the
+   face and the name. Measured, it stacks with the shadow .cardScalable already
+   carries and the ring above: three shadows on one avatar.
+   The ring is the affordance on this screen. The shelf move comes off. */
+
+@media (hover: hover) and (pointer: fine) {
+    #loginPage #divUsers .card:hover .cardBox {
+        transform: none;
+        box-shadow: none;
+    }
 }
 
 /* Focus keeps the theme's own two-ring treatment from 02-base.css, just moved
