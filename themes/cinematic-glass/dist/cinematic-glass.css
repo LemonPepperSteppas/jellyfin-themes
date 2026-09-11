@@ -1808,15 +1808,18 @@ h1.parentName {
 .layout-desktop .itemDetailPage .trackSelections {
     grid-column: 2;
     order: 3;
-    margin-top: 0;
 }
 
-/* Both cards start on the same line. Upstream gives .trackSelections a top
-   margin that left it sitting about 23px above its neighbour. */
+/* Both cards start on the same line. The stray 22px belongs to
+   .itemDetailsGroup, not to .trackSelections - ElegantFin sets a top margin on
+   the latter, which is what led me to clear the wrong one first. Measured:
+   .itemDetailsGroup margin-top 22.32px, .trackSelections 0. Cleared on both so
+   it does not matter which one a future build decides to move it to. */
 
 .layout-desktop .itemDetailPage .itemDetailsGroup,
 .layout-desktop .itemDetailPage .trackSelections {
     align-self: start;
+    margin-top: 0;
 }
 
 /* Capped. Left to fill its grid column these run 1780px wide on a 1910px
