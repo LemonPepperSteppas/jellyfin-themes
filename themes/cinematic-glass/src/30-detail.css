@@ -205,6 +205,22 @@ h1.parentName {
     justify-content: center;
 }
 
+/* With the veil gone (02-base.css) this copy sits on unmuted artwork, so it
+   carries its own shadow rather than the page carrying a wash for it. The
+   external-link chips are excluded: they already have a glass backing, and a
+   shadow on top of that just muddies them. */
+
+.itemDetailPage .itemMiscInfo,
+.itemDetailPage .detailSectionContent,
+.detailRibbon h3.itemName,
+.detailRibbon .parentName:not(h1) {
+    text-shadow: var(--cg-shadow-text);
+}
+
+.itemDetailPage .itemExternalLinks a.button-link {
+    text-shadow: none;
+}
+
 .nameContainer .button-link {
     text-decoration: none;
 }
