@@ -2709,6 +2709,48 @@ h1.parentName {
     background-color: var(--cg-state-hover);
 }
 
+/* --- Image editor and image search --------------------------------------
+   The "Edit images" dialog off an item's ... menu, and the search dialog behind
+   its magnifier. Both build their grids from .imageEditorCard, so one set of
+   rules covers them.
+
+   Measured on the live server: search results came out 120x171 with the image
+   itself 104x155, inside a 1077px-wide container - five columns of thumbnail
+   in a dialog with room to spare. These are pickers; the image IS the content,
+   and you cannot judge a poster at 104px.
+
+   Two shapes, two widths. Wide art (backdrop, banner, thumb, logo) goes three
+   to a row; posters and square art go five, because at 32% a 2:3 poster would
+   be over 500px tall and you would scroll past two of them.
+
+   The scrim comes off. 20-cards.css ramps the bottom of every .cardScalable so
+   titles can sit over artwork - useful on a library shelf, actively wrong in a
+   picker, where it darkens the very thing being chosen. */
+
+.imageEditorCard {
+    width: 32%;
+}
+
+.imageEditorCard.portraitCard,
+.imageEditorCard.squareCard {
+    width: 18%;
+}
+
+@media all and (max-width: 62.5em) {
+    .imageEditorCard {
+        width: 48%;
+    }
+
+    .imageEditorCard.portraitCard,
+    .imageEditorCard.squareCard {
+        width: 31%;
+    }
+}
+
+.imageEditorCard .cardScalable::after {
+    background-image: none;
+}
+
 /* --- Toasts --------------------------------------------------------------
    Stock is a light grey box. A toast lands over artwork as often as not, so
    it gets the same glass as everything else that floats. */
