@@ -1874,9 +1874,18 @@ h1.parentName {
    then facts left and streams right. Everything else spans the full width and
    sorts after. */
 
+/* Three columns, and the third is the point. The two cards get a column each,
+   sized to the card rather than to a share of the row, so they sit side by
+   side with one gap between them instead of being flung to opposite ends of a
+   1.4fr/1fr split. The trailing 1fr soaks up whatever is left, so anything
+   spanning 1/-1 - the overview, the tags, the rails - still runs full width.
+
+   minmax(0, 46em) rather than a bare 46em so the columns can shrink on a
+   narrow window instead of overflowing it. */
+
 .layout-desktop .itemDetailPage .detailSection {
     display: grid;
-    grid-template-columns: 1.4fr 1fr;
+    grid-template-columns: minmax(0, 46em) minmax(0, 46em) 1fr;
     column-gap: 2em;
     row-gap: 1em;
     align-items: start;
@@ -1899,6 +1908,15 @@ h1.parentName {
 .layout-desktop .itemDetailPage .trackSelections {
     grid-column: 2;
     order: 3;
+    margin-top: 0;
+}
+
+/* Both cards start on the same line. Upstream gives .trackSelections a top
+   margin that left it sitting about 23px above its neighbour. */
+
+.layout-desktop .itemDetailPage .itemDetailsGroup,
+.layout-desktop .itemDetailPage .trackSelections {
+    align-self: start;
 }
 
 /* Capped. Left to fill its grid column these run 1780px wide on a 1910px
