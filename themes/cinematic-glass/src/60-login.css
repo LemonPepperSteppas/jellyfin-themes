@@ -205,20 +205,13 @@
     box-shadow: 0 0 0 2px var(--cg-accent), var(--cg-shadow-2);
 }
 
-/* 20-cards.css lifts a hovered card and drops --cg-shadow-3 under it. That is
-   a shelf move: a poster rises off the page and the shadow sells the height.
-   Here it lands on .cardBox - the 71x95 column - so a 60px-blur shadow offset
-   24px down pools around a 71px circle and reads as a dark patch behind the
-   face and the name. Measured, it stacks with the shadow .cardScalable already
-   carries and the ring above: three shadows on one avatar.
-   The ring is the affordance on this screen. The shelf move comes off. */
-
-@media (hover: hover) and (pointer: fine) {
-    #loginPage #divUsers .card:hover .cardBox {
-        transform: none;
-        box-shadow: none;
-    }
-}
+/* The lift from 20-cards.css is KEPT here, and this note exists because it was
+   briefly taken off. --cg-shadow-3 under a hovered avatar looked like a dark
+   rectangle behind the face, so it read as wrong for a round card. It was not:
+   `contain: content` on .card was clipping that shadow square to the card's
+   own box. With the paint containment gone (20-cards.css) the shadow spreads
+   the way it does on a shelf and the lift and the ring work together.
+   Do not "fix" this again by removing the lift - the cause was containment. */
 
 /* Focus keeps the theme's own two-ring treatment from 02-base.css, just moved
    onto the round element. Left on the button it draws a RECTANGLE around a
