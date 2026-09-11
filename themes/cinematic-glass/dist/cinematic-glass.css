@@ -1460,13 +1460,23 @@ h1, h2, h3,
     display: none;
 }
 
-/* TWO elements carry the poster's 32.45vw clearance, not one. .detailPageContent
-   is the documented one; .detailRibbon gets it too, which is why the title
-   first came out 623px inboard on a 1910px window with the poster already
-   hidden. 3.3% is upstream's own `.padded-left`, so title, buttons and body
-   all land on the same edge. */
+/* THREE elements carry the poster's 32.45vw clearance, not one.
+   .detailPageContent is the documented one; .detailRibbon and
+   .detailPagePrimaryContent have it too. With the poster hidden, each is just
+   a 623px gutter on a 1910px window - which is where the title, and then the
+   body text, kept reappearing after the first two fixes.
 
-.detailPageContent,
+   Specificity matters here. librarybrowser.scss sets these inside
+   `[dir="ltr"] &` / `[dir="rtl"] &` blocks, so the real selector is (0,2,0)
+   and a bare `.detailPageContent` at (0,1,0) loses to it. The `.itemDetailPage`
+   prefix ties at (0,2,0) and wins on load order, and stays direction-agnostic
+   rather than restating both dir blocks.
+
+   3.3% is upstream's own `.padded-left`, so title, buttons and body share an
+   edge. */
+
+.itemDetailPage .detailPageContent,
+.itemDetailPage .detailPagePrimaryContent,
 .detailRibbon.padded-left.padded-right {
     padding-left: 3.3%;
     padding-right: 3.3%;
