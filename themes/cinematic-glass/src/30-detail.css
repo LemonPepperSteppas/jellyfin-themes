@@ -87,7 +87,8 @@
     align-items: center;
     justify-content: flex-end;
     gap: .5em;
-    min-height: 22vh;
+    padding-top: 1.1em;
+    padding-bottom: .4em;
     background: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
