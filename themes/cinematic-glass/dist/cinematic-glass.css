@@ -3498,3 +3498,58 @@ h1.parentName {
 #loginPage #divUsers .cardBox {
     margin-bottom: 0 !important;
 }
+
+/* jellyfin-web 10.11.8, src/styles/librarybrowser.scss - the page clearances
+   that reserve room under the fixed .skinHeader:
+
+       .libraryPage                          { padding-top: 7em   !important }
+       .libraryPage:not(.noSecondaryNavPage) { padding-top: 7.5em !important }
+       .standalonePage                       { padding-top: 4.5em !important }
+       @media (min-width: 100em) {
+           .libraryPage:not(.noSecondaryNavPage) { padding-top: 4.6em !important } }
+
+   Every one is a fixed em value sized for Jellyfin's own header, and this
+   theme's header is not that header. Two differences, both measured:
+
+     1. THE NOTCH IS NEVER RESERVED. Upstream gives .skinHeader
+        `padding-top: env(safe-area-inset-top)` so the bar clears the cutout,
+        but no page adds that inset to its own padding. On a desktop the inset
+        is 0 and nothing shows; on an iPhone it is ~59px and the header simply
+        lands on top of the content. This is why the sign-in card and the first
+        home rail were being overlapped ON THE PHONE ONLY.
+
+     2. 10-chrome.css makes the header taller. The rail takes an extra
+        --cg-header-gap so the pill floats clear of the top edge, and
+        .headerTabs takes another so the second pill floats clear of the first.
+        That second one also overrides upstream's `margin-top: -4.3em`, which
+        above 100em pulls the tabs up INTO the bar - correct for a bar, wrong
+        for a pill. Cancelling it is deliberate, but it leaves 4.6em reserved
+        for a header that is now the same height as the narrow-window one.
+
+   So: the same formula at every width, since the header is now the same shape
+   at every width. Measured in a fixture built from the rules above - at
+   375x812 with a 59px inset the first rail was 65px UNDER the header, and at
+   1600x900 it was 61px under; both now clear it by single digits.
+
+   !important because the declarations are. */
+
+.standalonePage {
+    padding-top: calc(env(safe-area-inset-top) + 4.5em + var(--cg-header-gap)) !important;
+}
+
+.libraryPage {
+    padding-top: calc(env(safe-area-inset-top) + 7em + var(--cg-header-gap)) !important;
+}
+
+.libraryPage:not(.noSecondaryNavPage) {
+    padding-top: calc(env(safe-area-inset-top) + 7.5em + (var(--cg-header-gap) * 2)) !important;
+}
+
+@media all and (min-width: 100em) {
+    .libraryPage:not(.noSecondaryNavPage) {
+        padding-top: calc(env(safe-area-inset-top) + 7.5em + (var(--cg-header-gap) * 2)) !important;
+    }
+}
+
+/* .itemDetailPage is `padding-top: 0 !important` upstream and stays that way -
+   its hero is supposed to run under the pill. */
