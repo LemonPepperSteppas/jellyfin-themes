@@ -245,6 +245,31 @@
     }
 }
 
+/* --- TV focus ------------------------------------------------------------
+   On a TV the ring is the only cursor there is, so where it lands matters.
+   02-base.css puts --cg-focus-ring-tv on `.show-focus:focus`, which on a card
+   is the BUTTON - and the button is not the card you can see.
+
+   Measured on the real server, TV layout: .card is 359x241 with `border-radius: 0`
+   while .cardBox inside it is 335x197 at --cg-radius-card. So the ring drew a
+   SQUARE box floating about twelve pixels outside a rounded card, which is
+   what it looks like from the sofa: a white rectangle around, not on, the
+   thing being pointed at.
+
+   Moved onto .cardBox, which is the box with the artwork and the radius. It
+   sits well inside .card, so even where paint containment is still in force
+   the ring has room and is not clipped. */
+
+.layout-tv .card.show-focus:focus,
+.layout-tv .card:focus-visible {
+    box-shadow: none;
+}
+
+.layout-tv .card.show-focus:focus .cardBox,
+.layout-tv .card:focus-visible .cardBox {
+    box-shadow: var(--cg-focus-ring-tv);
+}
+
 /* --- Indicators ----------------------------------------------------------
    Stock paints these Jellyfin blue. They are the accent's real job: a fill
    with dark ink on it, which is the only way the accent reads (see the States

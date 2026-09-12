@@ -446,6 +446,42 @@ body {
     --cg-z-tooltip:   1500;
 }
 
+/* --- No backdrop-filter, no translucency ---------------------------------
+   THE BLUR IS NOT OPTIONAL FURNITURE - the glass tokens assume it. Every one
+   of them is a translucent fill whose job is to sit over a blurred copy of
+   what is behind it. Take the blur away and the fill is a window: a flat tint
+   over moving artwork, with small print on top of it.
+
+   That is not hypothetical. `backdrop-filter` shipped in Chromium 76; webOS
+   4/5 are Chromium 53/68 and Tizen 5 is 63, so the TV apps - which ARE
+   jellyfin-web - get none of it, and every glass surface in the theme degrades
+   to exactly that flat tint. It is why the fact panels read as heavy grey
+   slabs on a TV and as dark glass on a laptop.
+
+   options/no-blur.css already solves this in nine declarations by redefining
+   two tokens. This does the same automatically for any client that cannot
+   blur, so the option stays what it is meant to be: a choice for clients that
+   CAN blur but should not, not a repair kit.
+
+   TOP-LEVEL, not nested inside :root. An @supports block written inside a
+   style rule is CSS Nesting, which is Chromium 112 - and the browsers this
+   whole rule exists for are Chromium 53 to 68. They would fail to parse it,
+   and could take the surrounding declarations down with it. The fallback has
+   to be written in CSS those browsers actually understand.
+
+   The condition tests the prefixed property too: Safari supported
+   -webkit-backdrop-filter alone for years, and testing only the unprefixed
+   name would hand the fallback to browsers that blur perfectly well. */
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :root {
+        --cg-blur:          none;
+        --cg-blur-strong:   none;
+        --cg-glass-chrome:  rgb(11, 14, 19);
+        --cg-glass:         rgba(148, 163, 184, .16);
+    }
+}
+
 /* ---- src/01-mui-vars.css --------------------------------------- */
 /* ==========================================================================
    Cinematic Glass - The MUI layer: retints the whole dashboard and the experimental chrome.
@@ -1536,6 +1572,31 @@ h1, h2, h3,
         transform: translateY(-.25em);
         box-shadow: var(--cg-shadow-3);
     }
+}
+
+/* --- TV focus ------------------------------------------------------------
+   On a TV the ring is the only cursor there is, so where it lands matters.
+   02-base.css puts --cg-focus-ring-tv on `.show-focus:focus`, which on a card
+   is the BUTTON - and the button is not the card you can see.
+
+   Measured on the real server, TV layout: .card is 359x241 with `border-radius: 0`
+   while .cardBox inside it is 335x197 at --cg-radius-card. So the ring drew a
+   SQUARE box floating about twelve pixels outside a rounded card, which is
+   what it looks like from the sofa: a white rectangle around, not on, the
+   thing being pointed at.
+
+   Moved onto .cardBox, which is the box with the artwork and the radius. It
+   sits well inside .card, so even where paint containment is still in force
+   the ring has room and is not clipped. */
+
+.layout-tv .card.show-focus:focus,
+.layout-tv .card:focus-visible {
+    box-shadow: none;
+}
+
+.layout-tv .card.show-focus:focus .cardBox,
+.layout-tv .card:focus-visible .cardBox {
+    box-shadow: var(--cg-focus-ring-tv);
 }
 
 /* --- Indicators ----------------------------------------------------------

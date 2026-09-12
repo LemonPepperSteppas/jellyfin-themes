@@ -22,6 +22,13 @@ _Last updated: 2026-09-10._
 
 - **Repo:** https://github.com/LemonPepperSteppas/jellyfin-themes (public, `main`).
   Public because jsDelivr can only serve public repos.
+- **TV was reviewed for the first time (2026-09-11)** after the server owner sent photos
+  of an actual television. Two real defects, both fixed on `main`: every glass surface
+  degrading to a flat tint because the TV browser cannot blur (item 10), and the TV focus
+  ring drawing a square box ~12px outside a rounded card because it sat on `.card`
+  (359x241, no radius) rather than `.cardBox` (335x197, 14px). **Native clients - Android
+  TV, Roku, Swiftfin, Findroid, Chromecast - run no web view and receive no custom CSS at
+  all; nothing in this repo can reach them.**
 - **`cinematic-glass-v0.0.6` HAS A KNOWN REGRESSION - do not pin it.** Its page-clearance
   fix caught the item detail page, whose class list is `page libraryPage itemDetailPage
   noSecondaryNavPage selfBackdropPage` - it IS a `.libraryPage` - so every detail page
@@ -89,7 +96,7 @@ design/     the art-direction deck (generated: python design/src/assemble.py)
 research/   how 10.11 theming actually works + generated reference files
 ```
 
-## The nine things that will make you write wrong CSS
+## The ten things that will make you write wrong CSS
 
 Read `research/jellyfin-10.11-theming.md` before touching a theme. The short version:
 
@@ -164,6 +171,23 @@ Read `research/jellyfin-10.11-theming.md` before touching a theme. The short ver
    and whose hero must run under the pill. Check `.layout-mobile` separately for anything
    structural: a narrow desktop window is not the same test, because Jellyfin picks the
    layout from the user agent, not the width.
+
+10. **The TV apps ARE jellyfin-web, on browsers that cannot blur.** LG webOS 4/5 are
+   Chromium 53/68 and Tizen 5 is 63; `backdrop-filter` shipped in Chromium 76. So every
+   glass token — all of which are *translucent fills that assume a blurred copy behind
+   them* — degrades on a TV to a flat tint over moving artwork with small print on it.
+   That is why the detail page's fact panels read as heavy grey slabs on a TV and as dark
+   glass on a laptop. `00-tokens.css` now carries an `@supports not (...)` block that
+   applies `options/no-blur.css`'s token swap automatically, so the option stays a choice
+   for clients that CAN blur but should not. Two traps: write that `@supports` at TOP
+   LEVEL, never nested inside `:root` (nesting is Chromium 112 — the browsers it exists
+   for would fail to parse it), and test `-webkit-backdrop-filter` in the condition too,
+   or Safari gets the fallback it does not need.
+
+   Also on TV: `.layout-tv .itemBackdrop { display: none }` upstream AND `renderBackdrop`
+   forces `isEnabled` false, so the hero artwork depends entirely on the user's
+   **Backdrops** setting, which defaults to `false`. A TV detail page with no artwork is
+   upstream behaviour, not a theme bug.
 
 The full generated list of all 1097 `--jf-*` variables is
 `research/reference/mui-jf-variables.10.11.8.css` (regenerate:
